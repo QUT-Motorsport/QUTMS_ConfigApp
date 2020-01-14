@@ -28,8 +28,6 @@ All the top-level page components are in `qev2-config/react/pages/`. These page 
 
 To make changes to the backend, edit the files in `qev2-config/python/`. The main python file is `qev2-config/python/api.py` which contains a Flask server.
 
-**TODO:** At the time of writing, communications between the frontend and backend are performed through the `GraphQL` protocol, which is good for large, long-term projects but is unnecessarily complex for our use-case and skill level. We should tear this up and replace it with the regular Flask RESTful protocol.
-
 ## Experimentation via Jupyter Lab
 
 First install jupyter lab (I will provide a conda environment eventually, for now just `pip install jupyterlab`)
@@ -50,14 +48,14 @@ The main 3 widget libraries I would recommend having a look at are:
 
 ## Installing the Electron app permanently
 
-**TODO:** Add respective `build:<platform>` scripts below to `package.json::scripts`, and test (at least) windows installation
-
 First you need to build the desktop application for the desired operating system:
 
 - Windows 32 Bit: `npm run build:win32`
 - Windows 64 Bit: `npm run build:win64` (this is probably the one you want)
 - Mac: `npm run build:mac`
 - Linux: `npm run build:linux`
+
+Then check the `dist` app for resulting install packages for your desired platform
 
 ## Any questions?
 

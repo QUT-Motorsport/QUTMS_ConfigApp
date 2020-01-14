@@ -9,8 +9,10 @@
     "dev": "next",
     "dev:electron": "nextron",
     "build-python": "shx rm -rf pythondist && pyinstaller python/api.py --distpath pythondist --workpath build-py-temp --onefile && shx rm -rf build-py-temp && shx rm api.spec",
-    "build-nextron": "nextron build",
-    "build": "npm run build-python && npm run build-nextron",
+    "build:win64": "npm run build-python && nextron build --win --x64",
+    "build:win32": "npm run build-python && nextron build --win --ia32",
+    "build:mac": "npm run build-python && nextron build --mac --x64",
+    "build:linux": "npm run build-python && nextron build --linux",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
