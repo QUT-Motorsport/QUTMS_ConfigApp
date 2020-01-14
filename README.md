@@ -40,7 +40,7 @@ Then open the browser-based IDE with:
 jupyter lab
 ```
 
-Jupyter-lab makes incremental research and development super easy and intuitive (imo). Widgets are great for incremental data-analysis and visualization. To make one, its easiest develop them in a notebook and then move it into its own python file in the `widgets` folder when you are happy with the results, so that it can be used by the React/Flask app as well.
+Jupyter-lab makes incremental research and development super easy and intuitive (imo). Widgets are great for incremental data-analysis and visualization. To make one, its easiest develop them in a notebook (`.ipynb` file in the `notebooks` folder) and then move it into its own `.py` file in the `widgets` folder when you are happy with the results, so that it can be used by the React/Flask app as well.
 
 The main 3 widget libraries I would recommend having a look at are:
 
