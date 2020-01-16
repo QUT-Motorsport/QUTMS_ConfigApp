@@ -1,5 +1,7 @@
 # QUTMS_ConfigApp
 
+![The Plan](/the_plan.png)
+
 ## Setup Development Environment
 
 Install all npm dependencies:
