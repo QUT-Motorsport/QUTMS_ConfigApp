@@ -14,12 +14,14 @@ def getPrec(c):
         return 3
     return 0
 
+
 def getAssoc(c):
     if c in "+-*/":
         return "LEFT"
     if c in "^":
         return "RIGHT"
     return "LEFT"
+
 
 def getBin(op, a, b):
     if op == '+':
@@ -33,6 +35,7 @@ def getBin(op, a, b):
     if op == '^':
         return a ** b
     return 0
+
 
 def calc(s):
     numStk = []
@@ -58,8 +61,10 @@ def calc(s):
                 opStk.append('#')
             else:
                 while (len(opStk) > 0):
-                    if ((getAssoc(s[i]) == "LEFT" and getPrec(s[i]) <= getPrec(opStk[-1])) or 
-                        (getAssoc(s[i]) == "RIGHT" and getPrec(s[i]) < getPrec(opStk[-1]))):
+                    if ((getAssoc(s[i]) == "LEFT" and
+                         getPrec(s[i]) <= getPrec(opStk[-1])) or
+                            (getAssoc(s[i]) == "RIGHT" and
+                             getPrec(s[i]) < getPrec(opStk[-1]))):
                         op = opStk.pop()
                         if op == '#':
                             numStk.append(-numStk.pop())
@@ -97,22 +102,21 @@ def calc(s):
             numStk.append(getBin(op, a, b))
 
     return numStk.pop()
-    
+
 
 if __name__ == '__main__':
     ss = [
-        "1 + 2 * 3 / 4 - 5 + - 6", # -8.5
-        "10 + ( - 1 ) ^ 4", # 11
-        "10 + - 1 ^ 4", # 9
-        "10 + - - 1 ^ 4", # 11
-        "10 + - ( - 1 ^ 4 )", # 11
-        "5 * ( 10 - 9 )", # 5
-        "1 + 2 * 3", # 7
-        "4 ^ 3 ^ 2", # 262144
-        "4 ^ - 3", # 0.015625
-        "4 ^ ( - 3 )", # 0.015625
+        "1 + 2 * 3 / 4 - 5 + - 6",  # -8.5
+        "10 + ( - 1 ) ^ 4",  # 11
+        "10 + - 1 ^ 4",  # 9
+        "10 + - - 1 ^ 4",  # 11
+        "10 + - ( - 1 ^ 4 )",  # 11
+        "5 * ( 10 - 9 )",  # 5
+        "1 + 2 * 3",  # 7
+        "4 ^ 3 ^ 2",  # 262144
+        "4 ^ - 3",  # 0.015625
+        "4 ^ ( - 3 )",  # 0.015625
     ]
     for s in ss:
         res = calc(s)
         print('{} = {}'.format(res, s))
-    

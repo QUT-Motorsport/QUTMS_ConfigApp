@@ -1,32 +1,32 @@
-import { app } from 'electron';
-import serve from 'electron-serve';
-import { createWindow } from './helpers';
+import { app } from "electron";
+import serve from "electron-serve";
+import { createWindow } from "./helpers";
 
-const isProd: boolean = process.env.NODE_ENV === 'production';
+const { NODE_ENV } = process.env;
 
-if (isProd) {
-  serve({ directory: 'app' });
+if (NODE_ENV === "production") {
+  serve({ directory: "app" });
 } else {
-  app.setPath('userData', `${app.getPath('userData')} (development)`);
+  app.setPath("userData", `${app.getPath("userData")} (development)`);
 }
 
 (async () => {
+  // Can't use app.on('ready',...)
+  // https://github.com/sindresorhus/electron-serve/issues/15
   await app.whenReady();
-
-  const mainWindow = createWindow('main', {
+  const mainWindow = createWindow("QUTMS EV2 Config", {
     width: 1000,
-    height: 600,
+    height: 600
   });
 
-  if (isProd) {
-    await mainWindow.loadURL('app://./home.html');
+  if (NODE_ENV === "production") {
+    await mainWindow.loadURL("app://");
   } else {
-    const port = process.argv[2];
-    await mainWindow.loadURL(`http://localhost:${port}/home`);
+    await mainWindow.loadURL("http://localhost:8888/");
     mainWindow.webContents.openDevTools();
   }
 })();
 
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   app.quit();
 });

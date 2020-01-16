@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 const useNow = () => {
   // here the "useState" hook is called with the initial value of when this component was first created.
   // it returns the current value of the time, and a function that sets a new value.
+  // Any time a 'setState' function is run, the component containing the function re-renders.
   const [now, setNow] = useState(new Date());
 
   // "useEffect" is a hook that runs after the component is first rendered, and every time any of the "effect dependencies" changes.
