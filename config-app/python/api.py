@@ -8,7 +8,7 @@ load_dotenv()
 
 
 app = Sanic(__name__)
-# Allow react app being served off another port to access sanic
+# Allow react app being served off another port (react app) to access sanic
 CORS(app, automatic_options=True)
 
 
