@@ -1,6 +1,6 @@
 # QUTMS_ConfigApp
 
-![The Plan](/the_plan.png)
+![QUTMS_Banner](https://raw.githubusercontent.com/Technosasquach/QUTMS_Master/master/src/qutmsBanner.jpg)
 
 ## Setup Development Environment
 
@@ -59,8 +59,6 @@ First you need to build the desktop application for the desired operating system
 
 Then check the `dist` app for resulting install packages for your desired platform
 
-## Any questions?
+## Want to Get Involved?
 
-If this readme doesn't answer any of your questions, please open an Issue on this GitHub! It will help people in the future find answers to similar questions. I will respond to it as soon as possible and update this Readme as necessary.
-
-Lots-of-Love, Callum Hays
+Studying at QUT? Contact us at qutmotorsport.team@gmail.com or [visit our website](https://www.qutmotorsport.com/) for details on how you can get involved.
