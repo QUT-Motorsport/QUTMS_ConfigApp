@@ -11,12 +11,15 @@ const apiUrl = `http://${
     : process.env.GLOBAL_HOST
 }:${process.env.FLASK_PORT}/`;
 
-export const get = (uri: string) => fetch(apiUrl + uri).then(res => res.json());
+const fetchJson = (uri: string, opts = {}) =>
+  fetch(apiUrl + uri, opts).then(res => res.json());
+
+export const get = (uri: string) => fetchJson(uri);
 
 export const post = (uri: string, data: object) =>
-  fetch(apiUrl + uri, {
+  fetchJson(uri, {
     method: "POST",
     cache: "no-cache",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  }).then(res => res.json());
+  });
