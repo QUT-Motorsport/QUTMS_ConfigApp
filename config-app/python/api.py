@@ -14,7 +14,7 @@ CORS(app, automatic_options=True)
 
 @app.post("/calc")
 async def post_calc(req):
-    return json({'calc': calc(req.json['math'])})
+    return json({'calc': calc(req.json['math']) + 1})
 
 
 if __name__ == "__main__":
