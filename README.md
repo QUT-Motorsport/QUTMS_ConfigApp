@@ -4,21 +4,31 @@
 
 ## Setup Development Environment
 
-Install all npm dependencies:
 
-```
-cd qev2-config && npm i
+
+### Install python & binary dependencies
+
+- *Windows*: `install.bat`
+- *Linux*: `bash install.bat`
+
+### Install npm dependencies
+
+```bash
+cd config-app
+npm i
 ```
 
 ## Run config-app as website in development mode (hot-reloading)
 
-```
+```bash
+# in the `config-app` directory
 npm run dev
 ```
 
 ## Run config-app as electron-app in development mode (cold reloading)
 
-```
+```bash
+# in the `config-app` directory
 npm run dev:electron
 ```
 
@@ -32,21 +42,20 @@ To make changes to the backend, edit the files in `qev2-config/python/`. The mai
 
 ## Experimentation via Jupyter Lab
 
-First install jupyter lab (I will provide a conda environment eventually, for now just `pip install jupyterlab`)
-
 Then open the browser-based IDE with:
 
-```
+```bash
 jupyter lab
 ```
 
 Jupyter-lab makes incremental research and development super easy and intuitive (imo). Widgets are great for incremental data-analysis and visualization. To make one, its easiest develop them in a notebook (`.ipynb` file in the `notebooks` folder) and then move it into its own `.py` file in the `widgets` folder when you are happy with the results, so that it can be used by the React/Flask app as well.
 
-The main 3 widget libraries I would recommend having a look at are:
+The main 4 widget libraries I would recommend having a look at are:
 
 - [ipywidgets](https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Basics.html) - Buttons, Sliders, Dropdowns, general UI
 - [bqplot](https://bqplot.readthedocs.io/en/latest/) - Incredibly interactive 2D plotting library by Bloomberg Financial
-- [k3d-jupyter](https://k3d-jupyter.readthedocs.io/en/latest/) - Relatively interactive, beautiful 3D plots in WebGL
+- [k3d-jupyter](https://k3d-jupyter.readthedocs.io/en/latest/) - Relatively interactive, efficient 3D plots in WebGL
+- [plotly](https://plot.ly/python/) - Easy to use 2D/3D plotting library by plotly. Not as interactive as bqplot but more efficient front-end and better default user experience. Integrates much better with the `pandas DataFrame` api.
 
 ## Installing the Electron app permanently
 

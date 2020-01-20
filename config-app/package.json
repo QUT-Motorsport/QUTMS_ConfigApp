@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "qev2-config-app",
+  "name": "qev3-config-app",
   "description": "Configuration / Visualization app for QUT Motorsport's second electronic vehicle RaceCar",
   "version": "1.0.0",
   "author": "CallumJHays <callumjhays@gmail.com>, Alex Lossberg",
