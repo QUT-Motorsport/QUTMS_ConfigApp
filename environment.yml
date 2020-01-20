@@ -1,0 +1,19 @@
+name: qev3-config-app
+
+channels:
+  - conda-forge
+
+dependencies:
+  - bqplot==0.12.1
+  - jupyterlab==1.1.4
+  - plotly==4.4.1
+  - pip==19.0.3
+  - nodejs==11.14.0
+  - pip:
+      - jupyter-plotly-dash==0.3.1
+      - matplotlib==3.1.1
+      - sanic==19.6.3
+      - sanic-cors==0.9.9.post1
+      - pyserial==3.4
+      - pyinstaller==3.6
+      - pylint==2.3.1
