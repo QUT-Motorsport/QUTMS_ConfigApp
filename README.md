@@ -6,14 +6,15 @@
 
 ### Install python & binary dependencies
 
-- _Windows_: `install.bat`
-- _Linux_: `bash install.bat`
+- _Windows_: `powershell install.ps1`
+- _Linux_: `source install.ps1`
 
-### Install npm dependencies
+### Activate Conda Environment
+
+***THIS MUST BE DONE BEFORE RUNNING ANY OTHER COMMAND RELATED TO THE CONFIG APP IN THE TERMINAL, EVERY TIME YOU OPEN A NEW TERMINAL***
 
 ```bash
-cd config-app
-npm i
+conda activate qev3-config-app
 ```
 
 ## Run config-app as website in development mode (hot-reloading)
@@ -36,7 +37,7 @@ All the top-level page components are in `qev2-config/react/pages/`. These page 
 
 ## Editing the Backend (Python & Flask Development)
 
-To make changes to the backend, edit the files in `qev2-config/python/`. The main python file is `qev2-config/python/api.py` which contains a Flask server.
+To make changes to the backend, edit the files in `qev2-config/python/`. The main python file is `qev2-config/python/api.py` which contains a Sanic server.
 
 ## Experimentation via Jupyter Lab
 
