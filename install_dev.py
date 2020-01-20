@@ -63,7 +63,7 @@ if __name__ == "__main__":
     # if env_cache was specified, use conda-pack to update / create the cache
     if cache_env is not None:
         import conda_pack
-        conda_pack.pack(name=conda_env_name)
+        conda_pack.pack(name=conda_env_name, output=cache_env)
 
     # install vscode extensions helpful for development
     call(
