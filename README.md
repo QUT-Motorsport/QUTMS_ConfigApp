@@ -4,12 +4,10 @@
 
 ## Setup Development Environment
 
-
-
 ### Install python & binary dependencies
 
-- *Windows*: `install.bat`
-- *Linux*: `bash install.bat`
+- _Windows_: `install.bat`
+- _Linux_: `bash install.bat`
 
 ### Install npm dependencies
 
@@ -55,7 +53,7 @@ The main 4 widget libraries I would recommend having a look at are:
 - [ipywidgets](https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Basics.html) - Buttons, Sliders, Dropdowns, general UI
 - [bqplot](https://bqplot.readthedocs.io/en/latest/) - Incredibly interactive 2D plotting library by Bloomberg Financial
 - [k3d-jupyter](https://k3d-jupyter.readthedocs.io/en/latest/) - Relatively interactive, efficient 3D plots in WebGL
-- [plotly](https://plot.ly/python/) - Easy to use 2D/3D plotting library by plotly. Not as interactive as bqplot but more efficient front-end and better default user experience. Integrates much better with the `pandas DataFrame` api.
+- [plotly](https://plot.ly/python/) - Easy to use 2D/3D plotting library by plotly. Not as interactive as bqplot but more efficient front-end and better default user experience. Integrates much better with the `pandas DataFrame` api. Interaction is described decleratively wheras with BQplot the majority of animation is done mutatively through python callbacks.
 
 ## Installing the Electron app permanently
 
