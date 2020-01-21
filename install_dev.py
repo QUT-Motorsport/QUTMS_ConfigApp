@@ -1,12 +1,10 @@
 from subprocess import check_output
+from os import system as call
 from sys import argv
-from shutil import which as exists
+from shutil import which
 import tarfile
 from pathlib import Path
 import re
-
-def call(command):
-    return check_output(command.split())
 
 
 if __name__ == "__main__":
@@ -27,7 +25,7 @@ if __name__ == "__main__":
         target_env_dir = Path(
             re.search(
                 r'base environment : (\S+?)  \(writable\)',
-                str(call("conda info"))
+                str(check_output("conda info".split()))
             ).group(1)
         ) / CONDA_ENV_NAME
 

@@ -24,7 +24,7 @@ of the installation after the first install on QUT's computers, and still gives 
 So if you are using the uni computers I recommend providing a cache path to the installer. This will create the file if it doesn't exist, or use it and update it with any dependency changes if it does:
 
 ```bash
-python install_dev.py --cache-env=H:\Installers\qev3-config-app.tar.gz
+python install_dev.py --cache-env=H:\qev3-config-app.tar.gz
 ```
 
 If you're installing to a personal computer, the cache can be ommitted:
@@ -40,6 +40,10 @@ python install_dev.py
 ```bash
 conda activate qev3-config-app
 ```
+
+Or, if you are using vscode as we recommend, this repository has vscode settings that do this automatically. But you have to select to 'Allow' the option in the bottom-right popup box when you first open a terminal (be quick, it disappears):
+
+![allow_shell_injection_vscode](/wiki/allow_shell_injection.png)
 
 ## Run config-app as website in development mode (hot-reloading)
 
