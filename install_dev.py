@@ -75,6 +75,8 @@ if __name__ == "__main__":
         or existing_labextensions[npm_package] != version
     ]
 
+    print("installing jupyter labextensions... (this will take a while... 5-10 mins?)")
+
     call(
         f"conda activate {conda_env_name}"
         # install any required js components of jupyterlab and their widgets at once
