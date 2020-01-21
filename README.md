@@ -41,9 +41,13 @@ python install_dev.py
 conda activate qev3-config-app
 ```
 
-Or, if you are using vscode as we recommend, this repository has vscode settings that do this automatically. But you have to select to 'Allow' the option in the bottom-right popup box when you first open a terminal (be quick, it disappears):
+Or, if you are using vscode as we recommend, this repository includes vscode settings that do this automatically. But you have to select to 'Allow' the option in the bottom-right popup box when you first open a terminal (be quick, it disappears):
 
 ![allow_shell_injection_vscode](/wiki/allow_shell_injection.png)
+
+## Project Overview
+
+![Architecture Diagram](/wiki/the_plan.png)
 
 ## Run config-app as website in development mode (hot-reloading)
 
@@ -63,7 +67,7 @@ npm run dev:electron
 
 All the top-level page components are in `qev2-config/react/pages/`. These page components may also import re-usable React components that are defined in `qev2-config/react/components/`. Open them in your favourite editor (VSCode is recommended). If you have run the app in development mode, editing any of these pages and saving the file (ctrl-s) will cause the development app to restart and show your changes.
 
-## Editing the Backend (Python & Flask Development)
+## Editing the Backend (Python & Sanic WebServer Development)
 
 To make changes to the backend, edit the files in `qev2-config/python/`. The main python file is `qev2-config/python/api.py` which contains a Sanic server.
 
@@ -92,7 +96,7 @@ First you need to build the desktop application for the desired operating system
 - Mac: `npm run build:mac`
 - Linux: `npm run build:linux`
 
-Then check the `dist` app for resulting install packages for your desired platform
+Then check the `dist` folder for resulting install packages for your desired platform
 
 ## Want to Get Involved?
 

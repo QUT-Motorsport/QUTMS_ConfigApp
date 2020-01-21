@@ -15,7 +15,9 @@ dependencies:
   - pylint==2.3.1
   - sanic==19.6.3
   - conda-pack==0.4.0
-  - black==19.10b0
+
+  - pylint==2.4.4 # for linting when you code
+  - black==19.10b0 # for autoformatting (when you save)
   - pip:
       - jupyter-plotly-dash==0.3.1
       - sanic-cors==0.9.9.post1
