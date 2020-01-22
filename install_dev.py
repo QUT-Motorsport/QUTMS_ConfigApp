@@ -80,22 +80,28 @@ if __name__ == "__main__":
     ]
 
     if any(labextensions_install_list):
-        print("installing jupyter labextensions... (this will take a while... 5-10 mins?)")
+        print(
+            "installing jupyter labextensions... (this will take a while... 5-10 mins?)"
+        )
 
     call(
         f"conda activate {conda_env_name}"
         # install any required js components of jupyterlab and their widgets at once
-        + (f' && jupyter labextension install {" ".join(labextensions_install_list)}'
-        if any(labextensions_install_list)
-        else "")
+        + (
+            f' && jupyter labextension install {" ".join(labextensions_install_list)}'
+            if any(labextensions_install_list)
+            else ""
+        )
         # install js dependencies of the config app
         + " && npm i",
-        cwd=Path(__file__).parent
+        cwd=Path(__file__).parent / "config-app",
     )
 
     # if env_cache was specified, use conda-pack to update / create the cache
     if cache_env is not None:
-        call(f"conda activate {conda_env_name} && conda pack -n {conda_env_name} -o {cache_env} ")
+        call(
+            f"conda activate {conda_env_name} && conda pack -n {conda_env_name} -o {cache_env} "
+        )
 
     # install vscode extensions helpful for development
     call(
