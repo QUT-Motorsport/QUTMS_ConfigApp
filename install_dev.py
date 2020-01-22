@@ -1,5 +1,4 @@
-from subprocess import check_output, STDOUT
-from os import system as call
+from subprocess import check_output, STDOUT, call as _call
 from sys import argv
 from shutil import which
 import tarfile
@@ -12,6 +11,11 @@ JUPYTER_LABEXTENSION_PKGS = {
     "jupyterlab-plotly": "1.4.0",
     "plotlywidget": "1.4.0",
 }
+
+
+def call(cmd, **kwargs):
+    return _call(cmd, shell=True, **kwargs)
+
 
 if __name__ == "__main__":
 
@@ -75,23 +79,23 @@ if __name__ == "__main__":
         or existing_labextensions[npm_package] != version
     ]
 
-    print("installing jupyter labextensions... (this will take a while... 5-10 mins?)")
+    if any(labextensions_install_list):
+        print("installing jupyter labextensions... (this will take a while... 5-10 mins?)")
 
     call(
         f"conda activate {conda_env_name}"
         # install any required js components of jupyterlab and their widgets at once
-        + f' && jupyter labextension install {" ".join(labextensions_install_list)}'
+        + (f' && jupyter labextension install {" ".join(labextensions_install_list)}'
         if any(labextensions_install_list)
-        else ""
+        else "")
         # install js dependencies of the config app
-        + " && cd config-app && npm i"
+        + " && npm i",
+        cwd=Path(__file__).parent
     )
 
     # if env_cache was specified, use conda-pack to update / create the cache
     if cache_env is not None:
-        import conda_pack
-
-        conda_pack.pack(name=conda_env_name, output=cache_env)
+        call(f"conda activate {conda_env_name} && conda pack -n {conda_env_name} -o {cache_env} ")
 
     # install vscode extensions helpful for development
     call(
