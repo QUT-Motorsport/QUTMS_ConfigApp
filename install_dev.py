@@ -100,11 +100,12 @@ if __name__ == "__main__":
     # if env_cache was specified, use conda-pack to update / create the cache
     if cache_env is not None:
         call(
-            f"conda activate {conda_env_name} && conda pack -n {conda_env_name} -o {cache_env} "
+            f"conda activate {conda_env_name} && conda pack -n {conda_env_name} -o {cache_env} --n-threads=4 --ignore-package-mods=jupyterlab "
         )
 
     # install vscode extensions helpful for development
     call(
         "code --install-extension ms-python.python"
         + " && code --install-extension esbenp.prettier-vscode"
+        + " && code --install-extension blanu.vscode-styled-jsx"
     )
