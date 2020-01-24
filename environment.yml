@@ -21,4 +21,4 @@ dependencies:
       - jupyter-plotly-dash==0.3.1
       - sanic-cors==0.9.9.post1
       - python-dotenv==0.10.5
-      - git+git://github.com/CallumJHays/conda-pack/5c40cd38d0584cf037b4ee03c1f7625fedd9a782
+      - git+git://github.com/CallumJHays/conda-pack@5c40cd38d0584cf037b4ee03c1f7625fedd9a782
