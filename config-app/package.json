@@ -16,6 +16,11 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@jupyter-widgets/base": "^2.0.2",
+    "@jupyter-widgets/html-manager": "^0.18.4",
+    "@jupyterlab/services": "^4.2.0",
+    "@lumino/widgets": "^1.10.0",
+    "@svgr/webpack": "^5.1.0",
     "@zeit/next-css": "^1.0.1",
     "antd": "^3.26.7",
     "bootstrap": "^4.4.1",
@@ -24,6 +29,7 @@
     "electron-serve": "^0.4.1",
     "electron-store": "^5.1.0",
     "isomorphic-unfetch": "^3.0.0",
+    "next-transpile-modules": "^3.0.2",
     "superagent": "^5.1.0"
   },
   "devDependencies": {

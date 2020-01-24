@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { Container } from "reactstrap";
 import { post } from "../api";
 
 export default ({ _ans: [ans, setAns] = useState("") }) => (
@@ -11,31 +10,11 @@ export default ({ _ans: [ans, setAns] = useState("") }) => (
     </Head>
 
     <div>
-      <style jsx>{`
-        .container {
-          position: absolute;
-          top: 30%;
-          left: 10px;
-        }
-
-        .container h2 {
-          font-size: 5rem;
-        }
-
-        .container a {
-          font-size: 1.4rem;
-        }
-
-        .container ol {
-          padding-left: 20px;
-        }
-      `}</style>
-
-      <Container>
+      <div className="container">
         <h2>Calculator</h2>
         <ol>
           <li>
-            <Link href="/index">
+            <Link href="/">
               <a>Home</a>
             </Link>
           </li>
@@ -58,7 +37,7 @@ export default ({ _ans: [ans, setAns] = useState("") }) => (
           }}
         />
         <div>{ans}</div>
-      </Container>
+      </div>
     </div>
   </>
 );

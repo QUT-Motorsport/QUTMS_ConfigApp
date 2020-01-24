@@ -1,37 +1,80 @@
 const withCSS = require("@zeit/next-css");
+// jupyterlab does not transpile their code - so we need to as we are excluding node_modules from transpilation in our tsconfig.json
+const withTM = require("next-transpile-modules")([
+  "@jupyterlab",
+  "@jupyter-widgets"
+]);
 const dotenv = require("dotenv");
 const { spawn } = require("child_process");
 const path = require("path");
 dotenv.config();
 
-const { WEBPACK_TARGET, FLASK_PORT, GLOBAL_HOST } = process.env;
+const { WEBPACK_TARGET, SANIC_PORT, GLOBAL_HOST, JUPYTER_PORT } = process.env;
+
+const handleErr = (err, fatal = true) => {
+  console.error(err);
+  if (fatal) {
+    throw err;
+  }
+};
 
 // unusual to load up the python api inside a config file,
 // however this solution supports both the next server + electron renderer option
 // TODO: test whether this supports the standalone electron app execution context
-const api = spawn("python", [path.join(__dirname, "../python/api.py")]);
+const spawnApi = () => {
+  const api = spawn("python", [path.join(__dirname, "../python/api.py")]);
 
-const handleErr = err => {
-  throw err;
+  api.on("error", handleErr);
+  api.stderr.on("data", buffer => handleErr(buffer.toString()));
+  api.stdout.on("data", buffer => console.log(buffer.toString()));
 };
+spawnApi();
 
-api.on("error", handleErr);
-api.stderr.on("data", buffer => handleErr(buffer.toString()));
+const spawnJupyter = () => {
+  const jupyter = spawn("jupyter", [
+    "notebook",
+    "--no-browser",
+    '--NotebookApp.allow_origin="*"',
+    "--NotebookApp.disable_check_xsrf=True",
+    "--NotebookApp.token=''",
+    "--ip=0.0.0.0",
+    `--port=${process.env.JUPYTER_PORT}`,
+    path.join(__dirname, "../../")
+  ]);
 
-api.stdout.on("data", buffer => console.log(buffer.toString()));
+  jupyter.on("error", handleErr);
+  jupyter.stderr.on("data", buffer => handleErr(buffer.toString(), false));
+  jupyter.stdout.on("data", buffer => console.log(buffer.toString()));
+  process.on("exit", () => {
+    jupyter.kill();
+  });
+};
+spawnJupyter();
 
-module.exports = withCSS({
-  env: {
-    WEBPACK_TARGET,
-    FLASK_PORT,
-    GLOBAL_HOST
-  },
+module.exports = withCSS(
+  withTM({
+    cssLoaderOptions: {
+      url: false
+    },
 
-  webpack: config =>
-    WEBPACK_TARGET
-      ? {
-          ...config,
-          target: WEBPACK_TARGET
-        }
-      : config
-});
+    env: {
+      WEBPACK_TARGET,
+      SANIC_PORT,
+      JUPYTER_PORT,
+      GLOBAL_HOST
+    },
+
+    webpack: config => {
+      if (WEBPACK_TARGET) {
+        config.target = WEBPACK_TARGET;
+      }
+
+      config.module.rules.push({
+        test: /\.svg$/,
+        use: ["@svgr/webpack"]
+      });
+
+      return config;
+    }
+  })
+);
