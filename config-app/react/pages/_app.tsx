@@ -13,13 +13,18 @@ export default <Page extends ComponentType<any>>({
   pageProps: ComponentProps<Page>;
 }) => (
   <Layout id="whole">
-    <Header className="header" style={{ background: "#fff" }}>
-      <div className="logo">
-        <img src="/images/qms_icon_2.png" />
-      </div>
+    <Header className="header" style={{ background: "#fff", height: "80px" }}>
+      <a href="/index">
+        <div
+          className="logo"
+          style={{ marginLeft: "-50px", marginBottom: "0px" }}
+        >
+          <img src="/images/qms_icon_2.png" />
+        </div>
+      </a>
     </Header>
     <Layout>
-      <Sider width={120} style={{ background: "#E6E6E6" }}>
+      <Sider width={140} style={{ background: "#E6E6E6" }}>
         <Menu
           mode="vertical"
           style={{
