@@ -1,0 +1,55 @@
+.flex-container {
+  display: flex;
+  justify-content: space-around;
+  height: 1000px;
+  width: auto;
+}
+
+.column-main-one {
+  width: 300px;
+}
+
+.column-main-two {
+  width: 300px;
+  height: 780px;
+}
+
+.column-border-one {
+  width: 0px;
+}
+
+.column-border-two {
+  width: 200px;
+}
+
+.block {
+  border-left: 2px solid #0f406a;
+}
+
+header {
+  color: #0f406a;
+  font-size: 3em;
+  padding: 80px 0px 60px 50px;
+}
+
+h1 {
+  color: #0f406a;
+  font-size: 2em;
+  padding: 20px 0px 0px 50px;
+}
+
+h2 {
+  padding: 195px 0px 0px 50px;
+}
+
+h3 {
+  padding: 25px 0px 0px 0px;
+}
+
+h4 {
+  padding: 25px 0px 0px 0px;
+}
+
+p {
+  padding: 0px 0px 0px 50px;
+}

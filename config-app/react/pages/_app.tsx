@@ -13,87 +13,60 @@ export default <Page extends ComponentType<any>>({
   Component: Page;
   pageProps: ComponentProps<Page>;
 }) => (
-  <Layout id="whole">
-    <Header className="header">
-      <div className="logo" />
-      <Menu
-        theme="dark"
-        mode="horizontal"
-        defaultSelectedKeys={["2"]}
-        style={{ lineHeight: "64px" }}
-      >
-        <Menu.Item key="1">nav 1</Menu.Item>
-        <Menu.Item key="2">nav 2</Menu.Item>
-        <Menu.Item key="3">nav 3</Menu.Item>
-      </Menu>
-    </Header>
-    <Layout>
-      <Sider width={200} style={{ background: "#fff" }}>
-        <Menu
-          mode="inline"
-          defaultSelectedKeys={["1"]}
-          defaultOpenKeys={["sub1"]}
-          style={{ height: "100%", borderRight: 0 }}
+    <Layout id="whole">
+      <Header className="header" style={{ background: "#fff" }}>
+        <div className="logo">
+          <img src="/images/qms_icon_2.png" />
+        </div>
+      </Header>
+      <Layout>
+        <Sider width={120} style={{ background: "#E6E6E6" }}>
+          <Menu
+            mode="vertical"
+            style={{
+              background: "#E6E6E6",
+              textAlign: "left"
+            }}
+          >
+            <a>
+              <Menu.Item key="sub1" style={{ padding: "40px 0 40px 10px" }}>
+                <span>
+                  <Icon type="dashboard" /> Telemetry
+              </span>
+              </Menu.Item>
+            </a>
+
+            <a href="/analysis">
+              <Menu.Item key="sub2" style={{ padding: "40px 0 40px 10px" }}>
+                <span>
+                  <Icon type="line-chart" /> Analysis
+              </span>
+              </Menu.Item>
+            </a>
+            <a>
+              <Menu.Item key="sub3" style={{ padding: "40px 0 40px 10px" }}>
+                <span>
+                  <Icon type="code" /> Config
+              </span>
+              </Menu.Item>
+            </a>
+            <a>
+              <Menu.Item key="sub4" style={{ padding: "40px 0 40px 10px" }}>
+                <span>
+                  <Icon type="heat-map" /> Simulation
+              </span>
+              </Menu.Item>
+            </a>
+          </Menu>
+        </Sider>
+
+        <Layout
+          style={{ background: "#fff", marginTop: "8px", marginLeft: "8px" }}
         >
-          <SubMenu
-            key="sub1"
-            title={
-              <span>
-                <Icon type="user" />
-                subnav 1
-              </span>
-            }
-          >
-            <Menu.Item key="1">
-              option1
-              <a href="/test" target="_blank" rel="noopener noreferrer">
-                test
-              </a>
-            </Menu.Item>
-            <Menu.Item key="2">option2</Menu.Item>
-            <Menu.Item key="3">option3</Menu.Item>
-            <Menu.Item key="4">option4</Menu.Item>
-          </SubMenu>
-          <SubMenu
-            key="sub2"
-            title={
-              <span>
-                <Icon type="laptop" />
-                subnav 2
-              </span>
-            }
-          >
-            <Menu.Item key="5">option5</Menu.Item>
-            <Menu.Item key="6">option6</Menu.Item>
-            <Menu.Item key="7">option7</Menu.Item>
-            <Menu.Item key="8">option8</Menu.Item>
-          </SubMenu>
-          <SubMenu
-            key="sub3"
-            title={
-              <span>
-                <Icon type="notification" />
-                subnav 3
-              </span>
-            }
-          >
-            <Menu.Item key="9">option9</Menu.Item>
-            <Menu.Item key="10">option10</Menu.Item>
-            <Menu.Item key="11">option11</Menu.Item>
-            <Menu.Item key="12">option12</Menu.Item>
-          </SubMenu>
-        </Menu>
-      </Sider>
-      <Layout style={{ padding: "0" }}>
-        <Breadcrumb style={{ margin: "16px 0" }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>List</Breadcrumb.Item>
-          <Breadcrumb.Item>App</Breadcrumb.Item>
-        </Breadcrumb>
-        <Content>
-          <Component {...pageProps} />
-        </Content>
+          <Content>
+            <Component {...pageProps} />
+          </Content>
+        </Layout>
       </Layout>
     </Layout>
-  </Layout>
-);
+  );
