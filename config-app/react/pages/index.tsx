@@ -7,7 +7,7 @@ export default () => (
   <>
     <div>
       <Head>
-        <title>Home</title>
+        <title>QUT Motorsport Config App</title>
       </Head>
       <body>
         <div className="flex-container">
