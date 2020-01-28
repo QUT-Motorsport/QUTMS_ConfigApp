@@ -21,7 +21,7 @@ const lapInfo = () => {
 
             <b>Total Laps</b>
             <br />
-            <Progress type="circle" percent={75} format={percent => `4/10`} />
+            <Progress type="circle" percent={75} format={percent => `4/10`} strokeColor="#0F406A" strokeWidth={12} />
         </div >
     )
 }
