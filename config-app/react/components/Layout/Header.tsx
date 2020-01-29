@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 import { Layout } from "antd";
 const { Header } = Layout;
 
@@ -16,22 +16,26 @@ const HeaderBar = () => {
         whiteSpace: "nowrap"
       }}
     >
-      <div
-        style={{
-          height: "60px",
-          position: "relative"
-        }}
-      >
-        <img
-          src="/images/qms_icon_2.png"
-          style={{
-            top: "0",
-            bottom: "0",
-            margin: "auto",
-            position: "absolute"
-          }}
-        />
-      </div>
+      <Link href={"/"}>
+        <a>
+          <div
+            style={{
+              height: "60px",
+              position: "relative"
+            }}
+          >
+            <img
+              src="/images/qms_icon_2.png"
+              style={{
+                top: "0",
+                bottom: "0",
+                margin: "auto",
+                position: "absolute"
+              }}
+            />
+          </div>
+        </a>
+      </Link>
     </Header>
   );
 };

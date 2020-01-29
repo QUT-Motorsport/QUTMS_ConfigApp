@@ -5,8 +5,8 @@ import { Layout, Icon, Menu } from "antd";
 const SideBar: React.FC<any> = props => {
   return (
     <Link href={props.link}>
-      <a>
-        <Menu.Item key={props.link} style={{ color: "#0F406A" }}>
+      <a className="SideBarItem">
+        <Menu.Item key={props.link}>
           <Icon
             type={props.iconType}
             style={{
@@ -25,6 +25,14 @@ const SideBar: React.FC<any> = props => {
             {props.name}
           </p>
         </Menu.Item>
+        <style jsx>{`
+          .SideBarItem {
+            color: #0f406a;
+          }
+          .SideBarItem:hover {
+            color: blue;
+          }
+        `}</style>
       </a>
     </Link>
   );
