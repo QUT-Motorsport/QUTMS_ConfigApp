@@ -1,6 +1,6 @@
 import { QmsData } from "../ts/api";
 import Plot from "react-plotly.js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { PlotData } from "plotly.js";
 import { Spin } from "antd";
 
@@ -23,21 +23,27 @@ const useHydration = (
   return hydrated;
 };
 
-type ChartData = { data: QmsData; hydrated?: boolean };
+type ChartData = { data: QmsData; _hydrated?: boolean };
 
 const GROUND_SPEED_CH_IDX = 44;
 const TIMELINE_IDXS = [GROUND_SPEED_CH_IDX];
 
 const Timeline = ({
   data,
-  hydrated = useHydration(data, TIMELINE_IDXS)
-}: ChartData & { idx?: number }) =>
+  _hydrated: hydrated = useHydration(data, TIMELINE_IDXS)
+}: ChartData & any) =>
   hydrated ? (
     <div className="root">
       <style jsx>{`
         // TODO: Enable styled-jsx-postcss-plugin to DRY this up
-        .root > :global(.plotly-timeline) {
+
+        .root {
           width: 100%;
+          overflow: hidden;
+        }
+
+        .root > :global(.plotly-timeline) {
+          width: calc(100% + 153px);
           height: 100%;
         }
 
@@ -91,7 +97,7 @@ const Chart = ({
   mode,
   channel_idxs,
   data,
-  hydrated = useHydration(data, channel_idxs)
+  _hydrated: hydrated = useHydration(data, channel_idxs)
 }: ChartSpec & ChartData) =>
   hydrated ? (
     <Plot
