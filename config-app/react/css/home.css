@@ -90,3 +90,10 @@ p {
   font-size: 1.3em;
   font-weight: bold;
 }
+
+.add-component {
+  position: absolute;
+  bottom: 10px;
+  align-self: center;
+  padding-right: 150px;
+}
