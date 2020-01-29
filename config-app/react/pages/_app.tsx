@@ -1,10 +1,11 @@
 import "antd/dist/antd.css";
-import Link from "next/link";
-import { ComponentType, ComponentProps } from "react";
-import { Layout, Menu, Breadcrumb, Icon } from "antd";
 
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+import { ComponentType, ComponentProps } from "react";
+import { Layout } from "antd";
+import Header from "../components/Layout/Header";
+import SideBar from "../components/Layout/SideBar";
+
+const { Content } = Layout;
 
 export default <Page extends ComponentType<any>>({
   Component,
@@ -13,65 +14,22 @@ export default <Page extends ComponentType<any>>({
   Component: Page;
   pageProps: ComponentProps<Page>;
 }) => (
-    <Layout id="whole">
-      <Header className="header" style={{ background: "#fff", height: "80px" }}>
-        <a href="/index">
-          <div
-            className="logo"
-            style={{ marginLeft: "-50px", marginBottom: "0px" }}
-          >
-            <img src="/images/qms_icon_2.png" />
-          </div>
-        </a>
-      </Header>
-      <Layout>
-        <Sider width={140} style={{ background: "#E6E6E6" }}>
-          <Menu
-            mode="vertical"
-            style={{
-              background: "#E6E6E6",
-              textAlign: "left"
-            }}
-          >
-            <a>
-              <Menu.Item key="sub1" style={{ padding: "40px 0 40px 10px" }}>
-                <span>
-                  <Icon type="dashboard" /> Telemetry
-              </span>
-              </Menu.Item>
-            </a>
-
-            <a href="/analysis">
-              <Menu.Item key="sub2" style={{ padding: "40px 0 40px 10px" }}>
-                <span>
-                  <Icon type="line-chart" /> Analysis
-              </span>
-              </Menu.Item>
-            </a>
-            <a>
-              <Menu.Item key="sub3" style={{ padding: "40px 0 40px 10px" }}>
-                <span>
-                  <Icon type="code" /> Config
-              </span>
-              </Menu.Item>
-            </a>
-            <a>
-              <Menu.Item key="sub4" style={{ padding: "40px 0 40px 10px" }}>
-                <span>
-                  <Icon type="heat-map" /> Simulation
-              </span>
-              </Menu.Item>
-            </a>
-          </Menu>
-        </Sider>
-
-        <Layout
-          style={{ background: "#fff", marginTop: "8px", marginLeft: "8px" }}
-        >
-          <Content>
-            <Component {...pageProps} />
-          </Content>
-        </Layout>
+  <Layout
+    id="whole"
+    style={{
+      width: "100%",
+      height: "100vh",
+      overflow: "hidden"
+    }}
+  >
+    <Header />
+    <Layout>
+      <SideBar />
+      <Layout style={{ background: "#fff", margin: "10px 10px 0px 10px" }}>
+        <Content>
+          <Component {...pageProps} />
+        </Content>
       </Layout>
     </Layout>
-  );
+  </Layout>
+);
