@@ -1,40 +1,14 @@
-import { Menu, Icon, Button, Row, Col, Avatar, Modal } from "antd";
+import { Menu, Icon, Button, Row, Col, Avatar, Modal, Select } from "antd";
 import { Component } from "react";
+import ModalDefault from "../components/Layout/Modal_1";
+import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import "../css/home.css";
 import Link from "next/link";
 
 const { SubMenu } = Menu;
+const { Option } = Select;
 
 export default class App extends Component {
-  state = {
-    collapsed: false,
-    visible: false
-  };
-
-  toggleCollapsed = () => {
-    this.setState({
-      collapsed: !this.state.collapsed
-    });
-  };
-
-  showModal = () => {
-    this.setState({
-      visible: true
-    });
-  };
-
-  handleOk = () => {
-    this.setState({
-      visible: false
-    });
-  };
-
-  handleCancel = () => {
-    this.setState({
-      visible: false
-    });
-  };
-
   render() {
     return (
       <>
@@ -45,83 +19,7 @@ export default class App extends Component {
           }
         `}</style>
         <div className="flex-container-menu">
-          <div className="something" style={{ height: "1000px" }}>
-            <Menu
-              defaultSelectedKeys={["1"]}
-              defaultOpenKeys={["driver", "suspension"]}
-              mode="inline"
-              theme="dark"
-              inlineCollapsed={this.state.collapsed}
-            >
-              <Menu.Item key="1" onClick={this.toggleCollapsed}>
-                <Icon type="right" />
-                <span className="workbook">Default Workbook</span>
-              </Menu.Item>
-
-              <Menu.Item>
-                <span
-                  style={{
-                    float: "right",
-                    marginTop: "-10px",
-                    paddingBottom: "10px",
-                    color: "#EEE02C"
-                  }}
-                >
-                  <Icon type="plus" />
-                  Import Dataset
-                </span>
-              </Menu.Item>
-
-              <SubMenu
-                key="driver"
-                title={
-                  <span>
-                    <Icon type="mail" />
-                    <span>Driver</span>
-                  </span>
-                }
-              >
-                <Menu.Item key="2">
-                  <Icon type="user" />
-                  <span>Steering</span>
-                </Menu.Item>
-                <Menu.Item key="3">
-                  <Icon type="slider" />
-                  <span>Braking</span>
-                </Menu.Item>
-                <Menu.Item key="4">
-                  <Icon type="inbox" />
-                  <span>Other</span>
-                </Menu.Item>
-              </SubMenu>
-              <SubMenu
-                key="suspension"
-                title={
-                  <span>
-                    <Icon type="mail" />
-                    <span>Suspension</span>
-                  </span>
-                }
-              >
-                <Menu.Item key="5">
-                  <Icon type="inbox" />
-                  <span>Positions</span>
-                </Menu.Item>
-                <Menu.Item key="6">
-                  <Icon type="inbox" />
-                  <span>Velocities</span>
-                </Menu.Item>
-                <Menu.Item key="7">
-                  <Icon type="inbox" />
-                  <span>Histo</span>
-                </Menu.Item>
-              </SubMenu>
-              <Menu.Item style={{ textAlign: "center" }}>
-                <Icon type="plus" />
-                <span>Create New Group</span>
-              </Menu.Item>
-            </Menu>
-          </div>
+          <AnalysisMenu />
           <div className="flex-container-analysis">
             <div className="header-border">
               <a className="h1-alt" style={{ float: "left" }}>
@@ -145,21 +43,7 @@ export default class App extends Component {
                 flexbox for all
               </div>
             </div>
-            <div className="add-component">
-              <Button type="primary" onClick={this.showModal}>
-                + Add Component
-              </Button>
-              <Modal
-                title="Basic Modal"
-                visible={this.state.visible}
-                onOk={this.handleOk}
-                onCancel={this.handleCancel}
-              >
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-              </Modal>
-            </div>
+            <ModalDefault />
           </div>
         </div>
       </>
