@@ -1,6 +1,8 @@
 import "antd/dist/antd.css";
 import { ComponentType, ComponentProps } from "react";
-import { Layout, Menu, Breadcrumb, Icon } from "antd";
+import { Upload, message, Layout, Menu, Breadcrumb, Icon, Avatar } from "antd";
+
+import Link from "next/link";
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -14,14 +16,16 @@ export default <Page extends ComponentType<any>>({
 }) => (
   <Layout id="whole">
     <Header className="header" style={{ background: "#fff", height: "80px" }}>
-      <a href="/index">
-        <div
-          className="logo"
-          style={{ marginLeft: "-50px", marginBottom: "0px" }}
-        >
+      <Link href="/">
+        <a className="logo" style={{ marginLeft: "-45px", float: "left" }}>
           <img src="/images/qms_icon_2.png" />
-        </div>
-      </a>
+        </a>
+      </Link>
+      <Link href="">
+        <a style={{ float: "right", paddingTop: "5px", marginRight: "-20px" }}>
+          <Avatar size="large" icon="user" />
+        </a>
+      </Link>
     </Header>
     <Layout>
       <Sider width={140} style={{ background: "#E6E6E6" }}>
