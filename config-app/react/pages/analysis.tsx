@@ -1,20 +1,11 @@
-import { Menu, Icon, Button } from "antd";
+import { Menu, Icon, Button, Row, Col, Avatar, Modal, Select } from "antd";
 import { Component } from "react";
 import PageExplorer from "../components/Layout/PageExplorer";
 
 const { SubMenu } = Menu;
+const { Option } = Select;
 
 export default class App extends Component {
-  state = {
-    collapsed: false
-  };
-
-  toggleCollapsed = () => {
-    this.setState({
-      collapsed: !this.state.collapsed
-    });
-  };
-
   render() {
     return (
       <>
