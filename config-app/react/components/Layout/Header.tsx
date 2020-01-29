@@ -9,16 +9,29 @@ const HeaderBar = () => {
       className="header"
       style={{
         backgroundColor: "#FFFFFF",
-        height: "80px",
+        height: "60px",
         boxShadow: "0px 1px 10px #00000066",
-        zIndex: 1
+        zIndex: 1,
+        padding: "0px 10px",
+        whiteSpace: "nowrap"
       }}
     >
-      <a href="/index">
-        <div className="logo" style={{ marginLeft: "0px" }}>
-          <img src="/images/qms_icon_2.png" />
-        </div>
-      </a>
+      <div
+        style={{
+          height: "60px",
+          position: "relative"
+        }}
+      >
+        <img
+          src="/images/qms_icon_2.png"
+          style={{
+            top: "0",
+            bottom: "0",
+            margin: "auto",
+            position: "absolute"
+          }}
+        />
+      </div>
     </Header>
   );
 };
