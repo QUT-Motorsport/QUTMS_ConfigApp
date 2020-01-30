@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
 
-import Clock from "../components/Clock";
 import Sponsors from "../components/Sponsors";
 import PedalPositions from "../components/PedalPosition";
 import Car from "../components/Car";
@@ -16,34 +15,31 @@ import EngineAndPower from "../components/EngineAndPower";
 import DriverInfo from "../components/DriverInfo";
 
 export default () => (
-    <>
-        <Head>
-            <title>Live Telemetry</title>
-        </Head>
-        <div style={{ height: "100%" }}>
-            <Row>
-                <Col span={5} >
-                    <DriverInfo />
-                    <LapInfo />
-                    <PedalPositions />
-                    <EngineAndPower />
-                </Col>
-                <Col span={5}>
-                    <Car />
-                </Col>
-                <Col span={7}>
-                    <SteeringAngle />
-                    <RawTelemetry />
-                    <DataRate />
-                </Col>
-                <Col span={7}>
-                    <TrackInfo />
-                    <Weather />
-                </Col>
-            </Row>
-            <Row style={{ textAlign: "center", bottom: 0 }}>
-                <Sponsors />
-            </Row>
-        </div>
-    </>
+  <>
+    <Head>
+      <title>Live Telemetry</title>
+    </Head>
+    <div style={{ height: "100vh" }}>
+      <Row>
+        <Col span={5} style={{ padding: "0px 10px" }}>
+          <DriverInfo />
+        </Col>
+        <Col span={5}>
+          <Car />
+        </Col>
+        <Col span={7}>
+          <SteeringAngle />
+          <RawTelemetry />
+          <DataRate />
+        </Col>
+        <Col span={7}>
+          <TrackInfo />
+          <Weather />
+        </Col>
+      </Row>
+      <Row style={{ textAlign: "center", bottom: 0 }}>
+        <Sponsors />
+      </Row>
+    </div>
+  </>
 );
