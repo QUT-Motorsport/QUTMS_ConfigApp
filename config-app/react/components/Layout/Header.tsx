@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Layout, Avatar } from "antd";
 const { Header } = Layout;
+import UserInfo from "../Layout/UserInfo";
 
 const HeaderBar = () => {
   return (
@@ -44,11 +45,7 @@ const HeaderBar = () => {
           marginTop: "-10px"
         }}
       >
-        <Link href="">
-          <a>
-            <Avatar size="large" icon="user" />
-          </a>
-        </Link>
+        <UserInfo />
       </div>
     </Header>
   );
