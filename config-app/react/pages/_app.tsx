@@ -14,36 +14,35 @@ export default <Page extends ComponentType<any>>({
   Component: Page;
   pageProps: ComponentProps<Page>;
 }) => (
+  <Layout
+    id="whole"
+    style={{
+      width: "100%",
+      height: "100vh",
+      overflow: "hidden"
+    }}
+  >
+    <Header />
     <Layout
-      id="whole"
       style={{
         width: "100%",
         height: "100vh",
         overflow: "hidden"
       }}
     >
-      <Header />
+      <SideBar />
       <Layout
         style={{
+          background: "#fff",
           width: "100%",
           height: "100vh",
-          overflow: "hidden",
-          backgroundColor: "#FFFFFF"
+          overflow: "hidden"
         }}
       >
-        <SideBar />
-        <Layout
-          style={{
-            background: "#fff",
-            width: "100%",
-            height: "100vh",
-            overflow: "hidden"
-          }}
-        >
-          <Content>
-            <Component {...pageProps} />
-          </Content>
-        </Layout>
+        <Content>
+          <Component {...pageProps} />
+        </Content>
       </Layout>
     </Layout>
-  );
+  </Layout>
+);

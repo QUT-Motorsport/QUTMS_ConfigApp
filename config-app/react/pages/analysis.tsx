@@ -1,16 +1,10 @@
-import { Menu, Icon, Button, Row, Col, Avatar, Modal, Select } from "antd";
 import { Component } from "react";
-import AnalysisMenu from "../components/Layout/AnalysisMenu";
+import Explorer from "../components/Layout/Explorer";
 
-const { SubMenu } = Menu;
-const { Option } = Select;
-
-export default class App extends Component {
+class Analysis extends Component {
   render() {
-    return (
-      <>
-        <AnalysisMenu />
-      </>
-    );
+    return <Explorer />;
   }
 }
+
+export default Analysis;
