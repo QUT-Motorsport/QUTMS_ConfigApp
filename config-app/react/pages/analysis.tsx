@@ -1,7 +1,19 @@
-import { Menu, Icon, Button, Row, Col, Avatar, Modal, Select } from "antd";
+import {
+  Menu,
+  Icon,
+  Button,
+  Row,
+  Col,
+  Avatar,
+  Modal,
+  Select,
+  Breadcrumb
+} from "antd";
 import { Component } from "react";
-import ModalDefault from "../components/Layout/Modal_1";
+import ModalAdd from "../components/Layout/Modal_1";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
+import SubHeader from "../components/Layout/SubHeader";
+import Content from "../components/Layout/Content";
 import "../css/home.css";
 import Link from "next/link";
 
@@ -21,29 +33,9 @@ export default class App extends Component {
         <div className="flex-container-menu">
           <AnalysisMenu />
           <div className="flex-container-analysis">
-            <div className="header-border">
-              <a className="h1-alt" style={{ float: "left" }}>
-                Analysis
-              </a>
-              <Link href="">
-                <a
-                  style={{
-                    float: "right",
-                    paddingTop: "15px",
-                    paddingRight: "0px"
-                  }}
-                >
-                  <Avatar size="large" icon="setting" />
-                </a>
-              </Link>
-            </div>
-            <div className="analysis-content">
-              <div>
-                content - graphs etc go here to fill page, currently just one
-                flexbox for all
-              </div>
-            </div>
-            <ModalDefault />
+            <SubHeader />
+            <Content />
+            <ModalAdd />
           </div>
         </div>
       </>
