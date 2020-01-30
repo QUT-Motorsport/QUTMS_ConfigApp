@@ -6,7 +6,13 @@ const { Sider } = Layout;
 
 const SideBar = () => {
   return (
-    <Sider width={100} style={{ background: "#E6E6E6", color: "#0F406A" }}>
+    <Sider
+      width={100}
+      style={{
+        background: "#E6E6E6",
+        color: "#0F406A"
+      }}
+    >
       <Menu
         mode="vertical"
         style={{
@@ -24,7 +30,7 @@ const SideBar = () => {
           name="Simulation"
           iconType="line-chart"
         />
-        <SideBarItem link="/config" name="Config" iconType="code" />
+        <SideBarItem link="/config" name="Config" iconType="sliders" />
       </Menu>
     </Sider>
   );
