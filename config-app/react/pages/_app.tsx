@@ -33,7 +33,7 @@ export default <Page extends ComponentType<any>>({
       <SideBar />
       <Layout
         style={{
-          background: "	#F5F5F5",
+          background: "#fff",
           width: "100%",
           height: "100vh",
           overflow: "hidden"
