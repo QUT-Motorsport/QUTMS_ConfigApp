@@ -7,6 +7,7 @@ const withTM = require("next-transpile-modules")([
 const dotenv = require("dotenv");
 const { spawn } = require("child_process");
 const path = require("path");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 dotenv.config();
 
 const { WEBPACK_TARGET, SANIC_PORT, GLOBAL_HOST, JUPYTER_PORT } = process.env;
@@ -30,26 +31,26 @@ const spawnApi = () => {
 };
 spawnApi();
 
-const spawnJupyter = () => {
-  const jupyter = spawn("jupyter", [
-    "notebook",
-    "--no-browser",
-    '--NotebookApp.allow_origin="*"',
-    "--NotebookApp.disable_check_xsrf=True",
-    "--NotebookApp.token=''",
-    "--ip=0.0.0.0",
-    `--port=${process.env.JUPYTER_PORT}`,
-    path.join(__dirname, "../../")
-  ]);
+// const spawnJupyter = () => {
+//   const jupyter = spawn("jupyter", [
+//     "notebook",
+//     "--no-browser",
+//     '--NotebookApp.allow_origin="*"',
+//     "--NotebookApp.disable_check_xsrf=True",
+//     "--NotebookApp.token=''",
+//     "--ip=0.0.0.0",
+//     `--port=${process.env.JUPYTER_PORT}`,
+//     path.join(__dirname, "../../")
+//   ]);
 
-  jupyter.on("error", handleErr);
-  jupyter.stderr.on("data", buffer => handleErr(buffer.toString(), false));
-  jupyter.stdout.on("data", buffer => console.log(buffer.toString()));
-  process.on("exit", () => {
-    jupyter.kill();
-  });
-};
-spawnJupyter();
+//   jupyter.on("error", handleErr);
+//   jupyter.stderr.on("data", buffer => handleErr(buffer.toString(), false));
+//   jupyter.stdout.on("data", buffer => console.log(buffer.toString()));
+//   process.on("exit", () => {
+//     jupyter.kill();
+//   });
+// };
+// spawnJupyter();
 
 module.exports = withCSS(
   withTM({
@@ -65,6 +66,10 @@ module.exports = withCSS(
     },
 
     webpack: config => {
+      config.plugins = config.plugins.filter(
+        plugin => !(plugin instanceof ForkTsCheckerWebpackPlugin)
+      );
+
       if (WEBPACK_TARGET) {
         config.target = WEBPACK_TARGET;
       }

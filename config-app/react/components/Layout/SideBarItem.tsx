@@ -2,13 +2,24 @@ import React from "react";
 import Link from "next/link";
 import { Layout, Icon, Menu } from "antd";
 
-const SideBar: React.FC<any> = props => {
+type ISidebarProps = {};
+
+const SideBar = ({
+  link,
+  iconType,
+  ...menuItemProps
+}: {
+  link: string;
+  iconType: string;
+  menuItemProps: any;
+}) => {
+  console.log(menuItemProps);
   return (
-    <Link href={props.link}>
+    <Link href={link}>
       <a className="SideBarItem">
-        <Menu.Item key={props.link}>
+        <Menu.Item key={link} {...menuItemProps}>
           <Icon
-            type={props.iconType}
+            type={iconType}
             style={{
               width: "100%",
               padding: "10px 0px",
@@ -22,7 +33,7 @@ const SideBar: React.FC<any> = props => {
               padding: "5px 0px"
             }}
           >
-            {props.name}
+            {menuItemProps.name}
           </p>
         </Menu.Item>
         <style jsx>{`

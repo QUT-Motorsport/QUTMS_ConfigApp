@@ -48,7 +48,7 @@ class AnalysisMenu extends Component {
             key="driver"
             title={
               <span>
-                <Icon type="user" />
+                <Icon type="mail" />
                 <span>Driver</span>
               </span>
             }
