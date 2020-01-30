@@ -9,7 +9,7 @@ const SideBar = ({
 }: {
   link: string;
   iconType: string;
-  menuItemProps: any;
+  sideBarProps: any;
 }) => {
   return (
     <Link href={link}>
