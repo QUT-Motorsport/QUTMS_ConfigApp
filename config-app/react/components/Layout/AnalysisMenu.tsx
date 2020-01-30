@@ -21,7 +21,7 @@ class AnalysisMenu extends Component {
         mode="inline"
         theme="light"
         inlineCollapsed={this.state.collapsed}
-        style={{ height: "100vh", marginTop: "0px" }}
+        style={{ height: "100vh", marginTop: "0px", display: "inline-block" }}
       >
         <Menu.Item
           key="1"
