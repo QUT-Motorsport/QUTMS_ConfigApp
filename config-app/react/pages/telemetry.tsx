@@ -21,20 +21,21 @@ export default () => (
     </Head>
     <div style={{ height: "100vh" }}>
       <Row>
-        <Col span={5} style={{ padding: "0px 10px" }}>
+        <Col span={5} style={{ padding: "10px 20px" }}>
           <DriverInfo />
-        </Col>
-        <Col span={5}>
           <Car />
         </Col>
-        <Col span={7}>
+        <Col span={5} style={{ padding: "10px 20px" }}>
+          <LapInfo />
           <SteeringAngle />
-          <RawTelemetry />
-          <DataRate />
         </Col>
-        <Col span={7}>
+        <Col span={7} style={{ padding: "10px 20px" }}>
+          <EngineAndPower />
+          <RawTelemetry />
+        </Col>
+
+        <Col span={7} style={{ padding: "10px 20px" }}>
           <TrackInfo />
-          <Weather />
         </Col>
       </Row>
       <Row style={{ textAlign: "center", bottom: 0 }}>
