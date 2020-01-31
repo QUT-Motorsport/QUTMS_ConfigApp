@@ -13,26 +13,23 @@ const Weather = () => {
           precision={2}
         />
       </div>
-
       <div style={{ float: "left", width: "33.3%" }}>
-        <b
-          style={{
-            color: "#0F406A"
-          }}
-        >
-          Temperature
-        </b>
-        <p>32</p>
+        <Statistic
+          style={{ color: "#0F406A !important", fontWeight: 600, opacity: 100 }}
+          valueStyle={{ color: "#0F406A" }}
+          title="Humidity"
+          value={"20%"}
+          precision={2}
+        />
       </div>
       <div style={{ float: "left", width: "33.3%" }}>
-        <b
-          style={{
-            color: "#0F406A"
-          }}
-        >
-          Sky
-        </b>
-        <p>Cloudy</p>
+        <Statistic
+          style={{ color: "#0F406A !important", fontWeight: 600, opacity: 100 }}
+          valueStyle={{ color: "#0F406A" }}
+          title="Sky"
+          value={"Cloudy"}
+          precision={2}
+        />
       </div>
     </div>
   );

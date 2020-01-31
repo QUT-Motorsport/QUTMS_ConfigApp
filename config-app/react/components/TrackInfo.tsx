@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider } from "antd";
+import { Divider, Statistic } from "antd";
 
 import Weather from "./Weather";
 
@@ -15,17 +15,15 @@ const TrackInfo = () => {
         alt="Queensland Raceway Map"
         width="100%"
       />
-      <b
-        style={{
-          padding: "0",
-          color: "#0F406A",
-          width: "100%",
-          margin: "10px 0"
-        }}
-      >
-        Location
-      </b>
-      <p>Queensland Raceway</p>
+      <div style={{ float: "left", width: "100%" }}>
+        <Statistic
+          style={{ color: "#0F406A !important", fontWeight: 600, opacity: 100 }}
+          valueStyle={{ color: "#0F406A" }}
+          title="Location"
+          value={"Queensland Raceway"}
+          precision={2}
+        />
+      </div>
 
       <Weather />
     </div>

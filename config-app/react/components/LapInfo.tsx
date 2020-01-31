@@ -1,33 +1,74 @@
 import React from "react";
 import { Progress } from "antd";
-import { Divider } from "antd";
+import { Divider, Statistic } from "antd";
 
 const lapInfo = () => {
   return (
-    <div>
+    <div style={{ height: "80%" }}>
       <h3 style={{ margin: "10px 0", padding: "0", color: "#0F406A" }}>
         Lap Info
       </h3>
       <Divider style={{ color: "#0F406A", margin: "5px 0" }} />
       <div style={{ width: "100%" }}>
         <div style={{ float: "left", width: "50%" }}>
-          <b style={{ margin: "0", padding: "0", color: "#0F406A" }}>
-            Current Lap
-          </b>
-          <p>1:00:02</p>
+          <Statistic
+            style={{
+              color: "#0F406A !important",
+              fontWeight: 600,
+              opacity: 100
+            }}
+            valueStyle={{ color: "#0F406A" }}
+            title="Current Lap"
+            value={"1:00:00"}
+            precision={2}
+          />
         </div>
-        <div style={{ float: "right", width: "50%" }}>
-          <b style={{ margin: "0", padding: "0", color: "#0F406A" }}>
-            Best Lap
-          </b>
-          <p>1:00:09</p>
+        <div style={{ float: "left", width: "50%" }}>
+          <Statistic
+            style={{
+              color: "#0F406A !important",
+              fontWeight: 600,
+              opacity: 100
+            }}
+            valueStyle={{ color: "#0F406A" }}
+            title="Best Lap"
+            value={"1:03:00"}
+            precision={2}
+          />
         </div>
       </div>
 
-      <b style={{ margin: "0", padding: "0", color: "#0F406A" }}>
-        Top Lap Speed
-      </b>
-      <p>100km/h</p>
+      <div>
+        <div style={{ float: "left", width: "50%" }}>
+          <Statistic
+            style={{
+              color: "#0F406A !important",
+              fontWeight: 600,
+              opacity: 100
+            }}
+            valueStyle={{ color: "#0F406A" }}
+            title="Top Lap Speed"
+            value={"100"}
+            suffix={"km/h"}
+            precision={0}
+          />
+        </div>
+
+        <div style={{ float: "left", width: "50%" }}>
+          <Statistic
+            style={{
+              color: "#0F406A !important",
+              fontWeight: 600,
+              opacity: 100
+            }}
+            valueStyle={{ color: "#0F406A" }}
+            title="Top Race Speed"
+            value={"200"}
+            suffix={"km/h"}
+            precision={0}
+          />
+        </div>
+      </div>
 
       <b style={{ margin: "0", padding: "0", color: "#0F406A" }}>Total Laps</b>
       <br />
