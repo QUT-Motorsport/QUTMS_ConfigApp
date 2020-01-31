@@ -1,8 +1,7 @@
 import Head from "next/head";
-import Link from "next/link";
-import { Row, Col } from "antd";
 import "../css/home.css";
 import HomeMenu from "../components/Layout/HomeMenu";
+import Link from "next/link";
 
 export default () => (
   <>

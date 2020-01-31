@@ -3,7 +3,7 @@ import { Select, Button, Modal } from "antd";
 
 const { Option } = Select;
 
-class ModalTest extends Component {
+class ModalAdd extends Component {
   state = { visible: false };
   showModal = () => {
     this.setState({
@@ -68,4 +68,4 @@ class ModalTest extends Component {
   }
 }
 
-export default ModalTest;
+export default ModalAdd;

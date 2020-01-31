@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Layout } from "antd";
+import { Layout, Avatar } from "antd";
 const { Header } = Layout;
+import UserInfo from "../Layout/UserInfo";
 
 const HeaderBar = () => {
   return (
@@ -21,7 +22,8 @@ const HeaderBar = () => {
           <div
             style={{
               height: "60px",
-              position: "relative"
+              position: "relative",
+              float: "left"
             }}
           >
             <img
@@ -36,6 +38,15 @@ const HeaderBar = () => {
           </div>
         </a>
       </Link>
+      <div
+        style={{
+          float: "right",
+          marginRight: "47px",
+          marginTop: "-10px"
+        }}
+      >
+        <UserInfo />
+      </div>
     </Header>
   );
 };

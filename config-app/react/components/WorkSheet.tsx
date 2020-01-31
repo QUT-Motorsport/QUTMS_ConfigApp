@@ -1,9 +1,9 @@
 import Plot from "react-plotly.js";
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
-import { PlotData } from "plotly.js";
+import { useEffect, useState } from "react";
 import { Spin } from "antd";
+import { StateHook, QmsData } from "../ts/hooks";
+// import { PlotData } from "plotly.js";
 // import WorkSpace from "./WorkSpace";
-import { QmsData } from "../ts/api";
 
 type ChartSpec = {
   // mode: PlotData["mode"];
@@ -25,7 +25,6 @@ const useHydration = (
 };
 
 type Range = [number, number] | undefined;
-type StateHook<T> = [T, Dispatch<SetStateAction<T>>];
 
 type ChartData = {
   data: QmsData;
