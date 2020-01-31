@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Select, Button, Menu, Icon } from "antd";
-import Modal_2 from "../Layout/Modal_2";
+import Modal_2 from "./Modal_Create_Group";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { QmsData } from "../../ts/api";
@@ -54,6 +54,12 @@ class AnalysisMenu extends Component {
               <span>
                 <Icon type="mail" />
                 <span>Driver</span>
+                <span>
+                  <Icon
+                    type="more"
+                    style={{ float: "right", marginTop: "14px" }}
+                  ></Icon>
+                </span>
               </span>
             }
           >
@@ -76,6 +82,12 @@ class AnalysisMenu extends Component {
               <span>
                 <Icon type="mail" />
                 <span>Suspension</span>
+                <span>
+                  <Icon
+                    type="more"
+                    style={{ float: "right", marginTop: "14px" }}
+                  ></Icon>
+                </span>
               </span>
             }
           >

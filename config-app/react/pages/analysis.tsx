@@ -10,7 +10,7 @@ import {
   Breadcrumb
 } from "antd";
 import { Component } from "react";
-import ModalAdd from "../components/Layout/Modal_1";
+import ModalAdd from "../components/Layout/Modal_Add_Group";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
 import Content from "../components/Layout/Content";

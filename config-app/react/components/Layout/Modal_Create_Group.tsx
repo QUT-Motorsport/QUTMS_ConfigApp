@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { QmsData } from "../../ts/api";
 import { Spin } from "antd";
-import AnalysisMenu from "../Layout/AnalysisMenu";
+import AnalysisMenu from "./AnalysisMenu";
 
 const { Option } = Select;
 
@@ -39,7 +39,6 @@ class ModalAdd extends Component<
 
   handleOk = () => {
     this.setState({ visible: false });
-    //this.setState({ selection: value });
     //console.log({ selection });
   };
 
