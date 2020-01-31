@@ -1,6 +1,6 @@
 import { QmsData } from "../ts/api";
 import Plot from "react-plotly.js";
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { PlotData } from "plotly.js";
 import { Spin } from "antd";
 
@@ -24,12 +24,12 @@ const useHydration = (
 };
 
 type Range = [number, number] | undefined;
+type StateHook<T> = [T, Dispatch<SetStateAction<T>>];
 
 type ChartData = {
   data: QmsData;
+  rangeHook?: StateHook<Range>;
   _hydrated?: boolean;
-  range: Range;
-  onNewRange: (range: Range) => void;
 };
 
 const GROUND_SPEED_CH_IDX = 44;
@@ -37,9 +37,8 @@ const TIMELINE_IDXS = [GROUND_SPEED_CH_IDX];
 
 const Timeline = ({
   data,
-  _hydrated: hydrated = useHydration(data, TIMELINE_IDXS),
-  range,
-  onNewRange
+  rangeHook: [range, setRange] = useState(),
+  _hydrated: hydrated = useHydration(data, TIMELINE_IDXS)
 }: ChartData) =>
   hydrated ? (
     <div className="root">
@@ -91,7 +90,10 @@ const Timeline = ({
           title: "",
           xaxis: {
             range,
-            rangeslider: {}
+            rangeslider: {
+              // KEEP THIS! Without it there's a weird bug
+              range: [0, data.channels[GROUND_SPEED_CH_IDX].data!.length]
+            }
           },
           yaxis: {
             fixedrange: true
@@ -101,7 +103,7 @@ const Timeline = ({
         onRelayout={e => {
           const EVENT_NEWRANGE_ATTR = "xaxis.range";
           if (EVENT_NEWRANGE_ATTR in e) {
-            onNewRange((e as any)[EVENT_NEWRANGE_ATTR]);
+            setRange((e as any)[EVENT_NEWRANGE_ATTR]);
           }
         }}
         debug={true}
@@ -140,51 +142,9 @@ const Timeline = ({
 //   ) : (
 //     <Spin />
 //   );
-const useForceUpdate = () => {
-  const [_value, setValue] = useState(0); // integer state
-  return () => setValue(value => value + 1); // update the state to force render
-};
 
-export default ({ data, charts }: { data: QmsData; charts: ChartSpec[] }) => {
-  const range1 = useRef<Range>();
-  const range2 = useRef<Range>();
-
-  const forceUpdate = useForceUpdate();
-
-  console.log(range1.current, range2.current);
-
-  const timeline1 = useMemo(
-    () => (
-      <Timeline
-        data={data}
-        range={range1.current}
-        onNewRange={range => {
-          range2.current = range;
-          forceUpdate();
-        }}
-      />
-    ),
-    [range1.current]
-  );
-
-  const timeline2 = useMemo(
-    () => (
-      <Timeline
-        data={data}
-        range={range2.current}
-        onNewRange={range => {
-          range1.current = range;
-          forceUpdate();
-        }}
-      />
-    ),
-    [range2.current]
-  );
-
-  return (
-    <>
-      {timeline1}
-      {timeline2}
-    </>
-  );
-};
+export default ({ data, charts }: { data: QmsData; charts: ChartSpec[] }) => (
+  <>
+    <Timeline data={data} />
+  </>
+);
