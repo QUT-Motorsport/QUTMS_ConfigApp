@@ -1,5 +1,10 @@
 import React, { Component } from "react";
 import { Select, Button, Menu, Icon } from "antd";
+import Modal_2 from "../Layout/Modal_2";
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { QmsData } from "../../ts/api";
+import { Spin } from "antd";
 
 const { SubMenu } = Menu;
 
@@ -14,7 +19,6 @@ class AnalysisMenu extends Component {
     });
   };
 
-  //functions
   render() {
     return (
       <div className="something" style={{ height: "1000px" }}>
@@ -89,10 +93,7 @@ class AnalysisMenu extends Component {
             </Menu.Item>
           </SubMenu>
           <Menu.Item style={{ textAlign: "center" }}>
-            <Icon type="plus" />
-            <span style={{ textDecorationLine: "underline" }}>
-              Create New Group
-            </span>
+            <Modal_2 />
           </Menu.Item>
         </Menu>
       </div>

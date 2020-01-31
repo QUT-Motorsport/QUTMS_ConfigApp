@@ -3,9 +3,9 @@ import dynamic from "next/dynamic";
 const WorkSheet = dynamic(() => import("../components/WorkSheet"), {
   ssr: false
 });
-
 import { QmsData } from "../ts/api";
 import { Spin } from "antd";
+
 const useQmsData = (filename: string): QmsData | null => {
   const [qmsData, setQmsData] = useState<QmsData | null>(null);
 
