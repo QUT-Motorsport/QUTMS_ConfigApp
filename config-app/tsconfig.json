@@ -12,7 +12,8 @@
     "noEmit": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "downlevelIteration": true
   },
   "include": ["react/next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "react/next.config.js", "app", "dist"]

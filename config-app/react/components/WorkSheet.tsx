@@ -1,11 +1,12 @@
-import { QmsData } from "../ts/api";
 import Plot from "react-plotly.js";
 import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { PlotData } from "plotly.js";
 import { Spin } from "antd";
+// import WorkSpace from "./WorkSpace";
+import { QmsData } from "../ts/api";
 
 type ChartSpec = {
-  mode: PlotData["mode"];
+  // mode: PlotData["mode"];
   channel_idxs: number[];
 };
 
@@ -35,116 +36,148 @@ type ChartData = {
 const GROUND_SPEED_CH_IDX = 44;
 const TIMELINE_IDXS = [GROUND_SPEED_CH_IDX];
 
+const reLayoutHandler = (setRange: Dispatch<SetStateAction<Range>>) => (
+  e: any
+) => {
+  // rangeChange events come in 2 consumable forms
+  const EVENT_NEWRANGE_ATTR = "xaxis.range";
+  const EVENT_NEWRANGE_ATTRS = ["xaxis.range[0]", "xaxis.range[1]"];
+
+  if (EVENT_NEWRANGE_ATTR in e) {
+    setRange((e as any)[EVENT_NEWRANGE_ATTR]);
+  } else if (EVENT_NEWRANGE_ATTRS.every(attr => attr in e)) {
+    setRange(EVENT_NEWRANGE_ATTRS.map(attr => (e as any)[attr]) as Range);
+  }
+};
+
 const Timeline = ({
   data,
   rangeHook: [range, setRange] = useState(),
   _hydrated: hydrated = useHydration(data, TIMELINE_IDXS)
-}: ChartData) =>
+}: ChartData) => (
+  <div className="root">
+    <style jsx>{`
+      // TODO: Enable styled-jsx-postcss-plugin to DRY this up
+
+      .root {
+        width: 100%;
+        height: 40px;
+        overflow: hidden;
+      }
+
+      .root > :global(.plotly-timeline) {
+        width: calc(100% + 153px);
+        height: 450px;
+      }
+
+      .root > :global(.plotly-timeline) :global(.modebar) {
+        display: none;
+      }
+
+      .root > :global(.plotly-timeline) :global(.cartesianlayer) {
+        display: none;
+      }
+
+      .root > :global(.plotly-timeline) :global(.hoverlayer) {
+        display: none;
+      }
+
+      .root > :global(.plotly-timeline) :global(.draglayer) {
+        display: none;
+      }
+
+      .root > :global(.plotly-timeline) :global(.rangeslider-container) {
+        transform: translate(3px, 0);
+      }
+    `}</style>
+    {hydrated ? (
+      ((
+        { freq, data: y } = data.channels[GROUND_SPEED_CH_IDX],
+        x = [...Array(y!.length).keys()].map(idx => idx / freq)
+      ) => (
+        <Plot
+          className="plotly-timeline"
+          data={[{ y, mode: "lines" }]}
+          useResizeHandler={true}
+          layout={{
+            title: "",
+            xaxis: {
+              range,
+              rangeslider: {
+                // KEEP THIS! Without it there's a weird bug
+                range: [0, x[x.length - 1]]
+              }
+            },
+            yaxis: {
+              fixedrange: true
+            },
+            autosize: true
+          }}
+          onRelayout={reLayoutHandler(setRange)}
+        />
+      ))()
+    ) : (
+      <Spin />
+    )}
+  </div>
+);
+
+const Chart = ({
+  channel_idxs,
+  data,
+  rangeHook: [range, setRange] = useState(),
+  _hydrated: hydrated = useHydration(data, channel_idxs)
+}: ChartSpec & ChartData) =>
   hydrated ? (
-    <div className="root">
-      <style jsx>{`
-        // TODO: Enable styled-jsx-postcss-plugin to DRY this up
-
-        .root {
-          width: 100%;
-          height: 40px;
-          overflow: hidden;
-        }
-
-        .root > :global(.plotly-timeline) {
-          width: calc(100% + 153px);
-          height: 450px;
-        }
-
-        .root > :global(.plotly-timeline) :global(.modebar) {
-          display: none;
-        }
-
-        .root > :global(.plotly-timeline) :global(.cartesianlayer) {
-          display: none;
-        }
-
-        .root > :global(.plotly-timeline) :global(.hoverlayer) {
-          display: none;
-        }
-
-        .root > :global(.plotly-timeline) :global(.draglayer) {
-          display: none;
-        }
-
-        .root > :global(.plotly-timeline) :global(.rangeslider-container) {
-          transform: translate(3px, 0);
-        }
-      `}</style>
-      <Plot
-        className="plotly-timeline"
-        data={[
-          {
-            y: data.channels[GROUND_SPEED_CH_IDX].data,
-            type: "scatter",
-            mode: "lines"
-          }
-        ]}
-        useResizeHandler={true}
-        layout={{
-          title: "",
-          xaxis: {
-            range,
-            rangeslider: {
-              // KEEP THIS! Without it there's a weird bug
-              range: [0, data.channels[GROUND_SPEED_CH_IDX].data!.length]
-            }
-          },
-          yaxis: {
-            fixedrange: true
-          },
-          autosize: true
-        }}
-        onRelayout={e => {
-          const EVENT_NEWRANGE_ATTR = "xaxis.range";
-          if (EVENT_NEWRANGE_ATTR in e) {
-            setRange((e as any)[EVENT_NEWRANGE_ATTR]);
-          }
-        }}
-        debug={true}
-      />
-    </div>
+    <Plot
+      data={channel_idxs.map(idx => {
+        const { name, freq, data: y } = data.channels[idx];
+        return {
+          name,
+          mode: "lines",
+          x: [...Array(y!.length).keys()].map(idx => idx / freq),
+          y
+        };
+      })}
+      useResizeHandler={true}
+      layout={{
+        title: channel_idxs.map(idx => data.channels[idx].name).join(" vs "),
+        xaxis: {
+          range
+        },
+        yaxis: {
+          fixedrange: true
+        },
+        autosize: true
+      }}
+      style={{
+        width: "100%",
+        height: "450px"
+      }}
+      onRelayout={reLayoutHandler(setRange)}
+    />
   ) : (
     <Spin />
   );
 
-// const Chart = ({
-//   mode,
-//   channel_idxs,
-//   data,
-//   _hydrated: hydrated = useHydration(data, channel_idxs)
-// }: ChartSpec & ChartData) =>
-//   hydrated ? (
-//     <Plot
-//       data={channel_idxs.map(idx => ({
-//         y: data.channels[idx].data,
-//         type: "scatter",
-//         mode
-//       }))}
-//       layout={{
-//         title: channel_idxs.map(idx => data.channels[idx].name).join(" vs "),
-//         xaxis: {
-//           rangeslider: {}
-//         },
-//         yaxis: {
-//           fixedrange: true
-//         }
-//       }}
-//       onRelayout={e => {
-//         console.log("RELAYOUT", e);
-//       }}
-//     />
-//   ) : (
-//     <Spin />
-//   );
-
-export default ({ data, charts }: { data: QmsData; charts: ChartSpec[] }) => (
+export default ({
+  data,
+  charts,
+  _rangeHook: rangeHook = useState()
+}: {
+  data: QmsData;
+  charts: ChartSpec[];
+  _rangeHook?: StateHook<Range>;
+}) => (
   <>
-    <Timeline data={data} />
+    <Timeline data={data} rangeHook={rangeHook} />
+    {charts.map(({ channel_idxs }, idx) => (
+      <Chart
+        key={idx}
+        data={data}
+        rangeHook={rangeHook}
+        channel_idxs={channel_idxs}
+      />
+    ))}
   </>
 );

@@ -17,7 +17,10 @@ const useQmsData = (filename: string): QmsData | null => {
 
 export default ({ _qmsData: data = useQmsData("Sample") }) =>
   data ? (
-    <WorkSheet data={data} charts={[{ mode: "lines", channel_idxs: [44] }]} />
+    <WorkSheet
+      data={data}
+      charts={[{ channel_idxs: [40, 41, 42] }, { channel_idxs: [36, 37, 38] }]}
+    />
   ) : (
     <Spin />
   );
