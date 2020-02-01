@@ -3,14 +3,14 @@ import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
 import dynamic from "next/dynamic";
 import "../css/home.css";
-import { useQmsData, QmsData } from "../ts/hooks";
+import { useQmsData } from "../ts/qmsData";
 import { Spin } from "antd";
 
 const WorkSheet = dynamic(() => import("../components/WorkSheet"), {
   ssr: false
 });
 
-export default ({ data = useQmsData("Sample") }: { data: QmsData | null }) =>
+export default ({ data = useQmsData("Sample") }) =>
   data ? (
     <div className="flex-container-menu">
       <AnalysisMenu data={data} />
