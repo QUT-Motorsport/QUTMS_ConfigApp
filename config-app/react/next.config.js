@@ -10,7 +10,13 @@ const path = require("path");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 dotenv.config();
 
-const { WEBPACK_TARGET, SANIC_PORT, GLOBAL_HOST, JUPYTER_PORT } = process.env;
+const {
+  WEBPACK_TARGET,
+  SANIC_PORT,
+  GLOBAL_HOST,
+  JUPYTER_PORT,
+  NODE_ENV
+} = process.env;
 
 const handleErr = (err, fatal = true) => {
   console.error(err);
@@ -66,10 +72,14 @@ module.exports = withCSS(
     },
 
     webpack: config => {
-      config.plugins = config.plugins.filter(
-        plugin => !(plugin instanceof ForkTsCheckerWebpackPlugin)
-      );
+      // disable type-checking in development mode for quicker hot-reloading
+      if (NODE_ENV === "development") {
+        config.plugins = config.plugins.filter(
+          plugin => !(plugin instanceof ForkTsCheckerWebpackPlugin)
+        );
+      }
 
+      // if we're targeting electron, tell webpack
       if (WEBPACK_TARGET) {
         config.target = WEBPACK_TARGET;
       }
