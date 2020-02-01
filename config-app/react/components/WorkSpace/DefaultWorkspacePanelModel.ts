@@ -15,13 +15,11 @@ export class DefaultWorkspacePanelModel extends WorkspaceModel {
     this.setExpand(false, true);
   }
 
-  toArray() {
-    return {
-      ...super.toArray(),
-      displayName: this.displayName,
-      icon: this.icon
-    };
-  }
+  toArray = () => ({
+    ...super.toArray(),
+    displayName: this.displayName,
+    icon: this.icon
+  });
 
   fromArray(payload: any, engine: WorkspaceEngine) {
     super.fromArray(payload, engine);
