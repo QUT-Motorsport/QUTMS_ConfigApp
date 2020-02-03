@@ -9,9 +9,6 @@ export default () => (
       <Head>
         <title>QUT Motorsport Config App</title>
       </Head>
-      <Link href="/worksheet">
-        <a style={{ fontSize: "3rem" }}>Worksheet DEMO</a>
-      </Link>
       <HomeMenu />
     </div>
   </>
