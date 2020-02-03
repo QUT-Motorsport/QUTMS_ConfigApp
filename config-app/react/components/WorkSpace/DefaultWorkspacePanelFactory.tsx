@@ -4,53 +4,47 @@ import {
   WorkspacePanelFactory,
   GenerateEvent
 } from "@projectstorm/react-workspaces";
+
 import { DefaultWorkspacePanelModel } from "./DefaultWorkspacePanelModel";
-import * as React from "react";
-import { DefaultPanelTitleWidget } from "./widgets/DefaultPanelTitleWidget";
-import { DefaultPanelContentWidget } from "./widgets/DefaultPanelContentWidget";
-import { DefaultPanelMicroButtonWidget } from "./widgets/DefaultPanelMicroButtonWidget";
-import { DefaultPanelTabWidget } from "./widgets/DefaultPanelTabWidget";
+import DefaultPanelTitleWidget from "./widgets/DefaultPanelTitleWidget";
+import DefaultPanelContentWidget from "./widgets/DefaultPanelContentWidget";
+import DefaultPanelMicroButtonWidget from "./widgets/DefaultPanelMicroButtonWidget";
+import DefaultPanelTabWidget from "./widgets/DefaultPanelTabWidget";
 
 export class DefaultWorkspacePanelFactory extends WorkspacePanelFactory<
   DefaultWorkspacePanelModel
 > {
-  generatePanelTitle(event: any): JSX.Element {
-    return <DefaultPanelTitleWidget title={event.model.displayName} />;
+  constructor() {
+    super("default");
   }
 
-  generatePanelContent(
-    event: GenerateEvent<DefaultWorkspacePanelModel>
-  ): JSX.Element {
-    return (
-      <DefaultPanelContentWidget>
-        Hello World: {event.model.displayName}
-      </DefaultPanelContentWidget>
-    );
-  }
+  generatePanelTitle = (event: any) => (
+    <DefaultPanelTitleWidget title={event.model.displayName} />
+  );
 
-  generatePanelTab(
+  generatePanelContent = (event: GenerateEvent<DefaultWorkspacePanelModel>) => (
+    <DefaultPanelContentWidget>
+      Hello World: {event.model.displayName}
+    </DefaultPanelContentWidget>
+  );
+
+  generatePanelTab = (
     event: GeneratePanelTabEvent<DefaultWorkspacePanelModel>
-  ): JSX.Element {
-    return (
-      <DefaultPanelTabWidget
-        name={event.model.displayName}
-        selected={event.selected}
-      />
-    );
-  }
+  ) => (
+    <DefaultPanelTabWidget
+      name={event.model.displayName}
+      selected={event.selected}
+    />
+  );
 
-  generateMicroButton(
+  generateMicroButton = (
     event: GenerateMicroButtonEvent<DefaultWorkspacePanelModel>
-  ): JSX.Element {
-    return (
-      <DefaultPanelMicroButtonWidget
-        selected={event.selected}
-        icon={event.model.icon}
-      />
-    );
-  }
+  ) => (
+    <DefaultPanelMicroButtonWidget
+      selected={event.selected}
+      icon={event.model.icon}
+    />
+  );
 
-  generateModel(): DefaultWorkspacePanelModel {
-    return new DefaultWorkspacePanelModel("Test");
-  }
+  generateModel = () => new DefaultWorkspacePanelModel("Test");
 }
