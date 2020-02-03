@@ -24,22 +24,22 @@ class ModalAdd extends Component<
 > {
   constructor(props: any) {
     super(props);
-    this.setState({
+    this.state = {
       visible: false,
       selection: this.props.data.channels[0].name
-    });
+    };
   }
 
   showModal = () => {
     this.setState({
-      ...this.state,
       visible: true
     });
   };
 
   handleOk = () => {
     this.setState({ visible: false });
-    //console.log({ selection });
+
+    console.log(this.state.selection);
   };
 
   handleCancel = () => {
@@ -57,7 +57,7 @@ class ModalAdd extends Component<
 
     return (
       <div>
-        <a onClick={this.showModal}>
+        <a key="modal" onClick={this.showModal}>
           <Icon type="plus" />
           <span style={{ textDecorationLine: "underline", color: "#fff" }}>
             Create New Group
@@ -65,7 +65,8 @@ class ModalAdd extends Component<
         </a>
         <Modal
           title="Create Group"
-          onOk={this.handleOk} //use this to handle add component
+          visible={this.state.visible}
+          onOk={this.handleOk}
           onCancel={this.handleCancel}
           style={{ marginTop: "200px" }}
           footer={[
@@ -79,9 +80,10 @@ class ModalAdd extends Component<
               Select Channel:
             </div>
             <div>
-              {/* Dropdown data selection */}
+              {/* Select Search Channel Init */}
               <Select
-                defaultValue={this.props.data.channels[0].name}
+                showSearch
+                placeholder="Select a new channel"
                 style={{ width: 210, marginLeft: "15px" }}
                 value={this.state.selection}
                 onChange={(value: string) => {
@@ -91,6 +93,7 @@ class ModalAdd extends Component<
                   });
                 }}
               >
+                {/* Options List */}
                 {dropdowns.map(channel => (
                   <Option value={channel}>{channel}</Option>
                 ))}

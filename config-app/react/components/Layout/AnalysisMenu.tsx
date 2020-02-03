@@ -10,7 +10,22 @@ const { SubMenu } = Menu;
 
 class AnalysisMenu extends Component {
   state = {
-    collapsed: false
+    collapsed: false,
+    workbook: [{ name_book: "", worksheets: [{ name_sheet: "" }] }]
+  };
+
+  addGroup = (name: string) => {
+    //append to workbook
+    let updateWorkbook = this.state.workbook;
+    let group = { name_book: name, worksheets: [] };
+    updateWorkbook.push(group);
+    this.setState({ workbook: updateWorkbook });
+  };
+
+  addWorksheet = (name: string, groupName: number) => {
+    let workbook = this.state.workbook;
+    let group = { name_book: { groupName }, worksheets: [] };
+    workbook[groupName].worksheets.push(group);
   };
 
   toggleCollapsed = () => {
@@ -18,6 +33,8 @@ class AnalysisMenu extends Component {
       collapsed: !this.state.collapsed
     });
   };
+
+  //append optional prop to array
 
   render() {
     return (
