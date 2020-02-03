@@ -103,7 +103,7 @@ export default ({
         </Menu.Item>
       </SubMenu>
       <Menu.Item style={{ textAlign: "center" }}>
-        <ModalCreateGroup data={data} />
+        <ModalCreateGroup data={data} onCreate={console.log} />
       </Menu.Item>
     </Menu>
   </div>

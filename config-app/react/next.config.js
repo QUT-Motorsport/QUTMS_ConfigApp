@@ -72,13 +72,6 @@ module.exports = withCSS(
     },
 
     webpack: config => {
-      // disable type-checking in development mode for quicker hot-reloading
-      if (NODE_ENV === "development") {
-        config.plugins = config.plugins.filter(
-          plugin => !(plugin instanceof ForkTsCheckerWebpackPlugin)
-        );
-      }
-
       // if we're targeting electron, tell webpack
       if (WEBPACK_TARGET) {
         config.target = WEBPACK_TARGET;
