@@ -1,56 +1,59 @@
 import Plot from "react-plotly.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { StateHook, SetState } from "../ts/hooks";
-import { QmsData, ChannelGroup, useChannelGroup } from "../ts/qmsData";
+import { StateHook, QmsData } from "../ts/hooks";
+// import { PlotData } from "plotly.js";
+// import WorkSpace from "./WorkSpace";
 
 type ChartSpec = {
+  // mode: PlotData["mode"];
   channel_idxs: number[];
+};
+
+const useHydration = (
+  data: QmsData,
+  channel_idxs: ChartSpec["channel_idxs"]
+) => {
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(false);
+    data.hydrate_channels(channel_idxs).then(() => setHydrated(true));
+  }, [channel_idxs]);
+
+  return hydrated;
 };
 
 type Range = [number, number] | undefined;
 
-type ChartProps = {
+type ChartData = {
   data: QmsData;
-  domainHook: StateHook<Range>;
-  _rangeHook?: StateHook<Range>;
-  _channelGroup?: ChannelGroup | null;
+  rangeHook?: StateHook<Range>;
+  _hydrated?: boolean;
 };
 
 const GROUND_SPEED_CH_IDX = 44;
 const TIMELINE_IDXS = [GROUND_SPEED_CH_IDX];
 
-const reLayoutHandler = (
-  setDomain: SetState<Range>,
-  // some charts (timeline) don't care about range state because it's fixed
-  setRange?: SetState<Range>
-) => (e: any) => {
-  [
-    { name: "xaxis", set: setDomain },
-    { name: "yaxis", set: setRange }
-  ].forEach(({ name, set }) => {
-    if (set !== undefined) {
-      // axisChange events come in 3 consumable forms
-      const event_newrange_attr = `${name}.range`;
-      const event_newrange_attrs = [`${name}.range[0]`, `${name}.range[1]`];
-      const event_resetrange_attr = `${name}.autorange`;
+const reLayoutHandler = (setRange: Dispatch<SetStateAction<Range>>) => (
+  e: any
+) => {
+  // rangeChange events come in 2 consumable forms
+  const EVENT_NEWRANGE_ATTR = "xaxis.range";
+  const EVENT_NEWRANGE_ATTRS = ["xaxis.range[0]", "xaxis.range[1]"];
 
-      if (event_newrange_attr in e) {
-        set((e as any)[event_newrange_attr]);
-      } else if (event_newrange_attrs.every(attr => attr in e)) {
-        set(event_newrange_attrs.map(attr => (e as any)[attr]) as Range);
-      } else if (event_resetrange_attr in e) {
-        set(undefined); // if axis range == undefined, plotly sets it to 100%
-      }
-    }
-  });
+  if (EVENT_NEWRANGE_ATTR in e) {
+    setRange((e as any)[EVENT_NEWRANGE_ATTR]);
+  } else if (EVENT_NEWRANGE_ATTRS.every(attr => attr in e)) {
+    setRange(EVENT_NEWRANGE_ATTRS.map(attr => (e as any)[attr]) as Range);
+  }
 };
 
 const Timeline = ({
   data,
-  domainHook: [domain, setDomain],
-  _channelGroup: channelGroup = useChannelGroup(data, TIMELINE_IDXS)
-}: ChartProps) => (
+  rangeHook: [range, setRange] = useState(),
+  _hydrated: hydrated = useHydration(data, TIMELINE_IDXS)
+}: ChartData) => (
   <div className="root">
     <style jsx>{`
       // TODO: Enable styled-jsx-postcss-plugin to DRY this up
@@ -86,30 +89,32 @@ const Timeline = ({
         transform: translate(3px, 0);
       }
     `}</style>
-    {channelGroup ? (
-      <Plot
-        className="plotly-timeline"
-        data={[
-          {
-            x: channelGroup.x,
-            y: channelGroup.channels[0].y,
-            mode: "lines"
-          }
-        ]}
-        useResizeHandler={true}
-        layout={{
-          title: "",
-          xaxis: {
-            range: domain,
-            rangeslider: {
-              // KEEP THIS! Without it there's a weird bug when dragging
-              range: [0, channelGroup.x[channelGroup.x.length - 1]]
-            }
-          },
-          autosize: true
-        }}
-        onRelayout={reLayoutHandler(setDomain)}
-      />
+    {hydrated ? (
+      ((
+        { freq, data: y } = data.channels[GROUND_SPEED_CH_IDX],
+        x = [...Array(y!.length).keys()].map(idx => idx / freq)
+      ) => (
+        <Plot
+          className="plotly-timeline"
+          data={[{ y, mode: "lines" }]}
+          useResizeHandler={true}
+          layout={{
+            title: "",
+            xaxis: {
+              range,
+              rangeslider: {
+                // KEEP THIS! Without it there's a weird bug
+                range: [0, x[x.length - 1]]
+              }
+            },
+            yaxis: {
+              fixedrange: true
+            },
+            autosize: true
+          }}
+          onRelayout={reLayoutHandler(setRange)}
+        />
+      ))()
     ) : (
       <Spin />
     )}
@@ -119,30 +124,36 @@ const Timeline = ({
 const Chart = ({
   channel_idxs,
   data,
-  domainHook: [domain, setDomain],
-  _rangeHook: [range, setRange] = useState(),
-  _channelGroup: channelGroup = useChannelGroup(data, channel_idxs)
-}: ChartSpec & ChartProps) =>
-  channelGroup ? (
+  rangeHook: [range, setRange] = useState(),
+  _hydrated: hydrated = useHydration(data, channel_idxs)
+}: ChartSpec & ChartData) =>
+  hydrated ? (
     <Plot
-      data={channelGroup.channels.map(({ channel, y }) => ({
-        name: channel.name,
-        x: channelGroup.x,
-        y: y,
-        mode: "lines"
-      }))}
+      data={channel_idxs.map(idx => {
+        const { name, freq, data: y } = data.channels[idx];
+        return {
+          name,
+          mode: "lines",
+          x: [...Array(y!.length).keys()].map(idx => idx / freq),
+          y
+        };
+      })}
       useResizeHandler={true}
       layout={{
-        // title: channel_idxs.map(idx => data.channels[idx].name).join(" vs "),
-        xaxis: { range: domain },
-        yaxis: { range },
+        title: channel_idxs.map(idx => data.channels[idx].name).join(" vs "),
+        xaxis: {
+          range
+        },
+        yaxis: {
+          fixedrange: true
+        },
         autosize: true
       }}
       style={{
         width: "100%",
         height: "450px"
       }}
-      onRelayout={reLayoutHandler(setDomain, setRange)}
+      onRelayout={reLayoutHandler(setRange)}
     />
   ) : (
     <Spin />
@@ -151,19 +162,19 @@ const Chart = ({
 export default ({
   data,
   charts,
-  _domainHook: domainHook = useState()
+  _rangeHook: rangeHook = useState()
 }: {
   data: QmsData;
   charts: ChartSpec[];
-  _domainHook?: StateHook<Range>;
+  _rangeHook?: StateHook<Range>;
 }) => (
   <>
-    <Timeline data={data} domainHook={domainHook} />
+    <Timeline data={data} rangeHook={rangeHook} />
     {charts.map(({ channel_idxs }, idx) => (
       <Chart
         key={idx}
         data={data}
-        domainHook={domainHook}
+        rangeHook={rangeHook}
         channel_idxs={channel_idxs}
       />
     ))}
