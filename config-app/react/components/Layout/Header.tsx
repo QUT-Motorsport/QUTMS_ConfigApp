@@ -27,12 +27,14 @@ const HeaderBar = () => {
             }}
           >
             <img
-              src="/images/qms_icon_2.png"
+              src="/images/config_hub.png"
               style={{
                 top: "0",
                 bottom: "0",
+                left: "10px",
                 margin: "auto",
-                position: "absolute"
+                position: "absolute",
+                width: "180px"
               }}
             />
           </div>

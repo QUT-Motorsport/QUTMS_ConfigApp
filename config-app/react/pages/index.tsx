@@ -21,9 +21,10 @@ export default class App extends Component {
           }}
         >
           <img
-            src="/images/qms_icon_2.png"
+            src="/images/config_hub.png"
             style={{
-              marginLeft: "50px",
+              width: "80%",
+              marginLeft: "10%",
               marginBottom: "25px",
               marginTop: "100%"
             }}
