@@ -1,59 +1,38 @@
 import React from "react";
 import { Divider, Statistic } from "antd";
+import SteeringWheel from "../public/images/steering-wheel.svg";
+import DividerBar from "./DividerBar";
 
 const SteeringAngle = () => {
   return (
-    <div style={{ height: "20%" }}>
-      <h3 style={{ marginTop: "10px", padding: "0", color: "#0F406A" }}>
-        Steering Angle
-      </h3>
-      <Divider style={{ color: "#0F406A", margin: "0px 0" }} />
-      <div style={{ width: "100%", marginTop: "10px" }}>
-        <img
-          src="https://i0.wp.com/boxthislap.org/app/uploads/2019/08/CSL-E-F1-SET-M_07.png?resize=540%2C300&ssl=1"
-          alt="Steering Wheel"
-          width="150px"
-        />
-      </div>
+    <div
+      style={{
+        marginTop: "10px",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      <h3 style={{ padding: "0", color: "#0F406A" }}>Steering Angle</h3>
+      <DividerBar />
 
-      <div style={{ width: "100%" }}>
-        <div style={{ float: "left", width: "33.33%" }}>
-          <Statistic
-            style={{
-              color: "#0F406A !important",
-              fontWeight: 600,
-              opacity: 100
-            }}
-            valueStyle={{ color: "#0F406A" }}
-            title="Min"
-            value={0.5}
-            precision={0}
-          />
+      <div
+        style={{
+          marginTop: "10px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center"
+        }}
+      >
+        <div style={{ marginTop: "5px", width: "40%" }}>
+          <SteeringWheel width="90%" height="100%" margin="0" padding="0" />
         </div>
-        <div style={{ float: "left", width: "33.33%" }}>
+        <div>
           <Statistic
-            style={{
-              color: "#0F406A !important",
-              fontWeight: 600,
-              opacity: 100
-            }}
             valueStyle={{ color: "#0F406A" }}
             title="Current"
-            value={1}
+            value={0.5}
             precision={0}
-          />
-        </div>
-        <div style={{ float: "left", width: "33.33%" }}>
-          <Statistic
-            style={{
-              color: "#0F406A !important",
-              fontWeight: 600,
-              opacity: 100
-            }}
-            valueStyle={{ color: "#0F406A" }}
-            title="Max"
-            value={1.5}
-            precision={0}
+            style={{ marginLeft: "20px" }}
           />
         </div>
       </div>

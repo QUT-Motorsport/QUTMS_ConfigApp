@@ -20,7 +20,7 @@ export default () => (
       <title>Live Telemetry</title>
     </Head>
     <div style={{ height: "100vh" }}>
-      <Row>
+      <Row style={{ height: "80vh" }}>
         <Col span={5} style={{ padding: "10px 20px" }}>
           <DriverInfo />
           <Car />
@@ -38,7 +38,7 @@ export default () => (
           <TrackInfo />
         </Col>
       </Row>
-      <Row style={{ textAlign: "center", bottom: 0 }}>
+      <Row>
         <Sponsors />
       </Row>
     </div>
