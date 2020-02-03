@@ -1,45 +1,33 @@
 import React, { Component } from "react";
 import { Select, Button, Modal, Icon } from "antd";
-import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 import { QmsData } from "../../ts/api";
-import { Spin } from "antd";
-import AnalysisMenu from "./AnalysisMenu";
 
 const { Option } = Select;
 
-const useQmsData = (filename: string): QmsData | null => {
-  const [qmsData, setQmsData] = useState<QmsData | null>(null);
-
-  useEffect(() => {
-    QmsData.download(filename).then(setQmsData);
-  }, []);
-
-  return qmsData;
-};
-
-class ModalAdd extends Component<
+export default class extends Component<
   { data: QmsData },
   { visible: boolean; selection: string }
 > {
+  state = { visible: true, selection: "" };
+
   constructor(props: any) {
     super(props);
-    this.state = {
+    this.setState({
       visible: false,
       selection: this.props.data.channels[0].name
-    };
+    });
   }
 
   showModal = () => {
     this.setState({
+      ...this.state,
       visible: true
     });
   };
 
   handleOk = () => {
     this.setState({ visible: false });
-
-    console.log(this.state.selection);
+    //console.log({ selection });
   };
 
   handleCancel = () => {
@@ -57,7 +45,7 @@ class ModalAdd extends Component<
 
     return (
       <div>
-        <a key="modal" onClick={this.showModal}>
+        <a onClick={this.showModal}>
           <Icon type="plus" />
           <span style={{ textDecorationLine: "underline", color: "#fff" }}>
             Create New Group
@@ -65,8 +53,7 @@ class ModalAdd extends Component<
         </a>
         <Modal
           title="Create Group"
-          visible={this.state.visible}
-          onOk={this.handleOk}
+          onOk={this.handleOk} //use this to handle add component
           onCancel={this.handleCancel}
           style={{ marginTop: "200px" }}
           footer={[
@@ -80,10 +67,9 @@ class ModalAdd extends Component<
               Select Channel:
             </div>
             <div>
-              {/* Select Search Channel Init */}
+              {/* Dropdown data selection */}
               <Select
-                showSearch
-                placeholder="Select a new channel"
+                defaultValue={this.props.data.channels[0].name}
                 style={{ width: 210, marginLeft: "15px" }}
                 value={this.state.selection}
                 onChange={(value: string) => {
@@ -93,7 +79,6 @@ class ModalAdd extends Component<
                   });
                 }}
               >
-                {/* Options List */}
                 {dropdowns.map(channel => (
                   <Option value={channel}>{channel}</Option>
                 ))}
@@ -105,6 +90,3 @@ class ModalAdd extends Component<
     );
   }
 }
-
-export default ({ _qmsData: data = useQmsData("Sample") }) =>
-  data ? <ModalAdd data={data} /> : <Spin />;
