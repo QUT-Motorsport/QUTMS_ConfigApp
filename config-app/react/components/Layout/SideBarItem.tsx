@@ -5,11 +5,12 @@ import { Layout, Icon, Menu } from "antd";
 const SideBar = ({
   link,
   iconType,
+  name,
   ...sideBarProps
 }: {
   link: string;
   iconType: string;
-  sideBarProps: any;
+  name: string;
 }) => {
   return (
     <Link href={link}>
@@ -41,7 +42,7 @@ const SideBar = ({
               margin: "0px"
             }}
           >
-            {sideBarProps.name}
+            {name}
           </p>
         </Menu.Item>
         <style jsx>{`
