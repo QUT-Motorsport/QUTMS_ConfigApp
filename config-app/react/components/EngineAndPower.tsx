@@ -1,25 +1,22 @@
 import React from "react";
 import { Progress, Divider } from "antd";
 import PedalPositions from "./PedalPosition";
+import DividerBar from "./DividerBar";
 
 const EngineAndPower = () => {
   return (
-    <div>
-      <h3 style={{ margin: "10px 0", padding: "0", color: "#0F406A" }}>
-        Engine and Power
-      </h3>
-      <Divider style={{ color: "#0F406A", margin: "5px 0" }} />
-      <div>
-        <b
+    <div style={{ marginTop: "5px" }}>
+      <h3 style={{ padding: "0", color: "#0F406A" }}>Engine and Power</h3>
+      <DividerBar />
+      <div style={{ marginTop: "10px" }}>
+        <p
           style={{
             padding: "0",
-            color: "#0F406A",
-            width: "100%",
-            margin: "10px 0"
+            color: "#908d8c"
           }}
         >
           Speed
-        </b>
+        </p>
         <div>
           <Progress
             style={{ height: "90px" }}

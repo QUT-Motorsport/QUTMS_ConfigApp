@@ -1,22 +1,17 @@
 import React from "react";
 import { Progress } from "antd";
 import { Divider, Statistic } from "antd";
+import DividerBar from "./DividerBar";
 
 const lapInfo = () => {
   return (
-    <div style={{ height: "80%" }}>
-      <h3 style={{ margin: "10px 0", padding: "0", color: "#0F406A" }}>
-        Lap Info
-      </h3>
-      <Divider style={{ color: "#0F406A", margin: "5px 0" }} />
-      <div style={{ width: "100%" }}>
+    <div style={{ marginTop: "5px" }}>
+      <h3 style={{ padding: "0", color: "#0F406A" }}>Lap Info</h3>
+      <DividerBar />
+
+      <div style={{ marginTop: "10px", display: "flex", flexDirection: "row" }}>
         <div style={{ float: "left", width: "50%" }}>
           <Statistic
-            style={{
-              color: "#0F406A !important",
-              fontWeight: 600,
-              opacity: 100
-            }}
             valueStyle={{ color: "#0F406A" }}
             title="Current Lap"
             value={"1:00:00"}
@@ -25,11 +20,6 @@ const lapInfo = () => {
         </div>
         <div style={{ float: "left", width: "50%" }}>
           <Statistic
-            style={{
-              color: "#0F406A !important",
-              fontWeight: 600,
-              opacity: 100
-            }}
             valueStyle={{ color: "#0F406A" }}
             title="Best Lap"
             value={"1:03:00"}
@@ -38,14 +28,9 @@ const lapInfo = () => {
         </div>
       </div>
 
-      <div>
+      <div style={{ marginTop: "10px", display: "flex", flexDirection: "row" }}>
         <div style={{ float: "left", width: "50%" }}>
           <Statistic
-            style={{
-              color: "#0F406A !important",
-              fontWeight: 600,
-              opacity: 100
-            }}
             valueStyle={{ color: "#0F406A" }}
             title="Top Lap Speed"
             value={"100"}
@@ -56,11 +41,6 @@ const lapInfo = () => {
 
         <div style={{ float: "left", width: "50%" }}>
           <Statistic
-            style={{
-              color: "#0F406A !important",
-              fontWeight: 600,
-              opacity: 100
-            }}
             valueStyle={{ color: "#0F406A" }}
             title="Top Race Speed"
             value={"200"}
@@ -70,16 +50,23 @@ const lapInfo = () => {
         </div>
       </div>
 
-      <b style={{ margin: "0", padding: "0", color: "#0F406A" }}>Total Laps</b>
-      <br />
-      <Progress
-        type="circle"
-        percent={75}
-        format={percent => `4/10`}
-        strokeColor="#0F406A"
-        strokeWidth={12}
-        style={{ marginTop: "5px" }}
-      />
+      <div style={{ marginTop: "10px" }}>
+        <p
+          style={{
+            padding: "0",
+            color: "#908d8c"
+          }}
+        >
+          Total Laps
+        </p>
+        <Progress
+          type="circle"
+          percent={70}
+          format={percent => `7/10`}
+          strokeColor="#0F406A"
+          strokeWidth={12}
+        />
+      </div>
     </div>
   );
 };

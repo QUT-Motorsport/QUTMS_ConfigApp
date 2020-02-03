@@ -3,8 +3,15 @@ import { Progress } from "antd";
 
 const pedalPositions = () => {
   return (
-    <div>
-      <b style={{ color: "#0F406A" }}>Pedal Positions</b>
+    <div style={{ marginTop: "10px" }}>
+      <p
+        style={{
+          padding: "0",
+          color: "#908d8c"
+        }}
+      >
+        Pedal Positions
+      </p>
       <Progress
         percent={50}
         showInfo={true}
