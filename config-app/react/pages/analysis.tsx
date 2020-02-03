@@ -1,31 +1,45 @@
+import {
+  Menu,
+  Icon,
+  Button,
+  Row,
+  Col,
+  Avatar,
+  Modal,
+  Select,
+  Breadcrumb
+} from "antd";
+import { Component } from "react";
 import ModalAdd from "../components/Layout/Modal_Add_Group";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
-import dynamic from "next/dynamic";
+import Content from "../components/Layout/Content";
 import "../css/home.css";
-import { useQmsData } from "../ts/qmsData";
-import { Spin } from "antd";
+import Link from "next/link";
 
 const WorkSheet = dynamic(() => import("../components/WorkSheet"), {
   ssr: false
 });
 
-export default ({ data = useQmsData("Sample") }) =>
-  data ? (
-    <div className="flex-container-menu">
-      <AnalysisMenu data={data} />
-      <div className="flex-container-analysis">
-        <SubHeader />
-        <WorkSheet
-          data={data}
-          charts={[
-            { channel_idxs: [40, 41, 42] },
-            { channel_idxs: [36, 37, 38] }
-          ]}
-        />
-        <ModalAdd />
-      </div>
-    </div>
-  ) : (
-    <Spin />
-  );
+export default class App extends Component {
+  render() {
+    return (
+      <>
+        <style jsx>{`
+          .something {
+            position: relative;
+            left: 200;
+          }
+        `}</style>
+        <div className="flex-container-menu">
+          <AnalysisMenu />
+          <div className="flex-container-analysis">
+            <SubHeader />
+            <Content />
+            <ModalAdd />
+          </div>
+        </div>
+      </>
+    );
+  }
+}
