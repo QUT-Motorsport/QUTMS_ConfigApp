@@ -21,12 +21,14 @@ class AnalysisMenu extends Component {
     updateWorkbook.push(group);
     this.setState({ workbook: updateWorkbook });
   };
-
+  /*
   addWorksheet = (name: string, groupName: number) => {
-    let workbook = this.state.workbook;
-    let group = { name_book: { groupName }, worksheets: [] };
-    workbook[groupName].worksheets.push(group);
+    let updateWorkbook = this.state.workbook;
+    let group = { name_book: { groupName }, worksheets: [name_sheet: {name}] };
+    updateWorkbook.push(group);
+    this.setState({workbook: updateWorkbook});
   };
+  */
 
   toggleCollapsed = () => {
     this.setState({
