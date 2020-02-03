@@ -2,7 +2,6 @@ from sanic import Sanic
 from sanic.response import json
 from sanic_cors import CORS
 import os
-from calc import calc
 from dotenv import load_dotenv
 from pathlib import Path
 import sys
