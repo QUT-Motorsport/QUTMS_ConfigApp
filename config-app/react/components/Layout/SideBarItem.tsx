@@ -2,54 +2,35 @@ import React from "react";
 import Link from "next/link";
 import { Layout, Icon, Menu } from "antd";
 
-const SideBar = ({
-  link,
-  iconType,
-  ...sideBarProps
-}: {
-  link: string;
-  iconType: string;
-  sideBarProps: any;
-}) => {
+const SideBar: React.FC<any> = props => {
   return (
-    <Link href={link}>
+    <Link href={props.link}>
       <a className="SideBarItem">
-        <Menu.Item
-          key={link}
-          style={{
-            margin: "0px",
-            padding: "5px 0px",
-            height: "auto",
-            lineHeight: "normal"
-          }}
-          {...sideBarProps}
-        >
+        <Menu.Item key={props.link}>
           <Icon
-            type={iconType}
+            type={props.iconType}
             style={{
               width: "100%",
-              padding: "0px",
-              fontSize: "24px",
-              margin: "10px 0px"
+              padding: "10px 0px",
+              fontSize: "24px"
             }}
           />
           <p
             style={{
               width: "100%",
               textAlign: "center",
-              padding: "0px 0px",
-              margin: "0px"
+              padding: "5px 0px"
             }}
           >
-            {sideBarProps.name}
+            {props.name}
           </p>
         </Menu.Item>
         <style jsx>{`
           .SideBarItem {
             color: #0f406a;
-            height: 24px;
-            width: 100%;
-            margin: 15px 0px;
+          }
+          .SideBarItem:hover {
+            color: blue;
           }
         `}</style>
       </a>
