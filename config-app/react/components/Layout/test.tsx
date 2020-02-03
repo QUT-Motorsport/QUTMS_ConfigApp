@@ -17,7 +17,7 @@ export default ({
 }: {
   data: QmsData;
   _collapsedState?: StateHook<boolean>;
-  _workbooksState?: StateHook<Workbook[]>;
+  _workbooksState: StateHook<Workbook[]>;
 }) => (
   <div className="something" style={{ height: "1000px" }}>
     <Menu

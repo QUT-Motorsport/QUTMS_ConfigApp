@@ -1,4 +1,4 @@
-import ModalAdd from "../components/Layout/Modal_Add_Group";
+import ModalAdd from "../components/Layout/ModalAddGroup";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
 import dynamic from "next/dynamic";
