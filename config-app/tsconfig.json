@@ -4,7 +4,12 @@
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "preserve",
-    "lib": ["DOM", "DOM.Iterable", "EsNext", "ScriptHost"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "EsNext",
+      "ScriptHost"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -13,8 +18,24 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    // "baseUrl": "react",
+    "paths": {
+      "~/*": [
+        "react/*"
+      ]
+    }
   },
-  "include": ["react/next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "react/next.config.js", "app", "dist"]
+  "include": [
+    "react/next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.less"
+  ],
+  "exclude": [
+    "node_modules",
+    "react/next.config.js",
+    "app",
+    "dist"
+  ]
 }
