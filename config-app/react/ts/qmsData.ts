@@ -42,40 +42,49 @@ export const useQmsData = (filename: string): QmsData | null => {
 
 export const useChannelGroup = (
   { filename, channels }: QmsData,
-  channel_idxs: number[]
+  channelIdxs: number[]
 ): ChannelGroup | null => {
   const [channelGroup, setChannelGroup] = useState<ChannelGroup | null>(null);
 
   useEffect(() => {
-    Promise.all(
-      channel_idxs.map(async idx => {
-        if (channels[idx].data === undefined) {
-          channels[idx].data = await get(`qms/${filename}/${idx}`);
-        }
-      })
-    ).then(() => {
-      const groupChannels = channel_idxs.map(idx => channels[idx]);
-      const maxFreq = Math.max(...groupChannels.map(({ freq }) => freq));
-      const maxLen = Math.max(...groupChannels.map(({ data }) => data!.length));
-      const x = [...Array(maxLen).keys()].map(idx => idx / maxFreq);
+    if (channelIdxs.length > 0) {
+      Promise.all(
+        channelIdxs.map(async idx => {
+          if (channels[idx].data === undefined) {
+            channels[idx].data = await get(`qms/${filename}/${idx}`);
+          }
+        })
+      ).then(() => {
+        const groupChannels = channelIdxs.map(idx => channels[idx]);
+        const maxFreq = Math.max(...groupChannels.map(({ freq }) => freq));
+        const maxLen = Math.max(
+          ...groupChannels.map(({ data }) => data!.length)
+        );
+        const x = [...Array(maxLen).keys()].map(idx => idx / maxFreq);
 
-      setChannelGroup({
-        x,
-        channels: groupChannels.map(channel => ({
-          channel,
-          // the interpolation function used can be swapped out if need be. Right now use 'step',
-          // which uses the last REAL recorded value at each timestep
-          y: interpolate.step(
-            x,
-            [...Array(channel.data!.length).keys()].map(
-              idx => idx / channel.freq
-            ),
-            channel.data!
-          )
-        }))
+        setChannelGroup({
+          x,
+          channels: groupChannels.map(channel => ({
+            channel,
+            // the interpolation function used can be swapped out if need be. Right now use 'step',
+            // which uses the last REAL recorded value at each timestep
+            y: interpolate.step(
+              x,
+              [...Array(channel.data!.length).keys()].map(
+                idx => idx / channel.freq
+              ),
+              channel.data!
+            )
+          }))
+        });
       });
-    });
-  }, [channel_idxs]);
+    } else {
+      setChannelGroup({
+        x: [],
+        channels: []
+      });
+    }
+  }, [channelIdxs]);
 
   return channelGroup;
 };
