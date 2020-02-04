@@ -1,79 +1,23 @@
 import dynamic from "next/dynamic";
 import { useState, ComponentProps } from "react";
-import { Spin, Select, Button, Modal } from "antd";
+import { Spin, Select, Button, Modal, Form } from "antd";
+import { TwitterPicker } from "react-color";
 
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
 
 import { ChartSpec, ChartTypeEnum, Range } from "../ts/chartTypes";
 import { StateHook } from "../ts/hooks";
-import { useQmsData } from "../ts/qmsData";
+import { useQmsData, QmsData } from "../ts/qmsData";
 
 const Chart = dynamic(() => import("../components/Chart"), {
   ssr: false,
   loading: () => <Spin />
 });
 
-const { Option } = Select;
-
-// needs to be a separate subcomponent for styled-jsx because antd does funky stuff with modals
-const AddChartForm = ({
-  chartSpecState: [chartSpec, setChartSpec] = useState<ChartSpec>({
-    type: "Line",
-    channelIdxs: []
-  })
-}: {
-  chartSpecState: StateHook<ChartSpec>;
-}) => (
-  <div className="root">
-    <style jsx>{`
-      .root :global(.chart-type-select) {
-        width: 120px;
-        margin-left: 15px;
-      }
-
-      .form-control {
-        margin-bottom: 5px;
-      }
-    `}</style>
-    <div className="form-control">
-      Display Type:
-      <Select
-        className="chart-type-select"
-        value={chartSpec.type}
-        onChange={(type: ChartSpec["type"]) =>
-          setChartSpec({ ...chartSpec, type })
-        }
-      >
-        {ChartTypeEnum.alternatives.map(({ value: chartType }, idx) => (
-          <Option key={idx} value={chartType}>
-            {chartType}
-          </Option>
-        ))}
-      </Select>
-    </div>
-    <div>
-      Display Type:
-      <Select
-        className="chart-type-select"
-        value={chartSpec.type}
-        onChange={(type: ChartSpec["type"]) =>
-          setChartSpec({ ...chartSpec, type })
-        }
-      >
-        {ChartTypeEnum.alternatives.map(({ value: chartType }, idx) => (
-          <Option key={idx} value={chartType}>
-            {chartType}
-          </Option>
-        ))}
-      </Select>
-    </div>
-    <div></div>
-  </div>
-);
-
 const AddChartModal = ({
   onAddChart,
+  data,
   _visibleState: [visible, setVisible] = useState<boolean>(false),
   _chartSpecState: [chartSpec, setChartSpec] = useState<ChartSpec>({
     type: "Line",
@@ -81,6 +25,7 @@ const AddChartModal = ({
   })
 }: {
   onAddChart: (type: ChartSpec) => void;
+  data: QmsData;
   _visibleState?: StateHook<boolean>;
   _chartSpecState?: StateHook<ChartSpec>;
 }) => {
@@ -105,21 +50,50 @@ const AddChartModal = ({
       <Modal
         title="Add Chart"
         visible={visible}
+        width={800}
         onOk={onSubmit} //use this to handle add component
-        style={{ top: 300 }}
+        okButtonProps={{ disabled: !isValid }}
         onCancel={() => setVisible(false)}
-        footer={[
-          <Button
-            key="submit"
-            type="primary"
-            onClick={onSubmit}
-            disabled={!isValid}
-          >
-            Create Chart
-          </Button>
-        ]}
       >
-        <AddChartForm chartSpecState={[chartSpec, setChartSpec]} />
+        <Form labelCol={{ xs: { span: 6 } }}>
+          <Form.Item
+            label="Chart Type"
+            wrapperCol={{ xs: { span: 18 }, sm: { span: 6 } }}
+          >
+            <Select
+              value={chartSpec.type}
+              onChange={(type: ChartSpec["type"]) =>
+                setChartSpec({ ...chartSpec, type })
+              }
+            >
+              {ChartTypeEnum.alternatives.map(({ value: chartType }, idx) => (
+                <Select.Option key={idx} value={chartType}>
+                  {chartType}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Channels"
+            wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
+          >
+            <Select
+              mode="multiple"
+              optionFilterProp="children"
+              value={chartSpec.channelIdxs}
+              onChange={(channelIdxs: ChartSpec["channelIdxs"]) =>
+                setChartSpec({ ...chartSpec, channelIdxs })
+              }
+            >
+              {data.channels.map(({ name, freq, unit }, idx) => (
+                <Select.Option key={idx} value={idx} label={name} title={name}>
+                  {`${name} ${unit ? `(${unit})` : ""} [${freq} hz]`}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
@@ -178,16 +152,7 @@ const Timeline = ({
 export default ({
   data = useQmsData("Sample"),
   _domainState: domainState = useState<Range>(),
-  _chartsState: [charts, setCharts] = useState<ChartSpec[]>([
-    {
-      type: "Line",
-      channelIdxs: [36, 37, 38]
-    },
-    {
-      type: "Line",
-      channelIdxs: [39, 40, 41]
-    }
-  ])
+  _chartsState: [charts, setCharts] = useState<ChartSpec[]>([])
 }) =>
   data ? (
     <div className="flex-container-menu">
@@ -204,7 +169,10 @@ export default ({
             {...chartSpec}
           />
         ))}
-        <AddChartModal onAddChart={chart => setCharts([...charts, chart])} />
+        <AddChartModal
+          data={data}
+          onAddChart={chart => setCharts([...charts, chart])}
+        />
       </div>
     </div>
   ) : (
