@@ -3,7 +3,7 @@ import { Divider } from "antd";
 
 const DriverInfo = () => {
   return (
-    <div style={{ margin: "20px 0", padding: "0", color: "#0F406A" }}>
+    <div style={{ margin: "10px 0", padding: "0", color: "#0F406A" }}>
       <div
         style={{
           height: "50px",
@@ -17,7 +17,7 @@ const DriverInfo = () => {
           float: "left"
         }}
       >
-        42
+        46
       </div>
       <div
         style={{

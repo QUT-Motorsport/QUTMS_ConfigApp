@@ -13,36 +13,37 @@ export default <Page extends ComponentType<any>>({
 }: {
   Component: Page;
   pageProps: ComponentProps<Page>;
-}) => (
-  <Layout
-    id="whole"
-    style={{
-      width: "100%",
-      height: "100vh",
-      overflow: "hidden"
-    }}
-  >
-    <Header />
+}) =>
+  typeof window !== "undefined" &&
+  (window.location.href.endsWith("/") ||
+    window.location.href.endsWith("/register")) ? (
+    <Component {...pageProps} />
+  ) : (
     <Layout
+      id="whole"
       style={{
         width: "100%",
-        height: "100vh",
-        overflow: "hidden"
+        height: "100vh"
       }}
     >
-      <SideBar />
+      <Header />
       <Layout
         style={{
           background: "#fff",
-          width: "100%",
-          height: "100vh",
-          overflow: "hidden"
+          width: "100%"
         }}
       >
-        <Content>
-          <Component {...pageProps} />
-        </Content>
+        <SideBar />
+        <Layout
+          style={{
+            background: "#fff",
+            width: "100%"
+          }}
+        >
+          <Content>
+            <Component {...pageProps} />
+          </Content>
+        </Layout>
       </Layout>
     </Layout>
-  </Layout>
-);
+  );

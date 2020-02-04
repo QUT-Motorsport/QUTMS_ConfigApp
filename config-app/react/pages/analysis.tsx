@@ -1,6 +1,3 @@
-import { Component } from "react";
-import Content from "../components/Layout/Content";
-import Link from "next/link";
 import ModalAdd from "../components/Layout/ModalAddGroup";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";

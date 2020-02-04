@@ -1,7 +1,17 @@
 import React, { Component } from "react";
 import { Table, Divider, Tag } from "antd";
+import DividerBar from "../DividerBar";
 
 class RawTelemetry extends Component {
+  state = {
+    // workbook: [
+    //   {
+    //     name: "Group1",
+    //     worksheets: [{ name: "Driver" }]
+    //   }
+    // ]
+  };
+
   render() {
     const columns = [
       {
@@ -42,18 +52,23 @@ class RawTelemetry extends Component {
       }
     ];
     return (
-      <div>
-        <h3 style={{ marginTop: "40px", padding: "0", color: "#0F406A" }}>
+      <div className="telemetry">
+        <h3 style={{ marginTop: "10px", padding: "0", color: "#0F406A" }}>
           Raw Telemetry
         </h3>
-        <Divider style={{ color: "#0F406A", margin: "0px 0" }} />
+        <DividerBar />
         <Table
           columns={columns}
           dataSource={data}
           size="small"
           pagination={false}
-          style={{ marginTop: "20px" }}
+          style={{ marginTop: "10px" }}
         />
+        {/* <style jsx>{`
+          .telemetry :global(th) {
+            background-color: #000 !important;
+          }
+        `}</style> */}
       </div>
     );
   }
