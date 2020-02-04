@@ -2,9 +2,9 @@ import ModalAdd from "../components/Layout/ModalAddGroup";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
 import dynamic from "next/dynamic";
+import "../css/home.css";
 import { useQmsData } from "../ts/qmsData";
 import { Spin } from "antd";
-import "../styles/home.css";
 
 const WorkSheet = dynamic(() => import("../components/WorkSheet"), {
   ssr: false
@@ -27,5 +27,5 @@ export default ({ data = useQmsData("Sample") }) =>
       </div>
     </div>
   ) : (
-      <Spin />
-    );
+    <Spin />
+  );

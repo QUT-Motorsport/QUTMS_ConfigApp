@@ -30,7 +30,7 @@ NOTE: On windows you will need to [install anaconda](https://www.anaconda.com/do
 # start with the obvious step you always need to do with node projects
 npm install
 
-# Depending on the packages you install, with Electron projects you may need to do 
+# Depending on the packages you install, with Electron projects you may need to do
 # an npm rebuild to rebuild any included binaries for the current OS. It's probably
 # not needed here but I do it out of habit because its fast and the issues can be
 # a pain to track down if they come up and you dont realize a rebuild is needed

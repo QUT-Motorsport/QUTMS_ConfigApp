@@ -59,6 +59,8 @@ export const useChannelGroup = (
       const maxLen = Math.max(...groupChannels.map(({ data }) => data!.length));
       const x = [...Array(maxLen).keys()].map(idx => idx / maxFreq);
 
+      console.log("doing interpolation");
+
       setChannelGroup({
         x,
         channels: groupChannels.map(channel => ({

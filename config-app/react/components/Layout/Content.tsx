@@ -1,6 +1,6 @@
 import React, { Component } from "react";
+import "../../css/home.css";
 import { Row, Col, Modal, Select } from "antd";
-import "../../styles/home.css";
 
 class Content extends Component {
   render() {

@@ -4,37 +4,9 @@
       "next/babel",
       // Fixes a bug in nextjs https://github.com/zeit/next.js/issues/8973
       {
-        "preset-env": {
-          "targets": {
-            "node": true
-          }
-        }
+        "preset-env": { "targets": { "node": true } }
       }
     ]
   ],
-  "plugins": [
-    [
-      "import",
-      {
-        "libraryName": "antd",
-        "style": "css" // change to true during production - it does webpack css bundling and optimization
-      }
-    ],
-    // allows referncing filepaths from react root ie components at ~/components/
-    [
-      "module-resolver",
-      {
-        "root": [
-          "."
-        ],
-        "alias": {
-          "~": "."
-        },
-        "extensions": [
-          ".ts",
-          ".tsx"
-        ]
-      }
-    ]
-  ]
+  "plugins": []
 }

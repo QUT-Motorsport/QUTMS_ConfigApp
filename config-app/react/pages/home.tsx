@@ -1,6 +1,7 @@
 import Head from "next/head";
+import "../css/home.css";
 import HomeMenu from "../components/Layout/HomeMenu";
-import "../styles/home.css";
+import Link from "next/link";
 
 export default () => (
   <>
