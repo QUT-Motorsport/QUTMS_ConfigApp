@@ -58,11 +58,10 @@ spawnApi();
 module.exports = withLess(
   withCss(
     withTM({
-      // required for
+      // required for jupyter? I think
       // cssLoaderOptions: {
       //   url: false
       // },
-      // cssModules: true,
 
       lessLoaderOptions: {
         javascriptEnabled: true,
