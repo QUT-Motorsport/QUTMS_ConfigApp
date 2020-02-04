@@ -2,9 +2,9 @@ import Plot from "react-plotly.js";
 import { useState } from "react";
 import { Spin } from "antd";
 
-import { ChartSpec, Range } from "../ts/chartTypes";
-import { StateHook } from "../ts/hooks";
-import { QmsData, ChannelGroup, useChannelGroup } from "../ts/qmsData";
+import { ChartSpec, Range } from "../../ts/chartTypes";
+import { StateHook } from "../../ts/hooks";
+import { QmsData, ChannelGroup, useChannelGroup } from "../../ts/qmsData";
 
 export default ({
   channelIdxs,

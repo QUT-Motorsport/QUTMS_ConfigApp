@@ -1,28 +1,67 @@
+import { Button, Form, Modal, Select, Spin } from "antd";
 import dynamic from "next/dynamic";
-import { useState, ComponentProps } from "react";
-import { Spin, Select, Button, Modal, Form } from "antd";
-import { TwitterPicker } from "react-color";
-
+import { ComponentProps, useState } from "react";
+import { Static } from  
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
-
-import { ChartSpec, ChartTypeEnum, Range } from "../ts/chartTypes";
+import { ChartSpec, ChartSpecRT, Range } from "../ts/chartTypes";
 import { StateHook } from "../ts/hooks";
-import { useQmsData, QmsData } from "../ts/qmsData";
+import { QmsData, useQmsData } from "../ts/qmsData";
 
-const Chart = dynamic(() => import("../components/Chart"), {
+const Chart = dynamic(() => import("../components/Charts/Line"), {
   ssr: false,
   loading: () => <Spin />
 });
+
+const DEFAULT_CHART_SPEC: ChartSpec = {
+  type: "Line",
+  xa: []
+};
+
+const ChartEditor = (data: QmsData, chart: ChartSpec) =>
+  ChartSpecRT.match(
+    Unimplemented("TrackMapChartEditor"),
+    (() => {
+      const [XAxisRTs, YAxisRTs] = ChartSpecRT.alternatives[1].intersectees;
+      return XAxisRTs.match(
+        Unimplemented("LineChartEditor"),
+        Unimplemented("ScatterChartEditor"),
+        Unimplemented("HistogramChartEditor"),
+      )
+    })()
+  )(chart);
+
+const Unimplemented = (component: string) => () => <div style={{ color: "red"}}>Sorry! {component} hasn't been implemented yet!</div>
+
+const LineChartEditor = ({ channelIdxs }: ChartSpec) => (
+  <Form.Item
+    label="Channels"
+    wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
+  >
+    <Select
+      mode="multiple"
+      optionFilterProp="children"
+      value={channelIdxs}
+      onChange={(channelIdxs: ChartSpec["channelIdxs"]) =>
+        setChartSpec({ ...chartSpec, channelIdxs })
+      }
+    >
+      {data.channels.map(({ name, freq, unit }, idx) => (
+        <Select.Option key={idx} value={idx} label={name} title={name}>
+          {`${name} ${unit ? `(${unit})` : ""} [${freq} hz]`}
+        </Select.Option>
+      ))}
+    </Select>
+  </Form.Item>
+);
 
 const AddChartModal = ({
   onAddChart,
   data,
   _visibleState: [visible, setVisible] = useState<boolean>(false),
-  _chartSpecState: [chartSpec, setChartSpec] = useState<ChartSpec>({
-    type: "Line",
-    channelIdxs: []
-  })
+  _chartSpecState: [chartSpec, setChartSpec] = useState<ChartSpec>(
+    DEFAULT_CHART_SPEC
+  )
 }: {
   onAddChart: (type: ChartSpec) => void;
   data: QmsData;
@@ -30,7 +69,10 @@ const AddChartModal = ({
   _chartSpecState?: StateHook<ChartSpec>;
 }) => {
   const isValid = chartSpec.channelIdxs.length > 0;
-  const onSubmit = () => (isValid ? onAddChart(chartSpec) : null);
+  const closeModal = () => {
+    setChartSpec(DEFAULT_CHART_SPEC);
+    setVisible(false);
+  };
 
   return (
     <div className="root">
@@ -51,9 +93,14 @@ const AddChartModal = ({
         title="Add Chart"
         visible={visible}
         width={800}
-        onOk={onSubmit} //use this to handle add component
+        onOk={() => {
+          if (isValid) {
+            onAddChart(chartSpec);
+            closeModal();
+          }
+        }} //use this to handle add component
         okButtonProps={{ disabled: !isValid }}
-        onCancel={() => setVisible(false)}
+        onCancel={closeModal}
       >
         <Form labelCol={{ xs: { span: 6 } }}>
           <Form.Item
@@ -66,34 +113,24 @@ const AddChartModal = ({
                 setChartSpec({ ...chartSpec, type })
               }
             >
-              {ChartTypeEnum.alternatives.map(({ value: chartType }, idx) => (
-                <Select.Option key={idx} value={chartType}>
-                  {chartType}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Channels"
-            wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
-          >
-            <Select
-              mode="multiple"
-              optionFilterProp="children"
-              value={chartSpec.channelIdxs}
-              onChange={(channelIdxs: ChartSpec["channelIdxs"]) =>
-                setChartSpec({ ...chartSpec, channelIdxs })
-              }
-            >
-              {data.channels.map(({ name, freq, unit }, idx) => (
-                <Select.Option key={idx} value={idx} label={name} title={name}>
-                  {`${name} ${unit ? `(${unit})` : ""} [${freq} hz]`}
-                </Select.Option>
-              ))}
+              {ChartSpecRT.alternatives.map(
+                (
+                  {
+                    fields: {
+                      type: { value: chartType }
+                    }
+                  }: { fields: { type: { value: ChartSpec["type"] } } },
+                  idx: number
+                ) => (
+                  <Select.Option key={idx} value={chartType}>
+                    {chartType}
+                  </Select.Option>
+                )
+              )}
             </Select>
           </Form.Item>
         </Form>
+        <Chart data={data} {...chartSpec} />
       </Modal>
     </div>
   );
@@ -161,6 +198,7 @@ export default ({
         <SubHeader />
 
         <Timeline data={data} domainState={domainState} />
+
         {charts.map((chartSpec, idx) => (
           <Chart
             key={idx}
