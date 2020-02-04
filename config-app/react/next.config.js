@@ -5,8 +5,6 @@ const withTM = require("next-transpile-modules")([
   "@jupyterlab",
   "@jupyter-widgets"
 ]);
-const lessToJS = require("less-vars-to-js");
-const fs = require("fs");
 const dotenv = require("dotenv");
 const { spawn } = require("child_process");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -58,20 +56,16 @@ spawnApi();
 module.exports = withLess(
   withCss(
     withTM({
-      // required for
+      // required for jupyter? I think
       // cssLoaderOptions: {
       //   url: false
       // },
-      // cssModules: true,
 
       lessLoaderOptions: {
         javascriptEnabled: true,
-        modifyVars: lessToJS(
-          fs.readFileSync(
-            path.resolve(__dirname, "./styles/antd-theme.less"),
-            "utf8"
-          )
-        )
+        modifyVars: {
+          // "primary-color": "red"
+        }
       },
 
       env: {

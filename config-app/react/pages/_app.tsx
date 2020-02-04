@@ -29,8 +29,17 @@ export default <Page extends ComponentType<any>>({
       <Header />
       <Layout>
         <SideBar />
-        <Layout style={{ backgroundColor: "#fff" }}>
-          <Content>
+        <Layout
+          style={{
+            background: "#fff",
+            width: "100%"
+          }}
+        >
+          <Content
+            style={{
+              overflow: "hidden"
+            }}
+          >
             <Component {...pageProps} />
           </Content>
         </Layout>

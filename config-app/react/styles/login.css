@@ -1,0 +1,31 @@
+.login-background {
+  width: 100vw;
+  height: 100vh;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-y: center;
+}
+
+.primary-colour {
+  background-color: #0f406a;
+  border-color: #0f406a;
+  color: white;
+}
+
+.primary-colour:hover {
+  background-color: #235c8d;
+  border-color: #235c8d;
+}
+
+.primary-colour-link {
+  color: #0f406a;
+}
+
+.primary-colour-link:hover {
+  color: #3a86c9;
+}
+
+.secondary-colour:hover {
+  border-color: #f57c31;
+  color: #f57c31;
+}
