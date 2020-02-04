@@ -29,8 +29,8 @@ const AddChartModal = ({
   _selectionState: [selection, setSelection] = useState<ChartType>("Line")
 }: {
   onAddChart: (type: ChartType) => void;
-  _visibleState: StateHook<boolean>;
-  _selectionState: StateHook<ChartType>;
+  _visibleState?: StateHook<boolean>;
+  _selectionState?: StateHook<ChartType>;
 }) => {
   const onSubmit = () => onAddChart(selection);
 
@@ -57,6 +57,7 @@ const AddChartModal = ({
           </div>
           <div>
             <Select
+              value={selection}
               onChange={setSelection}
               style={{ width: 120, marginLeft: "15px" }}
             >
@@ -92,7 +93,7 @@ export default ({ data = useQmsData("Sample") }) =>
             { channel_idxs: [36, 37, 38] }
           ]}
         />
-        <AddChartModal />
+        <AddChartModal onAddChart={chart => console.log(chart)} />
       </div>
     </div>
   ) : (

@@ -16,7 +16,7 @@ export default ({
 }: {
   data: QmsData;
   _collapsedState?: StateHook<boolean>;
-  _workbooksState: StateHook<Workbook[]>;
+  _workbooksState?: StateHook<Workbook[]>;
 }) => {
   const onCreate = (selection: string) => {
     setWorkbooks([...workbooks, { name_book: selection, worksheets: [] }]);
