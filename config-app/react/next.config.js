@@ -1,23 +1,19 @@
-const withCss = require("@zeit/next-css")
+const withCss = require("@zeit/next-css");
 const withLess = require("@zeit/next-less");
 // jupyterlab does not transpile their code - so we need to as we are excluding node_modules from transpilation in our tsconfig.json
 const withTM = require("next-transpile-modules")([
   "@jupyterlab",
   "@jupyter-widgets"
 ]);
-const lessToJS = require('less-vars-to-js');
-const fs = require('fs')
+const lessToJS = require("less-vars-to-js");
+const fs = require("fs");
 const dotenv = require("dotenv");
 const { spawn } = require("child_process");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 dotenv.config();
 
-const {
-  WEBPACK_TARGET,
-  SANIC_PORT,
-  GLOBAL_HOST,
-  JUPYTER_PORT
-} = process.env;
+const { WEBPACK_TARGET, SANIC_PORT, GLOBAL_HOST, JUPYTER_PORT } = process.env;
 
 const handleErr = (err, fatal = true) => {
   console.error(err);
@@ -59,59 +55,78 @@ spawnApi();
 // };
 // spawnJupyter();
 
-module.exports = withLess(withCss(
-  withTM({
-    // required for
-    // cssLoaderOptions: {
-    //   url: false
-    // },
-    // cssModules: true,
+module.exports = withLess(
+  withCss(
+    withTM({
+      // required for
+      // cssLoaderOptions: {
+      //   url: false
+      // },
+      // cssModules: true,
 
-    lessLoaderOptions: {
-      javascriptEnabled: true,
-      modifyVars: lessToJS(fs.readFileSync(path.resolve(__dirname, './styles/antd-theme.less'), 'utf8'))
-    },
+      lessLoaderOptions: {
+        javascriptEnabled: true,
+        modifyVars: lessToJS(
+          fs.readFileSync(
+            path.resolve(__dirname, "./styles/antd-theme.less"),
+            "utf8"
+          )
+        )
+      },
 
-    env: {
-      WEBPACK_TARGET,
-      SANIC_PORT,
-      JUPYTER_PORT,
-      GLOBAL_HOST
-    },
+      env: {
+        WEBPACK_TARGET,
+        SANIC_PORT,
+        JUPYTER_PORT,
+        GLOBAL_HOST
+      },
 
-    webpack: (config, { isServer }) => {
-      // get antd theming and module loading working
-      if (isServer) {
-        const antStyles = /antd\/.*?\/style.*?/
-        const origExternals = [...config.externals]
-        config.externals = [
-          (context, request, callback) => {
-            if (request.match(antStyles)) return callback()
-            if (typeof origExternals[0] === 'function') {
-              origExternals[0](context, request, callback)
-            } else {
-              callback()
-            }
-          },
-          ...(typeof origExternals[0] === 'function' ? [] : origExternals),
-        ]
+      webpack: (config, { isServer }) => {
+        // get antd theming and module loading working
+        if (isServer) {
+          const antStyles = /antd\/.*?\/style.*?/;
+          const origExternals = [...config.externals];
+          config.externals = [
+            (context, request, callback) => {
+              if (request.match(antStyles)) return callback();
+              if (typeof origExternals[0] === "function") {
+                origExternals[0](context, request, callback);
+              } else {
+                callback();
+              }
+            },
+            ...(typeof origExternals[0] === "function" ? [] : origExternals)
+          ];
 
-        config.module.rules.unshift({
-          test: antStyles,
-          use: 'null-loader',
-        })
+          config.module.rules.unshift({
+            test: antStyles,
+            use: "null-loader"
+          });
+        }
+
+        // ignore minicss extract warning (ambiguous css order with antd components)
+        const miniCssPluginIdx = config.plugins.findIndex(
+          plugin => plugin.constructor.name === "MiniCssExtractPlugin"
+        );
+        if (miniCssPluginIdx !== -1) {
+          config.plugins[miniCssPluginIdx] = new MiniCssExtractPlugin({
+            ...config.plugins[miniCssPluginIdx].options,
+            ignoreOrder: true
+          });
+        }
+
+        // if we're targeting electron, tell webpack
+        if (WEBPACK_TARGET) {
+          config.target = WEBPACK_TARGET;
+        }
+
+        config.module.rules.push({
+          test: /\.svg$/,
+          use: ["@svgr/webpack"]
+        });
+
+        return config;
       }
-      // if we're targeting electron, tell webpack
-      if (WEBPACK_TARGET) {
-        config.target = WEBPACK_TARGET;
-      }
-
-      config.module.rules.push({
-        test: /\.svg$/,
-        use: ["@svgr/webpack"]
-      });
-
-      return config;
-    }
-  })
-));
+    })
+  )
+);
