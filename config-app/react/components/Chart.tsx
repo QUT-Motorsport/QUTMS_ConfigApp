@@ -1,5 +1,5 @@
 import Plot from "react-plotly.js";
-import { useState, ComponentProps } from "react";
+import { useState } from "react";
 import { Spin } from "antd";
 
 import { ChartSpec, Range } from "../ts/chartTypes";
@@ -10,13 +10,13 @@ export default ({
   channelIdxs,
   data,
   showRangeSlider = false,
-  domainState: [domain, setDomain],
+  domainState: [domain, setDomain] = useState(),
   _rangeState: [range, setRange] = useState(),
   _channelGroup: channelGroup = useChannelGroup(data, channelIdxs)
 }: ChartSpec & {
   data: QmsData;
   showRangeSlider?: boolean;
-  domainState: StateHook<Range>;
+  domainState?: StateHook<Range>;
   _rangeState?: StateHook<Range>;
   _channelGroup?: ChannelGroup | null;
 }) =>
