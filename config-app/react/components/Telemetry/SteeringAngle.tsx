@@ -1,7 +1,7 @@
 import React from "react";
 import { Divider, Statistic } from "antd";
-import SteeringWheel from "../public/images/steering-wheel.svg";
-import DividerBar from "./DividerBar";
+import SteeringWheel from "../../public/images/steering-wheel.svg";
+import DividerBar from "../DividerBar";
 
 const SteeringAngle = () => {
   return (

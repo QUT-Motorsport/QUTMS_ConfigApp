@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Table, Divider, Tag } from "antd";
-import DividerBar from "./DividerBar";
+import DividerBar from "../DividerBar";
 
 class RawTelemetry extends Component {
   state = {

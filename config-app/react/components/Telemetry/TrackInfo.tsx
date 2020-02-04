@@ -2,7 +2,7 @@ import React from "react";
 import { Divider, Statistic } from "antd";
 
 import Weather from "./Weather";
-import DividerBar from "./DividerBar";
+import DividerBar from "../DividerBar";
 
 const TrackInfo = () => {
   return (
