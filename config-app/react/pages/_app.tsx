@@ -23,8 +23,7 @@ export default <Page extends ComponentType<any>>({
       id="whole"
       style={{
         width: "100%",
-        height: "100vh",
-        overflow: "hidden"
+        height: "100vh"
       }}
     >
       <Header />
@@ -38,9 +37,7 @@ export default <Page extends ComponentType<any>>({
         <Layout
           style={{
             background: "#fff",
-            width: "100%",
-            height: "100vh",
-            overflow: "hidden"
+            width: "100%"
           }}
         >
           <Content>
