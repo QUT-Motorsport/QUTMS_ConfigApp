@@ -1,21 +1,22 @@
-const withCSS = require("@zeit/next-css");
+const withCss = require("@zeit/next-css")
+const withLess = require("@zeit/next-less");
 // jupyterlab does not transpile their code - so we need to as we are excluding node_modules from transpilation in our tsconfig.json
 const withTM = require("next-transpile-modules")([
   "@jupyterlab",
   "@jupyter-widgets"
 ]);
+const lessToJS = require('less-vars-to-js');
+const fs = require('fs')
 const dotenv = require("dotenv");
 const { spawn } = require("child_process");
 const path = require("path");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 dotenv.config();
 
 const {
   WEBPACK_TARGET,
   SANIC_PORT,
   GLOBAL_HOST,
-  JUPYTER_PORT,
-  NODE_ENV
+  JUPYTER_PORT
 } = process.env;
 
 const handleErr = (err, fatal = true) => {
@@ -58,10 +59,17 @@ spawnApi();
 // };
 // spawnJupyter();
 
-module.exports = withCSS(
+module.exports = withLess(withCss(
   withTM({
-    cssLoaderOptions: {
-      url: false
+    // required for
+    // cssLoaderOptions: {
+    //   url: false
+    // },
+    // cssModules: true,
+
+    lessLoaderOptions: {
+      javascriptEnabled: true,
+      modifyVars: lessToJS(fs.readFileSync(path.resolve(__dirname, './styles/antd-theme.less'), 'utf8'))
     },
 
     env: {
@@ -71,7 +79,28 @@ module.exports = withCSS(
       GLOBAL_HOST
     },
 
-    webpack: config => {
+    webpack: (config, { isServer }) => {
+      // get antd theming and module loading working
+      if (isServer) {
+        const antStyles = /antd\/.*?\/style.*?/
+        const origExternals = [...config.externals]
+        config.externals = [
+          (context, request, callback) => {
+            if (request.match(antStyles)) return callback()
+            if (typeof origExternals[0] === 'function') {
+              origExternals[0](context, request, callback)
+            } else {
+              callback()
+            }
+          },
+          ...(typeof origExternals[0] === 'function' ? [] : origExternals),
+        ]
+
+        config.module.rules.unshift({
+          test: antStyles,
+          use: 'null-loader',
+        })
+      }
       // if we're targeting electron, tell webpack
       if (WEBPACK_TARGET) {
         config.target = WEBPACK_TARGET;
@@ -85,4 +114,4 @@ module.exports = withCSS(
       return config;
     }
   })
-);
+));

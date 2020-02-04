@@ -1,7 +1,6 @@
-import { Card, Icon, Form, Input, Checkbox, Button, Divider } from "antd";
+import { Card, Icon, Form, Input, Button } from "antd";
 import { Component } from "react";
-import { CardImgOverlay } from "reactstrap";
-import "../css/login.css";
+import "../styles/login.css";
 
 export default class App extends Component {
   render() {

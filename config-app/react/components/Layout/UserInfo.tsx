@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { Row, Col, Avatar, Button, Drawer } from "antd";
-import "../../css/home.css";
+import "../../styles/home.css";
 
 class UserInfo extends Component {
   state = { visible: false };
