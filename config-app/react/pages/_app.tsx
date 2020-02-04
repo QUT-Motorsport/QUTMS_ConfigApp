@@ -30,9 +30,8 @@ export default <Page extends ComponentType<any>>({
       <Header />
       <Layout
         style={{
-          width: "100%",
-          height: "100vh",
-          overflow: "hidden"
+          background: "#fff",
+          width: "100%"
         }}
       >
         <SideBar />
