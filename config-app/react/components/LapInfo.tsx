@@ -2,7 +2,6 @@ import React from "react";
 import { Progress } from "antd";
 import { Divider, Statistic } from "antd";
 import DividerBar from "./DividerBar";
-import Label from "./Label";
 
 const lapInfo = () => {
   return (
@@ -52,7 +51,14 @@ const lapInfo = () => {
       </div>
 
       <div style={{ marginTop: "10px" }}>
-        <Label title="Total Laps" />
+        <p
+          style={{
+            padding: "0",
+            color: "#908d8c"
+          }}
+        >
+          Total Laps
+        </p>
         <Progress
           type="circle"
           percent={70}
