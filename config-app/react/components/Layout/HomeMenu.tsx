@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { Row, Col } from "antd";
-import "../../css/home.css";
+import "../../styles/home.css";
 
 class HomeMenu extends Component {
   render() {

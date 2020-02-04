@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Select, Button, Modal, Avatar } from "antd";
 import Link from "next/link";
-import "../../css/home.css";
+import "../../styles/home.css";
 import Modal_3 from "./Modal_Settings";
 
 class SubHeader extends Component {

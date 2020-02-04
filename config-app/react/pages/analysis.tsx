@@ -6,7 +6,7 @@ import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
 import { StateHook } from "../ts/hooks";
 import { useQmsData } from "../ts/qmsData";
-import "../css/home.css";
+import "../styles/home.css";
 import { useState } from "react";
 
 const { Option } = Select;
