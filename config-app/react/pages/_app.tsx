@@ -13,39 +13,26 @@ export default <Page extends ComponentType<any>>({
   pageProps: ComponentProps<Page>;
 }) =>
   typeof window !== "undefined" &&
-    (window.location.href.endsWith("/") ||
-      window.location.href.endsWith("/register")) ? (
-      <Component {...pageProps} />
-    ) : (
+  (window.location.href.endsWith("/") ||
+    window.location.href.endsWith("/register")) ? (
+    <Component {...pageProps} />
+  ) : (
+    <Layout
+      id="whole"
+      style={{
+        width: "100%"
+      }}
+    >
+      <SideBar />
       <Layout
-        id="whole"
         style={{
-          width: "100%",
-          height: "100vh",
-          overflow: "hidden"
+          background: "#fff",
+          width: "100%"
         }}
       >
-        <Header />
-        <Layout
-          style={{
-            width: "100%",
-            height: "100vh",
-            overflow: "hidden"
-          }}
-        >
-          <SideBar />
-          <Layout
-            style={{
-              background: "#fff",
-              width: "100%",
-              height: "100vh",
-              overflow: "hidden"
-            }}
-          >
-            <Content>
-              <Component {...pageProps} />
-            </Content>
-          </Layout>
-        </Layout>
+        <Content>
+          <Component {...pageProps} />
+        </Content>
       </Layout>
-    );
+    </Layout>
+  );

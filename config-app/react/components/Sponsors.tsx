@@ -3,7 +3,9 @@ import React from "react";
 const Sponsors = () => {
   return (
     <div>
-      <h3 style={{ textAlign: "center", color: "#0F406A" }}>Our Sponsors</h3>
+      <h3 style={{ textAlign: "center", color: "#0F406A", padding: "0" }}>
+        Our Sponsors
+      </h3>
       <div
         style={{
           display: "flex",

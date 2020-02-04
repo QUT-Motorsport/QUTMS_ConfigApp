@@ -24,7 +24,7 @@ const SteeringAngle = () => {
         }}
       >
         <div style={{ marginTop: "5px", width: "40%" }}>
-          <SteeringWheel width="90%" height="100%" margin="0" padding="0" />
+          <SteeringWheel width="100px" height="100%" margin="0" padding="0" />
         </div>
         <div>
           <Statistic
