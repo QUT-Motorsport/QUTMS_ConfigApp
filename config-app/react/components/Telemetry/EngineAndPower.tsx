@@ -1,8 +1,8 @@
 import React from "react";
 import { Progress, Divider, Statistic } from "antd";
 import PedalPositions from "./PedalPosition";
-import DividerBar from "./DividerBar";
-import Label from "./Label";
+import DividerBar from "../DividerBar";
+import Label from "../Label";
 
 const EngineAndPower = () => {
   return (

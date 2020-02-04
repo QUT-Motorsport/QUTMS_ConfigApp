@@ -1,6 +1,6 @@
 import React from "react";
 import { Progress, Statistic } from "antd";
-import Label from "./Label";
+import Label from "../Label";
 
 const pedalPositions = () => {
   return (

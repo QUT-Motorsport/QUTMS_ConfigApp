@@ -1,8 +1,8 @@
 import React from "react";
 import { Progress } from "antd";
 import { Divider, Statistic } from "antd";
-import DividerBar from "./DividerBar";
-import Label from "./Label";
+import DividerBar from "../DividerBar";
+import Label from "../Label";
 
 const lapInfo = () => {
   return (
