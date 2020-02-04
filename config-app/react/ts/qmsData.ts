@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import interpolate from "everpolate";
-import { get } from "./api";
+import { get } from "./ajax";
 
 // object acts as both the file interface and a cache for channel data
 export type QmsData = {
@@ -58,8 +58,6 @@ export const useChannelGroup = (
       const maxFreq = Math.max(...groupChannels.map(({ freq }) => freq));
       const maxLen = Math.max(...groupChannels.map(({ data }) => data!.length));
       const x = [...Array(maxLen).keys()].map(idx => idx / maxFreq);
-
-      console.log("doing interpolation");
 
       setChannelGroup({
         x,
