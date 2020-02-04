@@ -19,27 +19,54 @@ export default () => (
     <Head>
       <title>Live Telemetry</title>
     </Head>
-    <div style={{ height: "100vh" }}>
-      <Row style={{ height: "80vh" }}>
-        <Col span={5} style={{ padding: "10px 20px" }}>
+    <div>
+      <Row>
+        <Col
+          lg={{ span: 5 }}
+          md={{ span: 24 }}
+          xs={{ span: 24 }}
+          style={{ padding: "10px 20px" }}
+        >
           <DriverInfo />
           <Car />
         </Col>
-        <Col span={5} style={{ padding: "10px 20px" }}>
+        <Col
+          lg={{ span: 5 }}
+          md={{ span: 12 }}
+          xs={{ span: 24 }}
+          style={{ padding: "10px 20px" }}
+        >
           <LapInfo />
           <SteeringAngle />
         </Col>
-        <Col span={7} style={{ padding: "10px 20px" }}>
+        <Col
+          lg={{ span: 7 }}
+          md={{ span: 12 }}
+          xs={{ span: 24 }}
+          style={{ padding: "10px 20px" }}
+        >
           <EngineAndPower />
           <RawTelemetry />
         </Col>
 
-        <Col span={7} style={{ padding: "10px 20px" }}>
+        <Col
+          lg={{ span: 7 }}
+          md={{ span: 24 }}
+          xs={{ span: 24 }}
+          style={{ padding: "10px 20px" }}
+        >
           <TrackInfo />
         </Col>
       </Row>
       <Row>
-        <Sponsors />
+        <Col
+          lg={{ span: 24 }}
+          md={{ span: 24 }}
+          xs={{ span: 24 }}
+          style={{ padding: "10px 20px" }}
+        >
+          <Sponsors />
+        </Col>
       </Row>
     </div>
   </>
