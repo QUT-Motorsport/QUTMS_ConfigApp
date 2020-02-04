@@ -40,7 +40,11 @@ export default <Page extends ComponentType<any>>({
             width: "100%"
           }}
         >
-          <Content>
+          <Content
+            style={{
+              overflow: "hidden"
+            }}
+          >
             <Component {...pageProps} />
           </Content>
         </Layout>
