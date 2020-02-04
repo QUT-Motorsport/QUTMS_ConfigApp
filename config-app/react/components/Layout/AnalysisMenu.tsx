@@ -19,13 +19,14 @@ export default ({
   _collapsedState?: StateHook<boolean>;
   _workbooksState?: StateHook<Workbook[]>;
 }) => (
-  <div className="something" style={{ height: "1000px" }}>
+  <div style={{ height: "100vh" }}>
     <Menu
       defaultSelectedKeys={["1"]}
       defaultOpenKeys={["driver", "suspension"]}
       mode="inline"
       theme="dark"
       inlineCollapsed={collapsed}
+      style={{ height: "100%", position: "fixed", zIndex: 100 }}
     >
       <Menu.Item key="1" onClick={() => setCollapsed(!collapsed)}>
         <Icon type="right" />

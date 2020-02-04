@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { Select, Button, Menu, Icon } from "antd";
 import ExplorerGroup from "./ExplorerGroup";
 import ExplorerItem from "./ExplorerItem";
-
-const { SubMenu } = Menu;
+import { Layout, Menu, Icon } from "antd";
+import SubMenu from "antd/lib/menu/SubMenu";
+const { Header, Content, Footer, Sider } = Layout;
 
 class Explorer extends Component {
   state = {
@@ -19,49 +19,36 @@ class Explorer extends Component {
   //functions
   render() {
     return (
-      <Menu
-        mode="inline"
-        theme="light"
-        inlineCollapsed={this.state.collapsed}
-        className="explorer"
-        style={{
-          width: this.state.collapsed ? "" : "240px",
-          height: "100vh",
-          margin: "0px",
-          padding: "0px",
-          backgroundColor: "#0F406A",
-          color: "#FFFFFF",
-          border: "none"
-        }}
-      >
-        <Menu.Item
-          key="1"
-          onClick={this.toggleCollapsed}
+      <div style={{ width: "80px" }}>
+        <Sider
           style={{
-            margin: "0px",
-            backgroundColor: "#0D395E",
-            border: "none",
-            width: "100%"
+            overflow: "auto",
+            height: "100vh",
+            left: 0,
+            backgroundColor: "#0F406A"
           }}
+          collapsible
+          collapsed={this.state.collapsed}
+          onCollapse={this.toggleCollapsed}
         >
-          <Icon type="right" />
-          <span className="workbook">Default Workbook</span>
-        </Menu.Item>
-
-        <ExplorerGroup name="Test" iconType="mail">
-          <ExplorerItem name="Testtttt" iconType="mail" {...this.props} />
-          <ExplorerItem name="Testtttt" iconType="mail" {...this.props} />
-          <ExplorerItem name="Testtttt" iconType="mail" {...this.props} />
-          <ExplorerItem name="Testtttt" iconType="mail" {...this.props} />
-        </ExplorerGroup>
-
-        <ExplorerGroup name="Test" iconType="mail">
-          <ExplorerItem name="Testtttt" iconType="mail" {...this.props} />
-          <ExplorerItem name="Testtttt" iconType="mail" {...this.props} />
-          <ExplorerItem name="Testtttt" iconType="mail" {...this.props} />
-          <ExplorerItem name="Testtttt" iconType="mail" {...this.props} />
-        </ExplorerGroup>
-      </Menu>
+          <Menu
+            theme="dark"
+            mode="inline"
+            defaultSelectedKeys={["Driver"]}
+            style={{ backgroundColor: "#0F406A" }}
+          >
+            <ExplorerGroup name="Driver" iconType="car">
+              <ExplorerItem name="Steering" iconType="mail" />
+              <ExplorerItem name="Steering" iconType="mail" />
+            </ExplorerGroup>
+            <ExplorerGroup name="Driver" iconType="car">
+              <ExplorerItem name="Steering" iconType="mail" />
+              <ExplorerItem name="Steering" iconType="mail" />
+              <ExplorerItem name="Steering" iconType="mail" />
+            </ExplorerGroup>
+          </Menu>
+        </Sider>
+      </div>
     );
   }
 }
