@@ -86,7 +86,7 @@ class Explorer extends Component {
                 bottom: "48px",
                 width: this.state.collapsed ? "80px" : "200px",
                 margin: "0",
-                marginLeft: "100px"
+                marginLeft: "80px"
               }}
             />
           </Menu>
