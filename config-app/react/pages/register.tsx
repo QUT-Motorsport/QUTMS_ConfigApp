@@ -36,6 +36,18 @@ export default class App extends Component {
                 }
                 placeholder="Email Address"
               />
+              <Input
+                prefix={
+                  <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
+                }
+                placeholder="First and Last Name"
+              />
+              <Input
+                prefix={
+                  <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
+                }
+                placeholder="Password"
+              />
             </Form.Item>
             <Form.Item>
               <Button
@@ -44,23 +56,12 @@ export default class App extends Component {
                 className="primary-colour login-form-button"
                 block
               >
-                Sign in
-              </Button>
-              <Button
-                htmlType="submit"
-                className="secondary-colour login-form-button"
-                block
-              >
-                Sign in as Guest
+                Register
               </Button>
               <Divider />
               Or
-              <a
-                className="primary-colour-link"
-                href="/register"
-                style={{ marginLeft: "5px" }}
-              >
-                register now!
+              <a href="/" style={{ marginLeft: "5px" }}>
+                login
               </a>
             </Form.Item>
           </Form>

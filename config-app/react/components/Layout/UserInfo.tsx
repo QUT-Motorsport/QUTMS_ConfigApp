@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { Row, Col, Avatar, Button, Drawer } from "antd";
+import { Row, Col, Avatar, Button, Drawer, Dropdown, Menu } from "antd";
 import "../../styles/home.css";
 
 class UserInfo extends Component {
@@ -20,24 +20,24 @@ class UserInfo extends Component {
   };
 
   render() {
+    const menu = (
+      <Menu>
+        <Menu.Item key="0">
+          <a href="#">Profile Settings</a>
+        </Menu.Item>
+        <Menu.Item key="1">
+          <a href="/">Logout</a>
+        </Menu.Item>
+      </Menu>
+    );
+
     return (
       <div>
-        <a onClick={this.showDrawer}>
-          <Avatar size="large" icon="user" />
-        </a>
-        <Drawer
-          title="User Information"
-          placement="right"
-          closable={true}
-          onClose={this.onClose}
-          visible={this.state.visible}
-          width={600}
-        >
-          <br />
-          <p>Email Address goes here</p> <br />
-          <p>Change settings</p> <br />
-          <p>Update account info</p> <br />
-        </Drawer>
+        <Dropdown overlay={menu} trigger={["click"]}>
+          <a>
+            <Avatar size="large" icon="user" />
+          </a>
+        </Dropdown>
       </div>
     );
   }
