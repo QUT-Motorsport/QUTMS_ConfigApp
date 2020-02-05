@@ -1,4 +1,5 @@
 import { Card, Icon, Form, Input, Checkbox, Button, Divider } from "antd";
+import Link from "next/link";
 import { Component } from "react";
 import "../styles/login.css";
 
@@ -38,14 +39,16 @@ export default class App extends Component {
               />
             </Form.Item>
             <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="primary-colour login-form-button"
-                block
-              >
-                Sign in
-              </Button>
+              <Link href="/home">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="primary-colour login-form-button"
+                  block
+                >
+                  Sign in
+                </Button>
+              </Link>
               <Button
                 htmlType="submit"
                 className="secondary-colour login-form-button"

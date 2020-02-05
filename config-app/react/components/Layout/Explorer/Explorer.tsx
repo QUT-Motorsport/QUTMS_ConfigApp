@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import ExplorerGroup from "./ExplorerGroup";
 import ExplorerItem from "./ExplorerItem";
-import { Layout, Menu, Icon } from "antd";
+import { Layout, Menu, Icon, Tooltip } from "antd";
 import SubMenu from "antd/lib/menu/SubMenu";
-import DividerBar from "../DividerBar";
+import DividerBar from "../../DividerBar";
 const { Header, Content, Footer, Sider } = Layout;
 
 class Explorer extends Component {
@@ -35,32 +35,26 @@ class Explorer extends Component {
           <div
             style={{
               width: "100%",
-              height: "70px",
+              height: "40px",
               padding: "10px 24px",
-              display: this.state.collapsed ? "none" : "flex",
-              flexDirection: "column"
+              display: this.state.collapsed ? "none" : ""
             }}
           >
-            <h3
-              style={{
-                color: "#FFFFFF",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }}
+            <Tooltip
+              title="Electrical Workbookssssssssssssssssssssssssssssssssssssssssss"
+              placement="right"
             >
-              Electrical Workbookssssssssssssssssssssssssssssssssssssssssss
-            </h3>
-            <span
-              style={{
-                color: "#FFFFFF",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }}
-            >
-              Import...
-            </span>
+              <h3
+                style={{
+                  color: "#FFFFFF",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}
+              >
+                Electrical Workbookssssssssssssssssssssssssssssssssssssssssss
+              </h3>
+            </Tooltip>
           </div>
 
           <Menu
@@ -78,6 +72,17 @@ class Explorer extends Component {
               <ExplorerItem name="Steering" iconType="mail" />
               <ExplorerItem name="Steering" iconType="mail" />
             </ExplorerGroup>
+            <ExplorerItem
+              name="Import"
+              iconType="import"
+              style={{
+                position: "fixed",
+                bottom: "88px",
+                width: this.state.collapsed ? "80px" : "200px",
+                margin: "0",
+                marginLeft: "80px"
+              }}
+            />
             <ExplorerItem
               name="Create New Group"
               iconType="plus"

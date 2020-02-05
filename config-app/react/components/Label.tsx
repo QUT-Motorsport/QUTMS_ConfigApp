@@ -7,7 +7,8 @@ const Label = (props: any) => {
         marginBottom: "12px",
         fontSize: "14px",
         color: "rgba(0, 0, 0, 0.45)",
-        padding: "0"
+        padding: "0",
+        fontWeight: 600
       }}
     >
       {props.title}

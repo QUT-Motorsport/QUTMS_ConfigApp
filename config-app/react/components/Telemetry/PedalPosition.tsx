@@ -9,14 +9,14 @@ const pedalPositions = () => {
       <Progress
         percent={50}
         showInfo={true}
-        strokeColor="#0F406A"
+        strokeColor="#7BE0AD"
         strokeWidth={15}
         strokeLinecap="square"
       />
       <Progress
         percent={50}
         showInfo={true}
-        strokeColor="#0F406A"
+        strokeColor="#FF5964"
         strokeWidth={15}
         strokeLinecap="square"
       />

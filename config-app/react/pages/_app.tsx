@@ -3,8 +3,7 @@ import "antd/dist/antd.css";
 import { ComponentType, ComponentProps } from "react";
 import { Layout } from "antd";
 import Header from "../components/Layout/Header";
-import SideBar from "../components/Layout/SideBar";
-import Explorer from "../components/Layout/Explorer";
+import SideBar from "../components/Layout/SideBar/SideBar";
 
 const { Content } = Layout;
 

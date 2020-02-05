@@ -27,10 +27,25 @@ const Sponsors = () => {
             height="64"
           ></img>
         </div>
+
+        <div>
+          <img
+            src="https://criticalcommunicationsfinland.fi/wp-content/uploads/2017/04/aibus-logo-grey-new.png"
+            alt="Airbus Logo"
+            height="64"
+          ></img>
+        </div>
         <div>
           <img
             src="https://i1.wp.com/produktivmedia.com/wp-content/uploads/2018/03/Toyota.png?ssl=1"
             alt="Boeing Logo"
+            height="64"
+          ></img>
+        </div>
+        <div>
+          <img
+            src="https://www.spacetelescope.org/static/archives/logos/transparent/esa_screen_grey.png"
+            alt="ESA Logo"
             height="64"
           ></img>
         </div>

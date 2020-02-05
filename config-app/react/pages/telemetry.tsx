@@ -13,7 +13,7 @@ import RawTelemetry from "../components/Telemetry/RawTelemetry";
 import DataRate from "../components/Telemetry/DataRate";
 import EngineAndPower from "../components/Telemetry/EngineAndPower";
 import DriverInfo from "../components/Telemetry/DriverInfo";
-import Explorer from "../components/Layout/Explorer";
+import Explorer from "../components/Layout/Explorer/Explorer";
 
 export default () => (
   <>
