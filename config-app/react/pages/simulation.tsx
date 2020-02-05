@@ -1,6 +1,6 @@
 import { Layout, Menu, Icon, Alert } from "antd";
 import SubMenu from "antd/lib/menu/SubMenu";
-import Explorer from "../components/Layout/Explorer";
+import Explorer from "../components/Layout/Explorer/Explorer";
 const { Header, Content, Footer, Sider } = Layout;
 
 export default (props: any) => (
