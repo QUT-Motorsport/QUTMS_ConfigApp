@@ -32,7 +32,7 @@ const SteeringAngle = () => {
             title="Current"
             value={0.5}
             precision={0}
-            style={{ marginLeft: "20px" }}
+            style={{ marginLeft: "20px", fontWeight: 600 }}
           />
         </div>
       </div>

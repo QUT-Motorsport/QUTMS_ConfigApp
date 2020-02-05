@@ -32,7 +32,13 @@ const EngineAndPower = () => {
             />
           </div>
           <div style={{ width: "50%" }}>
-            <Statistic title={"Charge"} value={100} suffix="%" />
+            <Statistic
+              title={"Charge"}
+              valueStyle={{ color: "#0F406A" }}
+              value={100}
+              suffix="%"
+              style={{ fontWeight: 600 }}
+            />
           </div>
         </div>
       </div>

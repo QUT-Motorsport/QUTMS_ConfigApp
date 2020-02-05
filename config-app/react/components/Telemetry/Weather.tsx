@@ -18,6 +18,7 @@ const Weather = () => {
           value={32}
           suffix={"C"}
           precision={0}
+          style={{ fontWeight: 600 }}
         />
       </div>
       <div>
@@ -26,6 +27,7 @@ const Weather = () => {
           title="Humidity"
           value={"20%"}
           precision={0}
+          style={{ fontWeight: 600 }}
         />
       </div>
       <div>
@@ -34,6 +36,7 @@ const Weather = () => {
           title="Sky"
           value={"Cloudy"}
           precision={0}
+          style={{ fontWeight: 600 }}
         />
       </div>
     </div>

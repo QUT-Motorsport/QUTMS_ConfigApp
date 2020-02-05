@@ -20,6 +20,7 @@ const TrackInfo = () => {
           title="Location"
           value={"Queensland Raceway"}
           precision={2}
+          style={{ fontWeight: 600 }}
         />
       </div>
 

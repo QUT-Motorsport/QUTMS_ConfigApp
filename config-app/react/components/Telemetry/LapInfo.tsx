@@ -17,6 +17,7 @@ const lapInfo = () => {
             title="Current Lap"
             value={"1:00:00"}
             precision={2}
+            style={{ fontWeight: 600 }}
           />
         </div>
         <div style={{ float: "left", width: "50%" }}>
@@ -25,6 +26,7 @@ const lapInfo = () => {
             title="Best Lap"
             value={"1:03:00"}
             precision={2}
+            style={{ fontWeight: 600 }}
           />
         </div>
       </div>
@@ -37,6 +39,7 @@ const lapInfo = () => {
             value={"100"}
             suffix={"km/h"}
             precision={0}
+            style={{ fontWeight: 600 }}
           />
         </div>
 
@@ -47,18 +50,20 @@ const lapInfo = () => {
             value={"200"}
             suffix={"km/h"}
             precision={0}
+            style={{ fontWeight: 600 }}
           />
         </div>
       </div>
 
       <div style={{ marginTop: "10px" }}>
-        <Label title="Total Laps" />
+        <Label title="Total Laps" style={{ fontWeight: 600 }} />
         <Progress
           type="circle"
           percent={70}
           format={percent => `7/10`}
           strokeColor="#0F406A"
           strokeWidth={12}
+          style={{ fontWeight: 600 }}
         />
       </div>
     </div>
