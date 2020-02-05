@@ -17,21 +17,9 @@ export type ChannelIdx = Static<typeof ChannelIdxRT>;
 
 export type Range = [number, number] | undefined;
 
-export const rangeTypes = {
-  "Colour-Scaled": {
-    type: Record({
-      nbins: Number.Or(Undefined), // if undefined, use continous-colorscale
-      colorAxis: ChannelIdxRT // typically Throttle Pos
-    }),
-    default: {
-      nbins: 10,
-      colorAxis: 
-    }
-  }
-};
 const ColorScaledBaseRT = Record({
   rangeType: Literal("Colour-Scaled"),
-  nbins: Number.Or(Undefined), // if undefined, use continous-colorscale
+  nColorBins: Number.Or(Undefined), // if undefined, use continous-colorscale
   colorAxis: ChannelIdxRT // typically Throttle Pos
 });
 export const ColorScaledRT = ColorScaledBaseRT.Or(
@@ -87,12 +75,13 @@ export type ScatterChartSpec = ScatterChartDomain &
 
 const HistogramDomainRT = Record({
   domainType: Literal("Histogram"),
-  bins: Number
+  nBins: Number
 });
 export type HistogramChartDomain = Static<typeof HistogramDomainRT>;
 export type HistogramChartSpec = HistogramChartDomain &
   (ColorScaledWithYAxis | MultiChannel);
 
+// TODO: Separate domain and range types into generic types... How to do that with runtypes???
 export const ChartSpecRT = TrackMapDomainRT.And(ColorScaledBaseRT).Or(
   Union(LineDomainRT, ScatterDomainRT, HistogramDomainRT).And(
     Union(ColorScaledRT, MultiChannelRT)

@@ -1,6 +1,12 @@
 import { QmsData } from "../../ts/qmsData";
-import { ChartSpec, ChartSpecRT } from "../../ts/chartTypes";
-import { ComponentType } from "react";
+import {
+  ChartSpec,
+  ChartSpecRT,
+  TrackMapSpec,
+  LineChartSpec,
+  ScatterChartSpec,
+  HistogramChartSpec
+} from "../../ts/chartTypes";
 
 import Histogram from "./Histogram";
 import Line from "./Line";
@@ -12,19 +18,15 @@ type ChartProps = {
   spec: ChartSpec;
 };
 
-export default (props: ChartProps) => {
-  const propped = (Component: ComponentType<ChartProps>) => (
-    _spec?: any // ignore
-  ) => <Component {...props} />;
-
+export default ({ data, spec }: ChartProps) => {
   return ChartSpecRT.match(
-    propped(TrackMap),
+    () => <TrackMap data={data} spec={spec as TrackMapSpec} />,
 
     // choose chart type based on domain
     ChartSpecRT.alternatives[1].intersectees[0].match(
-      propped(Line),
-      propped(Scatter),
-      propped(Histogram)
+      () => <Line data={data} spec={spec as LineChartSpec} />,
+      () => <Scatter data={data} spec={spec as ScatterChartSpec} />,
+      () => <Histogram data={data} spec={spec as HistogramChartSpec} />
     )
-  )(props.spec);
+  )(spec);
 };

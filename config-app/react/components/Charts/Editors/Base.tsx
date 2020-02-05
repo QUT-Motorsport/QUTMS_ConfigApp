@@ -17,6 +17,51 @@ export type EditorProps<SpecType> = {
   specState: StateHook<SpecType>;
 };
 
+const THROTTLE_POS_CH_IDX = 42;
+const GROUND_SPEED_CH_IDX = 44;
+
+const defaultBaseColorScaled = {
+  rangeType: "Colour-Scaled",
+  nColorBins: 10,
+  colorAxis: THROTTLE_POS_CH_IDX
+};
+
+const defaultRangeTypes = {
+  "Colour-Scaled": {
+    ...defaultBaseColorScaled,
+    yAxis: GROUND_SPEED_CH_IDX
+  },
+  "Multi-Channel": {
+    rangeType: "Multi-Channel",
+    yAxis: []
+  }
+};
+
+const defaultDomainTypes = {
+  "Track-Map": {
+    domainType: "Track-Map",
+    map: { inner: null, outer: null }, // TODO: populate with real data
+    segments: 100,
+    ...defaultBaseColorScaled
+  },
+  Line: {
+    domainType: "Line",
+    xAxis: "Time",
+    ...defaultRangeTypes["Multi-Channel"]
+  },
+  Scatter: {
+    domainType: "Scatter",
+    trendline: false,
+    xAxis: GROUND_SPEED_CH_IDX,
+    ...defaultRangeTypes["Colour-Scaled"]
+  },
+  Histogram: {
+    domainType: "Histogram",
+    nBins: 7,
+    ...defaultRangeTypes["Multi-Channel"]
+  }
+};
+
 export default ({ data, specState }: EditorProps<ChartSpec>) => {
   const ColorScaledHelper = () => (
     <ColorScaledEditor
@@ -47,17 +92,20 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
         <Form.Item label="Chart Type" wrapperCol={{ xs: { span: 18 } }}>
           <Radio.Group
             value={chartSpec.domainType}
-            onChange={e =>
-              setChartSpec({ ...chartSpec, domainType: e.target.value })
-            }
+            onChange={e => {
+              const domainType: keyof typeof defaultDomainTypes =
+                e.target.value;
+              setChartSpec({
+                ...chartSpec,
+                ...defaultDomainTypes[domainType]
+              } as ChartSpec);
+            }}
           >
-            {["Track-Map", "Line", "Scatter", "Histogram"].map(
-              (domainType, idx) => (
-                <Radio key={idx} value={domainType}>
-                  {domainType}
-                </Radio>
-              )
-            )}
+            {Object.keys(defaultDomainTypes).map((domainType, idx) => (
+              <Radio key={idx} value={domainType}>
+                {domainType}
+              </Radio>
+            ))}
           </Radio.Group>
         </Form.Item>
 
@@ -81,17 +129,19 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
                   <Radio.Group
                     value={chartSpec.rangeType}
                     onChange={e => {
-                      console.log(chartSpec, e.target.value);
-                      setChartSpec({ ...chartSpec, rangeType: e.target.value });
+                      const rangeType: keyof typeof defaultRangeTypes =
+                        e.target.value;
+                      setChartSpec({
+                        ...chartSpec,
+                        ...defaultRangeTypes[rangeType]
+                      } as ChartSpec);
                     }}
                   >
-                    {["Colour-Scaled", "Multi-Channel"].map(
-                      (rangeType, idx) => (
-                        <Radio key={idx} value={rangeType}>
-                          {rangeType}
-                        </Radio>
-                      )
-                    )}
+                    {Object.keys(defaultRangeTypes).map((rangeType, idx) => (
+                      <Radio key={idx} value={rangeType}>
+                        {rangeType}
+                      </Radio>
+                    ))}
                   </Radio.Group>
                 </Form.Item>
 

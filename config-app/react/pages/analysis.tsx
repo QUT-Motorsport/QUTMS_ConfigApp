@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { ComponentProps, useState } from "react";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
-import { ChartSpec, Range } from "../ts/chartTypes";
+import { ChartSpec, Range, LineChartSpec } from "../ts/chartTypes";
 import { StateHook } from "../ts/hooks";
 import { QmsData, useQmsData } from "../ts/qmsData";
 
@@ -60,13 +60,18 @@ const AddChartModal = ({
         onCancel={() => setVisible(false)}
       >
         <BaseChartEditor data={data} specState={chartSpecState} />
-        {/* <BaseChart data={data} spec={chartSpecState[0]} /> */}
+        <BaseChart data={data} spec={chartSpecState[0]} />
       </Modal>
     </div>
   );
 };
 
-const TIMELINE_IDXS = [44 /* Ground Speed Ch Idx */];
+const TIMELINE_SPEC: LineChartSpec = {
+  domainType: "Line",
+  xAxis: "Time",
+  rangeType: "Multi-Channel",
+  yAxis: [[44 /* Ground Speed Ch Idx */]]
+};
 const Timeline = ({
   data,
   domainState
@@ -108,8 +113,7 @@ const Timeline = ({
     `}</style>
     <LineChart
       data={data}
-      type={"Line"}
-      channelIdxs={TIMELINE_IDXS}
+      spec={TIMELINE_SPEC}
       domainState={domainState}
       showRangeSlider={true}
     />
