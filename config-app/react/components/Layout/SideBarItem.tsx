@@ -39,7 +39,8 @@ const SideBar = ({
               width: "100%",
               textAlign: "center",
               padding: "0px 0px",
-              margin: "0px"
+              margin: "0px",
+              fontSize: "14px"
             }}
           >
             {name}

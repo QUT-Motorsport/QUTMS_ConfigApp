@@ -7,7 +7,7 @@ const { Sider } = Layout;
 const SideBar = () => {
   return (
     <Sider
-      width={100}
+      width={80}
       style={{
         background: "#F2EFEA",
         boxShadow: "5px 2px 5px 0px rgba(0,0,0,0.25)",
