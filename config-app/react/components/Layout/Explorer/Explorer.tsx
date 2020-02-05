@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import ExplorerGroup from "./ExplorerGroup";
 import ExplorerItem from "./ExplorerItem";
-import { Layout, Menu, Icon } from "antd";
+import { Layout, Menu, Icon, Tooltip } from "antd";
 import SubMenu from "antd/lib/menu/SubMenu";
-import DividerBar from "../DividerBar";
+import DividerBar from "../../DividerBar";
 const { Header, Content, Footer, Sider } = Layout;
 
 class Explorer extends Component {
@@ -40,16 +40,21 @@ class Explorer extends Component {
               display: this.state.collapsed ? "none" : ""
             }}
           >
-            <h3
-              style={{
-                color: "#FFFFFF",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }}
+            <Tooltip
+              title="Electrical Workbookssssssssssssssssssssssssssssssssssssssssss"
+              placement="right"
             >
-              Electrical Workbookssssssssssssssssssssssssssssssssssssssssss
-            </h3>
+              <h3
+                style={{
+                  color: "#FFFFFF",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}
+              >
+                Electrical Workbookssssssssssssssssssssssssssssssssssssssssss
+              </h3>
+            </Tooltip>
           </div>
 
           <Menu

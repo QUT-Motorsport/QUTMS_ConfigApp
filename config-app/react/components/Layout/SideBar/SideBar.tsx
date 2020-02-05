@@ -20,7 +20,7 @@ const SideBar = () => {
           background: "#F2EFEA",
           textAlign: "left",
           zIndex: 1,
-          paddingTop: "10px"
+          paddingTop: "5px"
         }}
       >
         <SideBarItem link="/" name="Home" iconType="home" />
