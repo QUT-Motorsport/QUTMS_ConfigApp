@@ -46,9 +46,15 @@ class RawTelemetry extends Component {
       },
       {
         key: "3",
-        channel: "Speed",
-        reading: 32,
-        unit: "km/h"
+        channel: "Brake Temp",
+        reading: 50,
+        unit: "C"
+      },
+      {
+        key: "4",
+        channel: "vCar",
+        reading: 259.3,
+        unit: "kph"
       }
     ];
     return (
