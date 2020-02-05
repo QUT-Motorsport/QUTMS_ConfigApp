@@ -1,8 +1,9 @@
-import { Menu, Icon } from "antd";
+import { Menu, Icon, Popconfirm, message } from "antd";
 import { useState } from "react";
 import { StateHook } from "../../ts/hooks";
 import { QmsData } from "../../ts/qmsData";
 import ModalCreateGroup from "./ModalCreateGroup";
+import ModalAddSheet from "./ModalAddSheet";
 
 const { SubMenu } = Menu;
 
@@ -21,19 +22,59 @@ export default ({
     setWorkbooks([...workbooks, { name_book: selection, worksheets: [] }]);
   };
 
+  const onCreateSheet = (selection: string, groupName: string) => {
+    for (let i = 0; i < workbooks.length; i++) {
+      if (workbooks[i].name_book == groupName) {
+        workbooks[i].worksheets.push({ name_sheet: selection });
+      }
+    }
+    //trigger a refresh
+    setWorkbooks([...workbooks]);
+  };
+
+  const deleteGroup = (groupName: string) => {
+    for (var i = 0; i < workbooks.length; i++) {
+      if (workbooks[i].name_book == groupName) {
+        workbooks.splice(i, 1);
+        message.success("Group Deleted");
+      }
+    }
+    //trigger a refresh
+    setWorkbooks([...workbooks]);
+  };
+
+  const deleteSheet = (sheetName: string) => {
+    for (var i = 0; i < workbooks.length; i++) {
+      for (var x = 0; x < workbooks[i].worksheets.length; x++) {
+        if (workbooks[i].worksheets[x].name_sheet == sheetName) {
+          workbooks[i].worksheets.splice(x, 1);
+          message.success("Sheet Deleted");
+        }
+      }
+    }
+    //trigger a refresh
+    setWorkbooks([...workbooks]);
+  };
+
+  const returnGroups = () => {
+    var bookNames: string[] = [];
+    workbooks.map(names => bookNames.push(names.name_book));
+    return bookNames;
+  };
+
   return (
     <div className="something" style={{ height: "1000px" }}>
       <Menu
-        defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["driver", "suspension"]}
+        openKeys={returnGroups()}
         mode="inline"
         theme="dark"
         inlineCollapsed={collapsed}
       >
-        <Menu.Item key="1" onClick={() => setCollapsed(!collapsed)}>
+        <Menu.Item key="workbookTitle" onClick={() => setCollapsed(!collapsed)}>
           <Icon type="right" />
           <span className="workbook">Default Workbook</span>
         </Menu.Item>
+
         <Menu.Item>
           <span
             style={{
@@ -53,54 +94,50 @@ export default ({
             key={group.name_book}
             title={
               <span>
-                <Icon type="mail" />
+                <Icon type="diff" />
                 <span>{group.name_book}</span>
-                <span>
+                <Popconfirm
+                  title="Are you sure you want to delete this group?"
+                  onConfirm={() => deleteGroup(group.name_book)}
+                  okText="Yes"
+                  cancelText="No"
+                >
                   <Icon
-                    type="more"
+                    type="delete"
                     style={{ float: "right", marginTop: "14px" }}
                   ></Icon>
+                </Popconfirm>
+
+                <span>
+                  <ModalAddSheet
+                    data={data}
+                    groupName={group.name_book}
+                    onCreateSheet={onCreateSheet}
+                  />
                 </span>
               </span>
             }
           >
-            {group.worksheets.map(worksheets => (
-              <Menu.Item>
-                <Icon type="user" />
-                <span>{worksheets}</span>
+            {group.worksheets.map(worksheet => (
+              <Menu.Item key={worksheet.name_sheet}>
+                <Icon type="file" />
+                <span>{worksheet.name_sheet}</span>
+                <Popconfirm
+                  title="Are you sure you want to delete this sheet?"
+                  onConfirm={() => deleteSheet(worksheet.name_sheet)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Icon
+                    type="delete"
+                    style={{ float: "right", marginTop: "14px" }}
+                  ></Icon>
+                </Popconfirm>
               </Menu.Item>
             ))}
           </SubMenu>
         ))}
 
-        <SubMenu
-          key="driver"
-          title={
-            <span>
-              <Icon type="mail" />
-              <span>Driver</span>
-              <span>
-                <Icon
-                  type="more"
-                  style={{ float: "right", marginTop: "14px" }}
-                ></Icon>
-              </span>
-            </span>
-          }
-        >
-          <Menu.Item key="2">
-            <Icon type="user" />
-            <span>Steering</span>
-          </Menu.Item>
-          <Menu.Item key="3">
-            <Icon type="slider" />
-            <span>Braking</span>
-          </Menu.Item>
-          <Menu.Item key="4">
-            <Icon type="inbox" />
-            <span>Other</span>
-          </Menu.Item>
-        </SubMenu>
         <Menu.Item style={{ textAlign: "center" }}>
           <ModalCreateGroup data={data} onCreate={onCreate} />
         </Menu.Item>
