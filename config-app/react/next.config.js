@@ -65,6 +65,7 @@ module.exports = withLess(
         javascriptEnabled: true,
         modifyVars: {
           // "primary-color": "red"
+          "input-padding-vertical-bas": "12px"
         }
       },
 
