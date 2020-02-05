@@ -11,8 +11,8 @@ const HeaderBar = () => {
       style={{
         backgroundColor: "#FFFFFF",
         height: "60px",
-        boxShadow: "0px 1px 10px #00000066",
-        zIndex: 1,
+        boxShadow: "0px 5px 5px 0px rgba(0,0,0,0.25)",
+        zIndex: 3,
         padding: "0px 10px",
         whiteSpace: "nowrap"
       }}

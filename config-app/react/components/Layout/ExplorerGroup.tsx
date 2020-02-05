@@ -6,10 +6,12 @@ const { SubMenu } = Menu;
 const ExplorerGroup: React.FC<any> = ({
   name,
   iconType,
+  children,
   ...props
 }: {
   name: string;
   iconType: string;
+  children: React.ReactNode;
   props: any;
 }) => {
   return (
@@ -24,7 +26,7 @@ const ExplorerGroup: React.FC<any> = ({
       }
       {...props}
     >
-      {props.children}
+      {children}
     </SubMenu>
   );
 };

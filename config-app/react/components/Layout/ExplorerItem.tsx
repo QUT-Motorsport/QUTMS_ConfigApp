@@ -11,7 +11,11 @@ const ExplorerItem: React.FC<any> = ({
   props: any;
 }) => {
   return (
-    <Menu.Item style={{ margin: "0px" }} key={name} {...props}>
+    <Menu.Item
+      style={{ margin: "0px", backgroundColor: "#0F406A" }}
+      key={name}
+      {...props}
+    >
       <Icon type={iconType} />
       <span>{name}</span>
     </Menu.Item>

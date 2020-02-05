@@ -63,14 +63,6 @@ h1 {
   padding: 20px 0px 12px 0px;
 }
 
-h2 {
-  padding: 195px 0px 0px 50px;
-}
-
-h3 {
-  padding: 35px 0px 0px 0px;
-}
-
 h4 {
   padding: 35px 0px 0px 0px;
 }
@@ -101,11 +93,4 @@ p {
   color: #0f406a;
   font-size: 1.3em;
   font-weight: bold;
-}
-
-.add-component {
-  position: absolute;
-  bottom: 10px;
-  align-self: center;
-  padding-right: 150px;
 }

@@ -1,97 +1,178 @@
 import dynamic from "next/dynamic";
-import { Spin, Select, Button, Modal } from "antd";
-import { Union, Literal, Static } from "runtypes";
+import { useState, ComponentProps } from "react";
+import { Spin, Select, Button, Modal, Form } from "antd";
+import { TwitterPicker } from "react-color";
+
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
+
+import { ChartSpec, ChartTypeEnum, Range } from "../ts/chartTypes";
 import { StateHook } from "../ts/hooks";
-import { useQmsData } from "../ts/qmsData";
-import "../styles/home.css";
-import { useState } from "react";
+import { useQmsData, QmsData } from "../ts/qmsData";
 
-const { Option } = Select;
-
-const WorkSheet = dynamic(() => import("../components/WorkSheet"), {
-  ssr: false
+const Chart = dynamic(() => import("../components/Chart"), {
+  ssr: false,
+  loading: () => <Spin />
 });
-
-const ChartRunType = Union(
-  Literal("Line"),
-  Literal("Scatter"),
-  Literal("Box Plot"),
-  Literal("Histogram")
-);
-type ChartType = Static<typeof ChartRunType>;
 
 const AddChartModal = ({
   onAddChart,
+  data,
   _visibleState: [visible, setVisible] = useState<boolean>(false),
-  _selectionState: [selection, setSelection] = useState<ChartType>("Line")
+  _chartSpecState: [chartSpec, setChartSpec] = useState<ChartSpec>({
+    type: "Line",
+    channelIdxs: []
+  })
 }: {
-  onAddChart: (type: ChartType) => void;
-  _visibleState: StateHook<boolean>;
-  _selectionState: StateHook<ChartType>;
+  onAddChart: (type: ChartSpec) => void;
+  data: QmsData;
+  _visibleState?: StateHook<boolean>;
+  _chartSpecState?: StateHook<ChartSpec>;
 }) => {
-  const onSubmit = () => onAddChart(selection);
+  const isValid = chartSpec.channelIdxs.length > 0;
+  const onSubmit = () => (isValid ? onAddChart(chartSpec) : null);
 
   return (
-    <div className="add-component">
+    <div className="root">
+      <style jsx>{`
+        .root {
+          position: absolute;
+          bottom: 10px;
+          align-self: center;
+          padding-right: 150px;
+        }
+      `}</style>
+
       <Button type="primary" onClick={() => setVisible(true)}>
         + Add Chart
       </Button>
+
       <Modal
-        title="Add Component"
+        title="Add Chart"
         visible={visible}
+        width={800}
         onOk={onSubmit} //use this to handle add component
-        style={{ top: 300 }}
+        okButtonProps={{ disabled: !isValid }}
         onCancel={() => setVisible(false)}
-        footer={[
-          <Button key="submit" type="primary" onClick={onSubmit}>
-            Create Component
-          </Button>
-        ]}
       >
-        <div>
-          <div className="modal-cat" style={{ float: "left" }}>
-            Display Type:
-          </div>
-          <div>
+        <Form labelCol={{ xs: { span: 6 } }}>
+          <Form.Item
+            label="Chart Type"
+            wrapperCol={{ xs: { span: 18 }, sm: { span: 6 } }}
+          >
             <Select
-              onChange={setSelection}
-              style={{ width: 120, marginLeft: "15px" }}
+              value={chartSpec.type}
+              onChange={(type: ChartSpec["type"]) =>
+                setChartSpec({ ...chartSpec, type })
+              }
             >
-              {ChartRunType.alternatives.map(({ value: chartType }, idx) => (
-                <Option key={idx} value={chartType}>
+              {ChartTypeEnum.alternatives.map(({ value: chartType }, idx) => (
+                <Select.Option key={idx} value={chartType}>
                   {chartType}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
-          </div>
-        </div>
-        <div>
-          <div>group selection bar goes here</div>
-        </div>
-        <div>
-          <div>table goes here</div>
-        </div>
+          </Form.Item>
+
+          <Form.Item
+            label="Channels"
+            wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
+          >
+            <Select
+              mode="multiple"
+              optionFilterProp="children"
+              value={chartSpec.channelIdxs}
+              onChange={(channelIdxs: ChartSpec["channelIdxs"]) =>
+                setChartSpec({ ...chartSpec, channelIdxs })
+              }
+            >
+              {data.channels.map(({ name, freq, unit }, idx) => (
+                <Select.Option key={idx} value={idx} label={name} title={name}>
+                  {`${name} ${unit ? `(${unit})` : ""} [${freq} hz]`}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
 };
 
-export default ({ data = useQmsData("Sample") }) =>
+const TIMELINE_IDXS = [44 /* Ground Speed Ch Idx */];
+const Timeline = ({
+  data,
+  domainState
+}: Pick<ComponentProps<typeof Chart>, "data" | "domainState">) => (
+  <div className="root">
+    <style jsx>{`
+      // TODO: Enable styled-jsx-postcss-plugin to DRY this up
+
+      .root {
+        width: 100%;
+        height: 40px;
+        overflow: hidden;
+      }
+
+      .root > :global(.js-plotly-plot) {
+        width: calc(100% + 153px) !important;
+        height: 450px !important;
+      }
+
+      .root > :global(.js-plotly-plot) :global(.modebar) {
+        display: none;
+      }
+
+      .root > :global(.js-plotly-plot) :global(.cartesianlayer) {
+        display: none;
+      }
+
+      .root > :global(.js-plotly-plot) :global(.hoverlayer) {
+        display: none;
+      }
+
+      .root > :global(.js-plotly-plot) :global(.draglayer) {
+        display: none;
+      }
+
+      .root > :global(.js-plotly-plot) :global(.rangeslider-container) {
+        transform: translate(3px, 0);
+      }
+    `}</style>
+    <Chart
+      data={data}
+      type={"Line"}
+      channelIdxs={TIMELINE_IDXS}
+      domainState={domainState}
+      showRangeSlider={true}
+    />
+  </div>
+);
+
+export default ({
+  data = useQmsData("Sample"),
+  _domainState: domainState = useState<Range>(),
+  _chartsState: [charts, setCharts] = useState<ChartSpec[]>([])
+}) =>
   data ? (
     <div className="flex-container-menu">
       <AnalysisMenu data={data} />
       <div className="flex-container-analysis">
         <SubHeader />
-        <WorkSheet
+
+        <Timeline data={data} domainState={domainState} />
+        {charts.map((chartSpec, idx) => (
+          <Chart
+            key={idx}
+            data={data}
+            domainState={domainState}
+            {...chartSpec}
+          />
+        ))}
+        <AddChartModal
           data={data}
-          charts={[
-            { channel_idxs: [40, 41, 42] },
-            { channel_idxs: [36, 37, 38] }
-          ]}
+          onAddChart={chart => setCharts([...charts, chart])}
         />
-        {/* <AddChartModal /> */}
       </div>
     </div>
   ) : (

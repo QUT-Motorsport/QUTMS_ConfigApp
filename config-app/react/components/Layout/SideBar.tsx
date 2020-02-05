@@ -7,16 +7,17 @@ const { Sider } = Layout;
 const SideBar = () => {
   return (
     <Sider
-      width={100}
+      width={80}
       style={{
-        background: "#E6E6E6",
-        color: "#0F406A"
+        background: "#F2EFEA",
+        boxShadow: "5px 2px 5px 0px rgba(0,0,0,0.25)",
+        zIndex: 2
       }}
     >
       <Menu
         mode="vertical"
         style={{
-          background: "#E6E6E6",
+          background: "#F2EFEA",
           textAlign: "left",
           zIndex: 1,
           paddingTop: "10px"
