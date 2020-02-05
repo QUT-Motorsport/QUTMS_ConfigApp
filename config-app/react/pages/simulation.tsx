@@ -5,7 +5,7 @@ const { Header, Content, Footer, Sider } = Layout;
 
 export default (props: any) => (
   <>
-    {/* <Explorer /> */}
+    <Explorer />
     <Alert
       message="Warning Text Warning Text Warning TextW arning Text Warning Text Warning TextWarning Text"
       type="warning"

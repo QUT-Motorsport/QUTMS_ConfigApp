@@ -122,7 +122,7 @@ export default ({
             <SubMenu
               key={group.name_book}
               title={
-                <span>
+                <>
                   <Icon type="diff" />
                   <span>{group.name_book}</span>
                   <Popconfirm
@@ -136,14 +136,12 @@ export default ({
                       style={{ float: "right", marginTop: "14px" }}
                     ></Icon>
                   </Popconfirm>
-                  <span>
-                    <ModalAddSheet
-                      data={data}
-                      groupName={group.name_book}
-                      onCreateSheet={onCreateSheet}
-                    />
-                  </span>
-                </span>
+                  <ModalAddSheet
+                    data={data}
+                    groupName={group.name_book}
+                    onCreateSheet={onCreateSheet}
+                  />
+                </>
               }
             >
               {group.worksheets.map(worksheet => (
@@ -154,6 +152,7 @@ export default ({
                     margin: "0px",
                     display: collapsed ? "none" : ""
                   }}
+                  title={<Icon type="diff" />}
                 >
                   <span>{worksheet.name_sheet}</span>
                   <Popconfirm
@@ -171,6 +170,17 @@ export default ({
               ))}
             </SubMenu>
           ))}
+          <ExplorerItem
+            name="Import"
+            iconType="import"
+            style={{
+              position: "fixed",
+              bottom: "88px",
+              width: collapsed ? "80px" : "200px",
+              margin: "0",
+              marginLeft: "80px"
+            }}
+          />
 
           <Menu.Item
             style={{

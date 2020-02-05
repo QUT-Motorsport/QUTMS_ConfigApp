@@ -27,7 +27,7 @@ export default ({
   return (
     <>
       <Icon
-        type="more"
+        type="plus"
         onClick={() => setVisible(true)}
         style={{ float: "right", marginTop: "14px" }}
       ></Icon>
