@@ -6,6 +6,7 @@ import { TwitterPicker } from "react-color";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import Explorer from "../components/Layout/Explorer/Explorer";
 import SubHeader from "../components/Layout/SubHeader";
+import Head from "next/head";
 
 import { ChartSpec, ChartTypeEnum, Range } from "../ts/chartTypes";
 import { StateHook } from "../ts/hooks";
@@ -34,69 +35,79 @@ const AddChartModal = ({
   const onSubmit = () => (isValid ? onAddChart(chartSpec) : null);
 
   return (
-    <div className="root">
-      <style jsx>{`
-        .root {
-          position: absolute;
-          bottom: 10px;
-          align-self: center;
-          padding-right: 150px;
-        }
-      `}</style>
+    <>
+      <Head>
+        <title>QUT ConfigHub - Home</title>
+      </Head>
+      <div className="root">
+        <style jsx>{`
+          .root {
+            position: absolute;
+            bottom: 10px;
+            align-self: center;
+            padding-right: 150px;
+          }
+        `}</style>
 
-      <Button type="primary" onClick={() => setVisible(true)}>
-        + Add Chart
-      </Button>
+        <Button type="primary" onClick={() => setVisible(true)}>
+          + Add Chart
+        </Button>
 
-      <Modal
-        title="Add Chart"
-        visible={visible}
-        width={800}
-        onOk={onSubmit} //use this to handle add component
-        okButtonProps={{ disabled: !isValid }}
-        onCancel={() => setVisible(false)}
-      >
-        <Form labelCol={{ xs: { span: 6 } }}>
-          <Form.Item
-            label="Chart Type"
-            wrapperCol={{ xs: { span: 18 }, sm: { span: 6 } }}
-          >
-            <Select
-              value={chartSpec.type}
-              onChange={(type: ChartSpec["type"]) =>
-                setChartSpec({ ...chartSpec, type })
-              }
+        <Modal
+          title="Add Chart"
+          visible={visible}
+          width={800}
+          onOk={onSubmit} //use this to handle add component
+          okButtonProps={{ disabled: !isValid }}
+          onCancel={() => setVisible(false)}
+        >
+          <Form labelCol={{ xs: { span: 6 } }}>
+            <Form.Item
+              label="Chart Type"
+              wrapperCol={{ xs: { span: 18 }, sm: { span: 6 } }}
             >
-              {ChartTypeEnum.alternatives.map(({ value: chartType }, idx) => (
-                <Select.Option key={idx} value={chartType}>
-                  {chartType}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+              <Select
+                value={chartSpec.type}
+                onChange={(type: ChartSpec["type"]) =>
+                  setChartSpec({ ...chartSpec, type })
+                }
+              >
+                {ChartTypeEnum.alternatives.map(({ value: chartType }, idx) => (
+                  <Select.Option key={idx} value={chartType}>
+                    {chartType}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
 
-          <Form.Item
-            label="Channels"
-            wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
-          >
-            <Select
-              mode="multiple"
-              optionFilterProp="children"
-              value={chartSpec.channelIdxs}
-              onChange={(channelIdxs: ChartSpec["channelIdxs"]) =>
-                setChartSpec({ ...chartSpec, channelIdxs })
-              }
+            <Form.Item
+              label="Channels"
+              wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
             >
-              {data.channels.map(({ name, freq, unit }, idx) => (
-                <Select.Option key={idx} value={idx} label={name} title={name}>
-                  {`${name} ${unit ? `(${unit})` : ""} [${freq} hz]`}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+              <Select
+                mode="multiple"
+                optionFilterProp="children"
+                value={chartSpec.channelIdxs}
+                onChange={(channelIdxs: ChartSpec["channelIdxs"]) =>
+                  setChartSpec({ ...chartSpec, channelIdxs })
+                }
+              >
+                {data.channels.map(({ name, freq, unit }, idx) => (
+                  <Select.Option
+                    key={idx}
+                    value={idx}
+                    label={name}
+                    title={name}
+                  >
+                    {`${name} ${unit ? `(${unit})` : ""} [${freq} hz]`}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </div>
+    </>
   );
 };
 
@@ -156,26 +167,31 @@ export default ({
   _chartsState: [charts, setCharts] = useState<ChartSpec[]>([])
 }) =>
   data ? (
-    <div className="flex-container-menu">
-      <AnalysisMenu data={data} />
-      <div className="flex-container-analysis">
-        <SubHeader />
+    <>
+      <div className="flex-container-menu">
+        <AnalysisMenu data={data} />
+        <div className="flex-container-analysis">
+          <SubHeader />
 
-        <Timeline data={data} domainState={domainState} />
-        {charts.map((chartSpec, idx) => (
-          <Chart
-            key={idx}
+          <Timeline data={data} domainState={domainState} />
+          {charts.map((chartSpec, idx) => (
+            <Chart
+              key={idx}
+              data={data}
+              domainState={domainState}
+              {...chartSpec}
+            />
+          ))}
+          <AddChartModal
             data={data}
-            domainState={domainState}
-            {...chartSpec}
+            onAddChart={chart => setCharts([...charts, chart])}
           />
-        ))}
-        <AddChartModal
-          data={data}
-          onAddChart={chart => setCharts([...charts, chart])}
-        />
+        </div>
       </div>
-    </div>
+      <Head>
+        <title>QUT ConfigHub - Analysis</title>
+      </Head>
+    </>
   ) : (
     <Spin />
   );

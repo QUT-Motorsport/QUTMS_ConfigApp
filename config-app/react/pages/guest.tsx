@@ -18,6 +18,9 @@ import Header from "../components/Layout/Header";
 
 export default () => (
   <>
+    <Head>
+      <title>QUT ConfigHub - Guest</title>
+    </Head>
     <Header />
     <div>
       <Row>
