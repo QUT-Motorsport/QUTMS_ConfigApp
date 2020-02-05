@@ -37,9 +37,6 @@ class UserInfo extends Component {
           <p>Email Address goes here</p> <br />
           <p>Change settings</p> <br />
           <p>Update account info</p> <br />
-          <p>More stuff</p> <br />
-          <p>Some contents...</p> <br />
-          <p>not sure what should go here</p> <br />
         </Drawer>
       </div>
     );

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Select, Button, Modal, Icon, Input } from "antd";
+import { Select, Button, Modal, Icon, Input, Menu } from "antd";
 import { useState, useEffect } from "react";
 import { useQmsData, QmsData } from "../../ts/qmsData";
 import { StateHook } from "../../ts/hooks";
@@ -23,12 +23,10 @@ export default ({
   };
 
   return (
-    <div>
+    <>
       <a key="modal" onClick={() => setVisible(true)}>
         <Icon type="plus" />
-        <span style={{ textDecorationLine: "underline", color: "#fff" }}>
-          Create New Group
-        </span>
+        <span>Create New Group</span>
       </a>
       <Modal
         title="Create Group"
@@ -61,6 +59,6 @@ export default ({
           </div>
         </div>
       </Modal>
-    </div>
+    </>
   );
 };
