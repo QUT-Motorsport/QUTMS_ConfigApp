@@ -8,30 +8,31 @@ const { Option } = Select;
 
 export default ({
   data,
-  onCreate,
+  groupName,
+  onCreateSheet,
   _selectionState: [selection, setSelection] = useState<string>(""),
   _visibleState: [visible, setVisible] = useState<boolean>(false)
 }: {
   data: QmsData;
-  onCreate: (selection: string) => void;
+  groupName: string;
+  onCreateSheet: (selection: string, groupName: string) => void;
   _selectionState?: StateHook<string>;
   _visibleState?: StateHook<boolean>;
 }) => {
   const onSubmit = (selection: string) => {
     setVisible(false);
-    onCreate(selection);
+    onCreateSheet(selection, groupName);
   };
 
   return (
-    <div>
-      <a key="modal" onClick={() => setVisible(true)}>
-        <Icon type="plus" />
-        <span style={{ textDecorationLine: "underline", color: "#fff" }}>
-          Create New Group
-        </span>
-      </a>
+    <>
+      <Icon
+        type="more"
+        onClick={() => setVisible(true)}
+        style={{ float: "right", marginTop: "14px" }}
+      ></Icon>
       <Modal
-        title="Create Group"
+        title="Create New Sheet"
         visible={visible}
         onOk={() => onSubmit(selection)}
         onCancel={() => setVisible(false)}
@@ -48,11 +49,11 @@ export default ({
       >
         <div>
           <div className="modal-cat" style={{ float: "left" }}>
-            Enter Group Name:
+            Enter Sheet Name:
           </div>
           <div>
             <Input
-              placeholder="Name of new group"
+              placeholder="Name of new work sheet"
               style={{ width: 210, marginLeft: "15px" }}
               value={selection}
               onChange={e => setSelection(e.target.value)}
@@ -61,6 +62,6 @@ export default ({
           </div>
         </div>
       </Modal>
-    </div>
+    </>
   );
 };

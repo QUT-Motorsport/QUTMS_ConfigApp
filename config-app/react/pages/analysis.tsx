@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 import { Spin, Select, Button, Modal } from "antd";
 import { Union, Literal, Static } from "runtypes";
-
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
 import { StateHook } from "../ts/hooks";
@@ -92,7 +91,7 @@ export default ({ data = useQmsData("Sample") }) =>
             { channel_idxs: [36, 37, 38] }
           ]}
         />
-        <AddChartModal />
+        {/* <AddChartModal /> */}
       </div>
     </div>
   ) : (
