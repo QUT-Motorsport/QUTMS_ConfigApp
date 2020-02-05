@@ -16,7 +16,8 @@ export default <Page extends ComponentType<any>>({
 }) =>
   typeof window !== "undefined" &&
   (window.location.href.endsWith("/") ||
-    window.location.href.endsWith("/register")) ? (
+    window.location.href.endsWith("/register") ||
+    window.location.href.endsWith("/guest")) ? (
     <Component {...pageProps} />
   ) : (
     <Layout
