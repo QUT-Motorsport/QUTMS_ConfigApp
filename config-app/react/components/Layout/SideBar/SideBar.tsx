@@ -23,7 +23,7 @@ const SideBar = () => {
           paddingTop: "5px"
         }}
       >
-        <SideBarItem link="/" name="Home" iconType="home" />
+        <SideBarItem link="/home" name="Home" iconType="home" />
         <SideBarItem link="/telemetry" name="Telemetry" iconType="dashboard" />
         <SideBarItem link="/analysis" name="Analysis" iconType="heat-map" />
         <SideBarItem

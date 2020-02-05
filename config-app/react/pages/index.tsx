@@ -39,7 +39,7 @@ export default class App extends Component {
               />
             </Form.Item>
             <Form.Item>
-              <Link href="/telemetry">
+              <Link href="/home">
                 <Button
                   type="primary"
                   htmlType="submit"
