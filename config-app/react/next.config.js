@@ -83,7 +83,12 @@ module.exports = withLess(
 
           /* Progress Bars */
           "progress-default-color": "@primary-color",
-          "progress-remaining-color": "@background-color-base"
+          "progress-remaining-color": "@background-color-base",
+
+          /* Statistic */
+          "statistic-title-font-size": "@font-size-base",
+          "statistic-content-font-size": "24px",
+          "statistic-unit-font-size": "16px"
         }
       },
 
