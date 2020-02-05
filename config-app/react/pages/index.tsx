@@ -49,13 +49,15 @@ export default class App extends Component {
                   Sign in
                 </Button>
               </Link>
-              <Button
-                htmlType="submit"
-                className="secondary-colour login-form-button"
-                block
-              >
-                Sign in as Guest
-              </Button>
+              <Link href="/guest">
+                <Button
+                  htmlType="submit"
+                  className="secondary-colour login-form-button"
+                  block
+                >
+                  Sign in as Guest
+                </Button>
+              </Link>
               <Divider />
               Or
               <a
