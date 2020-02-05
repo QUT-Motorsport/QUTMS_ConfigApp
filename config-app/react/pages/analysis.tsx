@@ -4,7 +4,7 @@ import { Spin, Select, Button, Modal, Form } from "antd";
 import { TwitterPicker } from "react-color";
 
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
-import Explorer from "../components/Layout/Explorer";
+import Explorer from "../components/Layout/Explorer/Explorer";
 import SubHeader from "../components/Layout/SubHeader";
 
 import { ChartSpec, ChartTypeEnum, Range } from "../ts/chartTypes";
