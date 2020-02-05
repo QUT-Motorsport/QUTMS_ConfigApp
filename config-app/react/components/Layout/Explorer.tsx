@@ -3,6 +3,7 @@ import ExplorerGroup from "./ExplorerGroup";
 import ExplorerItem from "./ExplorerItem";
 import { Layout, Menu, Icon } from "antd";
 import SubMenu from "antd/lib/menu/SubMenu";
+import DividerBar from "../DividerBar";
 const { Header, Content, Footer, Sider } = Layout;
 
 class Explorer extends Component {
@@ -31,6 +32,37 @@ class Explorer extends Component {
           collapsed={this.state.collapsed}
           onCollapse={this.toggleCollapsed}
         >
+          <div
+            style={{
+              width: "100%",
+              height: "70px",
+              padding: "10px 24px",
+              display: this.state.collapsed ? "none" : "flex",
+              flexDirection: "column"
+            }}
+          >
+            <h3
+              style={{
+                color: "#FFFFFF",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              Electrical Workbookssssssssssssssssssssssssssssssssssssssssss
+            </h3>
+            <span
+              style={{
+                color: "#FFFFFF",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >
+              Import...
+            </span>
+          </div>
+
           <Menu
             theme="dark"
             mode="inline"
@@ -46,6 +78,17 @@ class Explorer extends Component {
               <ExplorerItem name="Steering" iconType="mail" />
               <ExplorerItem name="Steering" iconType="mail" />
             </ExplorerGroup>
+            <ExplorerItem
+              name="Create New Group"
+              iconType="plus"
+              style={{
+                position: "fixed",
+                bottom: "48px",
+                width: this.state.collapsed ? "80px" : "200px",
+                margin: "0",
+                marginLeft: "100px"
+              }}
+            />
           </Menu>
         </Sider>
       </div>
