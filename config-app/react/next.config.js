@@ -64,7 +64,26 @@ module.exports = withLess(
       lessLoaderOptions: {
         javascriptEnabled: true,
         modifyVars: {
-          // "primary-color": "red"
+          /* General Styling */
+          "primary-color": "#0F406A",
+          "processing-color": "@primary-color",
+          "body-background": "#FFFFFF",
+          "link-color": "@primary-color",
+          "link-hover-color": "#FF6B35",
+          "link-active-color": "#FF6B35",
+          "heading-color": "@primary-color",
+
+          /* Side Bar Styling */
+          "menu-highlight-color": "#FF6B35",
+          "menu-item-active-bg": "transparent",
+
+          /* Icon */
+          "icon-color": "@primary-color",
+          "icon-color-hover": "#FF6B35",
+
+          /* Progress Bars */
+          "progress-default-color": "@primary-color",
+          "progress-remaining-color": "@background-color-base"
         }
       },
 
@@ -114,6 +133,7 @@ module.exports = withLess(
           config.target = WEBPACK_TARGET;
         }
 
+        // Add the ability to import SVG files
         config.module.rules.push({
           test: /\.svg$/,
           use: ["@svgr/webpack"]
