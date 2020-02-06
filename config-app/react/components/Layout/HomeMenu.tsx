@@ -7,47 +7,94 @@ import "../../styles/home.css";
 class HomeMenu extends Component {
   render() {
     return (
-      <div className="flex-container">
-        <div className="column-border-one"></div>
-        <div className="column-main-one">
-          <div>
-            <header>Home</header>
+      <>
+        <Row>
+          <Col md={{ span: 4 }} />
+          <Col md={{ span: 5 }}>
             <h1>Start</h1>
-            <p>Open File...</p>
-            <p>Import...</p>
-            <p>Initialise Serial</p>
-            <p>Initialise UDP</p>
+            <a>
+              <p>Open File...</p>
+            </a>
+            <a>
+              <p>Import...</p>
+            </a>
+          </Col>
+          <Col md={{ span: 5, offset: 1 }}>
             <h1>Recent</h1>
-            <p>recent_file_dummy_1</p>
-            <p>recent_file_dummy_2</p>
-            <p>recent_file_dummy_3</p>
-            <p>More...</p>
-            <h1>Simulation</h1>
-            <p>Import...</p>
-            <p>View...</p>
-          </div>
-        </div>
-        <div className="column-main-two">
-          <h2></h2>
-          <div className="block">
-            <h1>Customise</h1>
-            <p>MATLAB Engine</p>
-            <p>Settings & Keybindings</p>
-            <p>Change Theme</p>
-            <h3></h3>
-            <h1>Help</h1>
-            <p>Get Started</p>
-            <p>Data Analysis Information</p>
-            <p>Export/Import Guide</p>
-            <h4></h4>
-            <h1>Contact</h1>
-            <p>Website</p>
-            <p>Facebook</p>
-            <p>Twitter</p>
-          </div>
-        </div>
-        <div className="column-border-two"></div>
-      </div>
+            <a>
+              <p>Lakeside_2020_03_02.qms</p>
+            </a>
+            <a>
+              <p>Lakeside_2020_01_01.qms</p>
+            </a>
+            <a>
+              <p>More...</p>
+            </a>
+          </Col>
+          <Col md={{ span: 9 }} />
+        </Row>
+        <Row>
+          <Col md={{ span: 4 }} />
+          <Col md={{ span: 5 }}>
+            <a>
+              <h1>Customise</h1>
+            </a>
+            <a>
+              <p>MATLAB Engine</p>
+            </a>
+            <a>
+              <p>Settings & Keybindings</p>
+            </a>
+            <a>
+              <p>Change Theme</p>
+            </a>
+          </Col>
+          <Col md={{ span: 5, offset: 1 }}>
+            <a>
+              <h1>Help</h1>
+            </a>
+            <a>
+              <p>Get Started</p>
+            </a>
+            <a>
+              <p>Data Analysis Information</p>
+            </a>
+            <a>
+              <p>Export/Import Guide</p>
+            </a>
+          </Col>
+          <Col md={{ span: 9 }} />
+        </Row>
+        <Row>
+          <Col md={{ span: 4 }} />
+          <Col md={{ span: 5 }}>
+            <a>
+              <h1>Simulation</h1>
+            </a>
+            <a>
+              <p>Import...</p>
+            </a>
+            <a>
+              <p>View...</p>
+            </a>
+          </Col>
+          <Col md={{ span: 5, offset: 1 }}>
+            <a>
+              <h1>Contact</h1>
+            </a>
+            <a>
+              <p>Website</p>
+            </a>
+            <a>
+              <p>Facebook</p>
+            </a>
+            <a>
+              <p>Twitter</p>
+            </a>
+          </Col>
+          <Col md={{ span: 9 }} />
+        </Row>
+      </>
     );
   }
 }
