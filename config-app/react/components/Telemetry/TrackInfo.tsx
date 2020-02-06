@@ -9,11 +9,15 @@ const TrackInfo = () => {
     <div style={{ marginTop: "5px" }}>
       <h3 style={{ padding: "0", color: "#0F406A" }}>Track Info</h3>
       <DividerBar />
+
+      {/* Track Visualisation */}
       <img
         src="http://www.silhouet.com/motorsport/tracks/qrace2.gif"
         alt="Queensland Raceway Map"
         width="100%"
       />
+
+      {/* Track Information */}
       <div style={{ marginTop: "10px", display: "flex", flexDirection: "row" }}>
         <Statistic
           valueStyle={{ color: "#0F406A" }}

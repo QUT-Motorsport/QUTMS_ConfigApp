@@ -1,9 +1,9 @@
 import React from "react";
-import { Divider } from "antd";
 
 const DriverInfo = () => {
   return (
     <div style={{ margin: "10px 0", padding: "0", color: "#0F406A" }}>
+      {/* Driver number */}
       <div
         style={{
           height: "50px",
@@ -19,6 +19,8 @@ const DriverInfo = () => {
       >
         46
       </div>
+
+      {/* Driver name */}
       <div
         style={{
           margin: "0",

@@ -11,6 +11,7 @@ const Weather = () => {
         justifyContent: "space-between"
       }}
     >
+      {/* Temperature Reading */}
       <div>
         <Statistic
           valueStyle={{ color: "#0F406A" }}
@@ -21,6 +22,8 @@ const Weather = () => {
           style={{ fontWeight: 600 }}
         />
       </div>
+
+      {/* Humidity Reading */}
       <div>
         <Statistic
           valueStyle={{ color: "#0F406A" }}
@@ -30,6 +33,8 @@ const Weather = () => {
           style={{ fontWeight: 600 }}
         />
       </div>
+
+      {/* Sky Reading */}
       <div>
         <Statistic
           valueStyle={{ color: "#0F406A" }}

@@ -1,11 +1,13 @@
 import React from "react";
-import { Progress, Statistic } from "antd";
+import { Progress } from "antd";
 import Label from "../Label";
 
 const pedalPositions = () => {
   return (
     <div style={{ marginTop: "10px" }}>
       <Label title="Pedal Positions" />
+
+      {/* Acceleration Bar */}
       <Progress
         percent={50}
         showInfo={true}
@@ -13,6 +15,8 @@ const pedalPositions = () => {
         strokeWidth={15}
         strokeLinecap="square"
       />
+
+      {/* Brakes Bar */}
       <Progress
         percent={50}
         showInfo={true}

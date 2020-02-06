@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import ExplorerGroup from "./ExplorerGroup";
 import ExplorerItem from "./ExplorerItem";
-import { Layout, Menu, Icon, Tooltip } from "antd";
-import SubMenu from "antd/lib/menu/SubMenu";
-import DividerBar from "../../DividerBar";
-const { Header, Content, Footer, Sider } = Layout;
+import { Layout, Menu, Tooltip } from "antd";
+const { Sider } = Layout;
+
+// This component isn't currently used. It was meant to be a general secondary sidebar for navigating subpages eg. Worksheets.
+// AnalysisMenu was based off this.
 
 class Explorer extends Component {
   state = {
@@ -17,7 +18,6 @@ class Explorer extends Component {
     });
   };
 
-  //functions
   render() {
     return (
       <div style={{ width: "80px" }}>

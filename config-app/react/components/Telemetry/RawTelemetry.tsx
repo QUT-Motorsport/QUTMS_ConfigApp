@@ -3,14 +3,7 @@ import { Table, Divider, Tag } from "antd";
 import DividerBar from "../DividerBar";
 
 class RawTelemetry extends Component {
-  state = {
-    // workbook: [
-    //   {
-    //     name: "Group1",
-    //     worksheets: [{ name: "Driver" }]
-    //   }
-    // ]
-  };
+  state = {}; // Will require state of what to include in table
 
   render() {
     const columns = [
@@ -57,12 +50,14 @@ class RawTelemetry extends Component {
         unit: "kph"
       }
     ];
+
     return (
       <div className="telemetry">
         <h3 style={{ marginTop: "10px", padding: "0", color: "#0F406A" }}>
           Raw Telemetry
         </h3>
         <DividerBar />
+
         <Table
           columns={columns}
           dataSource={data}
@@ -70,11 +65,6 @@ class RawTelemetry extends Component {
           pagination={false}
           style={{ marginTop: "10px" }}
         />
-        {/* <style jsx>{`
-          .telemetry :global(th) {
-            background-color: #000 !important;
-          }
-        `}</style> */}
       </div>
     );
   }
