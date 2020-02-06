@@ -152,9 +152,9 @@ export default ({
                     margin: "0px",
                     display: collapsed ? "none" : ""
                   }}
-                  title={<Icon type="diff" />}
                 >
-                  <span>{worksheet.name_sheet}</span>
+                  <Icon type="diff" />
+                  {worksheet.name_sheet}
                   <Popconfirm
                     title="Are you sure you want to delete this sheet?"
                     onConfirm={() => deleteSheet(worksheet.name_sheet)}

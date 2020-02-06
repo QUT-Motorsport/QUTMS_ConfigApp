@@ -157,7 +157,9 @@ export default ({
 }) =>
   data ? (
     <div className="flex-container-menu">
-      <AnalysisMenu data={data} />
+      <div>
+        <AnalysisMenu data={data} />
+      </div>
       <div className="flex-container-analysis">
         <SubHeader />
 

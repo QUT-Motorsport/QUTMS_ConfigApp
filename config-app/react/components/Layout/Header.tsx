@@ -27,7 +27,8 @@ const HeaderBar = () => {
             }}
           >
             <img
-              src="/images/config_hub.png"
+              // src="/images/config_hub.png"
+              src="/images/logo_1.png"
               style={{
                 top: "0",
                 bottom: "0",
