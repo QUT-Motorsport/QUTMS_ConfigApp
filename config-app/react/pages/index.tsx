@@ -9,7 +9,7 @@ export default class App extends Component {
     return (
       <>
         <Head>
-          <title>QUT ConfigHub - Login</title>
+          <title>QUT Config App - Login</title>
         </Head>
         <div
           className="login-background"
@@ -25,7 +25,7 @@ export default class App extends Component {
             }}
           >
             <img
-              src="/images/config_hub.png"
+              src="/images/logo_1.png"
               style={{
                 width: "80%",
                 marginLeft: "10%",

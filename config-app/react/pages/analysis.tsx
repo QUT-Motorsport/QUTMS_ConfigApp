@@ -37,7 +37,7 @@ const AddChartModal = ({
   return (
     <>
       <Head>
-        <title>QUT ConfigHub - Home</title>
+        <title>QUT Config App - Home</title>
       </Head>
       <div className="root">
         <style jsx>{`
