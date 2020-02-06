@@ -17,6 +17,9 @@ import Explorer from "../components/Layout/Explorer/Explorer";
 
 export default () => (
   <>
+    <Head>
+      <title>QUT ConfigHub - Telemetry</title>
+    </Head>
     <div>
       <Row>
         <Col

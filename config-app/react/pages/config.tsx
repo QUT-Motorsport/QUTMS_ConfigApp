@@ -13,6 +13,9 @@ import Link from "next/link";
 
 export default () => (
   <>
+    <Head>
+      <title>QUT ConfigHub - Config</title>
+    </Head>
     <div>
       CONFIG <Button type="primary">Test</Button>
       <Checkbox />
