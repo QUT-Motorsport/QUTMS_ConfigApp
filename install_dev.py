@@ -79,6 +79,8 @@ if __name__ == "__main__":
         or existing_labextensions[npm_package] != version
     ]
 
+    print('installing labextensions:', labextensions_install_list)
+
     call(
         # install js dependencies of the config app
         f"conda run -n {conda_env_name} npm i"
