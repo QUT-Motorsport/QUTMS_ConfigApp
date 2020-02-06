@@ -37,7 +37,7 @@ if __name__ == "__main__":
         target_env_dir = (
             Path(
                 re.search(
-                    r"envs directories : (\S+?)  \(writable\)",
+                    r"envs directories : (\S+?)\s",
                     check_output("conda info".split()).decode(),
                 ).group(1)
             )
@@ -79,6 +79,8 @@ if __name__ == "__main__":
         or existing_labextensions[npm_package] != version
     ]
 
+    print('installing labextensions:', labextensions_install_list)
+
     call(
         # install js dependencies of the config app
         f"conda run -n {conda_env_name} npm i"
@@ -94,7 +96,7 @@ if __name__ == "__main__":
     # if env_cache was specified, use conda-pack to update / create the cache
     if cache_env is not None:
         call(
-            f"conda run -n {conda_env_name} conda pack -n {conda_env_name} -o {cache_env} --n-threads=4 --ignore-package-mods=jupyterlab "
+            f"conda run -n {conda_env_name} conda pack -n {conda_env_name} -o {cache_env} --n-threads=4 --ignore-package-mods=jupyterlab"
         )
 
     # install vscode extensions helpful for development

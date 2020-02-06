@@ -9,11 +9,6 @@ export default (props: any) => (
     <Head>
       <title>QUT Config App - Simulation</title>
     </Head>
-    <Explorer />
-    <Alert
-      message="Warning Text Warning Text Warning TextW arning Text Warning Text Warning TextWarning Text"
-      type="warning"
-      closable
-    />
+    {/* <Explorer /> */}
   </>
 );
