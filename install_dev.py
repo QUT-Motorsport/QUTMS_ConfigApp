@@ -37,7 +37,7 @@ if __name__ == "__main__":
         target_env_dir = (
             Path(
                 re.search(
-                    r"envs directories : (\S+?) ",
+                    r"envs directories : (\S+?)\s",
                     check_output("conda info".split()).decode(),
                 ).group(1)
             )
