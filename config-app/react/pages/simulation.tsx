@@ -7,7 +7,7 @@ const { Header, Content, Footer, Sider } = Layout;
 export default (props: any) => (
   <>
     <Head>
-      <title>QUT ConfigHub - Simulation</title>
+      <title>QUT Config App - Simulation</title>
     </Head>
     {/* <Explorer /> */}
   </>

@@ -7,7 +7,7 @@ export default () => (
   <>
     <div>
       <Head>
-        <title>QUT ConfigHub - Home</title>
+        <title>QUT Config App - Home</title>
       </Head>
       <HomeMenu />
     </div>
