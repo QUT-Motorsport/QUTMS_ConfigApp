@@ -121,7 +121,10 @@ const Timeline = ({
       // TODO: Enable styled-jsx-postcss-plugin to DRY this up
 
       .root {
-        width: 100%;
+        width: 90%;
+        margin-left: 5%;
+        margin-right: 5%;
+        margin-top: 10px;
         height: 40px;
         overflow: hidden;
       }
@@ -173,7 +176,7 @@ export default ({
           <AnalysisMenu data={data} />
         </div>
         <div className="flex-container-analysis">
-          <SubHeader />
+          {/* <SubHeader /> */}
 
           <Timeline data={data} domainState={domainState} />
           {charts.map((chartSpec, idx) => (
