@@ -40,14 +40,22 @@ export default ({
   channelGroup ? (
     <Plot
       data={channelGroup.channels.map(({ channel, y }) => ({
-        name: channel.name,
+        name: `${channel.name} [${channel.freq}]`,
         x: channelGroup.x,
         y: y,
+        yaxis: `y${RangeTypesWithYAxisRT.match(
+          () => 1,
+          ({ yAxes }) =>
+            yAxes.findIndex(yAxis =>
+              yAxis.find(chIdx => channel.idx === chIdx)
+            ) + 1
+        )(spec)}`,
         mode: "lines"
       }))}
       useResizeHandler={true}
       layout={{
         xaxis: {
+          title: spec.xAxis === "Time" ? "Time (s)" : "Distance (m)",
           range: domain,
           ...(showDomainSlider
             ? {
@@ -57,8 +65,22 @@ export default ({
               }
             : {})
         },
-        yaxis: { range },
-        autosize: true
+        autosize: true,
+        ...RangeTypesWithYAxisRT.match(
+          () => ({ yaxis1: { range } }),
+          ({ yAxes }) => {
+            const axesLayout: any = {};
+
+            yAxes.forEach((yAxis, idx) => {
+              const axisNo = idx + 1;
+              axesLayout[`yaxis${axisNo}`] = {
+                title: `Axis ${axisNo}`
+              };
+            });
+
+            return axesLayout;
+          }
+        )(spec)
       }}
       style={{
         width: "100%",
