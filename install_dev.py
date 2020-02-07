@@ -4,6 +4,7 @@ from shutil import which
 import tarfile
 from pathlib import Path
 import re
+import json
 
 JUPYTER_LABEXTENSION_PKGS = {
     "@jupyter-widgets/jupyterlab-manager": "1.0.3",
@@ -32,17 +33,18 @@ if __name__ == "__main__":
     # ensure conda is at the latest version
     call("conda update -n base -y conda")
 
+    target_env_dir = (
+        Path(
+            re.search(
+                r"envs directories : (\S+?)\s",
+                check_output("conda info".split()).decode(),
+            ).group(1)
+        )
+        / conda_env_name
+    )
+
     # extract the env cache if it has been specified and exists
     if cache_env is not None and cache_env.exists():
-        target_env_dir = (
-            Path(
-                re.search(
-                    r"envs directories : (\S+?)\s",
-                    check_output("conda info".split()).decode(),
-                ).group(1)
-            )
-            / conda_env_name
-        )
 
         if not target_env_dir.exists():
             target_env_dir.mkdir()
@@ -79,7 +81,7 @@ if __name__ == "__main__":
         or existing_labextensions[npm_package] != version
     ]
 
-    print('installing labextensions:', labextensions_install_list)
+    print("installing labextensions:", labextensions_install_list)
 
     call(
         # install js dependencies of the config app
@@ -96,7 +98,7 @@ if __name__ == "__main__":
     # if env_cache was specified, use conda-pack to update / create the cache
     if cache_env is not None:
         call(
-            f"conda run -n {conda_env_name} conda pack -n {conda_env_name} -o {cache_env} --n-threads=4 --ignore-package-mods=jupyterlab"
+            f"conda run -n {conda_env_name} conda pack -n {conda_env_name} -o {cache_env} --n-threads=4 --ignore-package-mods=jupyterlab,llvm-openmp"
         )
 
     # install vscode extensions helpful for development
@@ -105,3 +107,8 @@ if __name__ == "__main__":
         + " && code --install-extension esbenp.prettier-vscode"
         + " && code --install-extension blanu.vscode-styled-jsx"
     )
+
+    with open("./.vscode/settings.json", "w") as vscode_settings_f:
+        vscode_settings = json.loads(vscode_settings_f)
+        vscode_settings["python.pythonPath"] = f"{target_env_dir}\\python"
+        json.dump(vscode_settings, vscode_settings_f)
