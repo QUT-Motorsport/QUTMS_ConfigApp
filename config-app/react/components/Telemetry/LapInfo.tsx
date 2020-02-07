@@ -7,9 +7,10 @@ import Label from "../Label";
 const lapInfo = () => {
   return (
     <div style={{ marginTop: "5px" }}>
-      <h3 style={{ padding: "0", color: "#0F406A" }}>Lap Info</h3>
+      <h3 style={{ color: "#0F406A" }}>Lap Info</h3>
       <DividerBar />
 
+      {/* Current Lap */}
       <div style={{ marginTop: "10px", display: "flex", flexDirection: "row" }}>
         <div style={{ float: "left", width: "50%" }}>
           <Statistic
@@ -20,6 +21,8 @@ const lapInfo = () => {
             style={{ fontWeight: 600 }}
           />
         </div>
+
+        {/* Best Lap */}
         <div style={{ float: "left", width: "50%" }}>
           <Statistic
             valueStyle={{ color: "#0F406A" }}
@@ -32,6 +35,7 @@ const lapInfo = () => {
       </div>
 
       <div style={{ marginTop: "10px", display: "flex", flexDirection: "row" }}>
+        {/* Top Lap Speed */}
         <div style={{ float: "left", width: "50%" }}>
           <Statistic
             valueStyle={{ color: "#0F406A" }}
@@ -43,6 +47,7 @@ const lapInfo = () => {
           />
         </div>
 
+        {/* Top Race Speed */}
         <div style={{ float: "left", width: "50%" }}>
           <Statistic
             valueStyle={{ color: "#0F406A" }}
@@ -56,6 +61,7 @@ const lapInfo = () => {
       </div>
 
       <div style={{ marginTop: "10px" }}>
+        {/* Total Laps */}
         <Label title="Total Laps" style={{ fontWeight: 600 }} />
         <Progress
           type="circle"

@@ -14,7 +14,7 @@ import DataRate from "../components/Telemetry/DataRate";
 import EngineAndPower from "../components/Telemetry/EngineAndPower";
 import DriverInfo from "../components/Telemetry/DriverInfo";
 import Explorer from "../components/Layout/Explorer/Explorer";
-import Header from "../components/Layout/Header";
+import Header from "../components/Layout/HeaderBar";
 
 export default () => (
   <>
