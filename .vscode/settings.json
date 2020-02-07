@@ -1,0 +1,14 @@
+{
+  "terminal.integrated.shell.windows": "cmd.exe",
+  "terminal.integrated.shellArgs.windows": [
+    "/k",
+    "conda activate qev3-config-app"
+  ],
+  "editor.formatOnSave": true,
+  "python.formatting.provider": "black",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "python.linting.enabled": true,
+  "python.pythonPath": "C:\\Users\\n9464263\\.conda\\envs\\qev3-config-app\\python.exe"
+}

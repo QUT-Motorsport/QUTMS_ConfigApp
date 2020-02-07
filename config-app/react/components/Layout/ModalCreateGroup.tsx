@@ -4,8 +4,6 @@ import { useState } from "react";
 import { QmsData } from "../../ts/qmsData";
 import { StateHook } from "../../ts/hooks";
 
-const { Option } = Select;
-
 // Modal for user input to create group
 // Returns input to AnalysisMenu workbooks.name_book state array
 export default ({

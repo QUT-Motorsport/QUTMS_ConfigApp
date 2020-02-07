@@ -1,10 +1,8 @@
 import React from "react";
-import { Button, Modal, Icon, Input } from "antd";
+import { Button, Modal, Icon, Input, Select } from "antd";
 import { useState } from "react";
 import { QmsData } from "../../ts/qmsData";
 import { StateHook } from "../../ts/hooks";
-
-const { Option } = Select;
 
 // Modal for user input to create sheet
 // Returns input to AnalysisMenu workbooks.worksheets.name_sheet state array

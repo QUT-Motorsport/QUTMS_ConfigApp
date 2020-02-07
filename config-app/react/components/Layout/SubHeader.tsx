@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Select, Button, Modal, Avatar } from "antd";
 import Link from "next/link";
 import "../../styles/home.css";
-import ModalSettings from "./Modal_Settings";
+import ModalSettings from "./ModalSettings";
 
 // Optional sub header for pages - initially set up with the intention of putting breadcrumbs here + settings button
 class SubHeader extends Component {
