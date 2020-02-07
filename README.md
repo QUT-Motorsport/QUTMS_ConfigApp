@@ -83,7 +83,6 @@ The second step is to install the npm packages for the app itself:
 
 ```
 conda activate qev3-config-app
-cd config-app
 npm i
 ```
 
