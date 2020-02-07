@@ -6,9 +6,20 @@
 
 - [Software Architecture and Release Plan](#architecture-and-release-plan)
 - [Development Environment Setup](#dev-env-setup)
+
   - [Cross-Platform Install Script](#cross-platform-install-script)
   - [Manual Installation](#manual-installation)
   - [Environment Activation](#environment-activation)
+
+- [App Development](#app-development)
+
+  - [As Website](#development-as-website)
+  - [As Electron App](#development-as-electron-app)
+  - [Editing the Frontend / UI (Typescript & React)](#editing-frontend)
+  - [Editing the Backend (Python & Sanic WebServer)](#editing-backend)
+
+- [Building Production App](#building-production)
+- [Getting Involved](#getting-involved)
 
 <a name="architecture-and-release-plan"></a>
 
@@ -89,9 +100,13 @@ Or, if you are using vscode as we recommend, this repository includes vscode set
 
 You have to then open up a new terminal for the auto-activation t take effect.
 
-## Running the App
+<a name="app-development"></a>
 
-### Develop config-app as website
+## App Development
+
+<a name="development-as-website"></a>
+
+### As website
 
 ```bash
 # in the `config-app` directory
@@ -100,22 +115,30 @@ npm run dev
 
 This is recommended over electron-app as it includes hot-module-reloading
 
-### Develop config-app as electron-app
+<a name="development-as-electron-app"></a>
+
+### As electron app
 
 ```bash
 # in the `config-app` directory
 npm run dev:electron
 ```
 
-### Editing the Frontend/UI (Typescript & React Development)
+<a name="editing-frontend"></a>
+
+### Editing the Frontend / UI (Typescript & React)
 
 All the top-level page components are in `config-app/react/pages/`. These page components may also import re-usable React components that are defined in `config-app/react/components/`.
 
 Open them in your favourite editor (VSCode is recommended). If you have run the app in development mode, editing any of these pages and saving the file (ctrl-s) will cause the development app to restart and show your changes. Hot-reloading is currently p
 
-### Editing the Backend (Python & Sanic WebServer Development)
+<a name="editing-backend"></a>
+
+### Editing the Backend (Python & Sanic WebServer)
 
 To make changes to the backend, edit the files in `config-app/python/`. The main python file is `config-app/python/api.py` which contains a Sanic server.
+
+<a name="building-production"></a>
 
 ## Installing the Electron app permanently
 
@@ -127,6 +150,8 @@ First you need to build the desktop application for the desired operating system
 - Linux: `npm run build:linux`
 
 Then check the `dist` folder for resulting install packages for your desired platform
+
+<a name="getting-involved"></a>
 
 ## Want to Get Involved?
 
