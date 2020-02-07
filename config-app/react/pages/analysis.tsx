@@ -6,6 +6,7 @@ import SubHeader from "../components/Layout/SubHeader";
 import { ChartSpec, Range, LineChartSpec } from "../ts/chartTypes";
 import { StateHook } from "../ts/hooks";
 import { QmsData, useQmsData } from "../ts/qmsData";
+import { GROUND_SPEED_CH_IDX, defaultCharts } from "../ts/defaults";
 
 import BaseChartEditor from "../components/Charts/Editors/Base";
 
@@ -19,18 +20,11 @@ const LineChart = dynamic(() => import("../components/Charts/Line"), {
   loading: () => <Spin />
 });
 
-export const DEFAULT_CHART_SPEC: ChartSpec = {
-  domainType: "Line",
-  rangeType: "Multi-Channel",
-  xAxis: "Time",
-  yAxis: []
-};
-
 const AddChartModal = ({
   onAddChartSpec,
   data,
   _visibleState: [visible, setVisible] = useState<boolean>(false),
-  _chartSpecState: chartSpecState = useState<ChartSpec>(DEFAULT_CHART_SPEC)
+  _chartSpecState: chartSpecState = useState<ChartSpec>(defaultCharts["Line"])
 }: {
   onAddChartSpec: (type: ChartSpec) => void;
   data: QmsData;
@@ -70,7 +64,7 @@ const TIMELINE_SPEC: LineChartSpec = {
   domainType: "Line",
   xAxis: "Time",
   rangeType: "Multi-Channel",
-  yAxis: [[44 /* Ground Speed Ch Idx */]]
+  yAxes: [[GROUND_SPEED_CH_IDX]]
 };
 const Timeline = ({
   data,
@@ -115,7 +109,7 @@ const Timeline = ({
       data={data}
       spec={TIMELINE_SPEC}
       domainState={domainState}
-      showRangeSlider={true}
+      showDomainSlider={true}
     />
   </div>
 );

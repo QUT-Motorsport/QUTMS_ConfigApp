@@ -5,28 +5,31 @@ import {
   TrackMapSpec,
   LineChartSpec,
   ScatterChartSpec,
-  HistogramChartSpec
+  HistogramChartSpec,
+  Range
 } from "../../ts/chartTypes";
 
 import Histogram from "./Histogram";
 import Line from "./Line";
 import Scatter from "./Scatter";
 import TrackMap from "./TrackMap";
+import { StateHook } from "../../ts/hooks";
 
 type ChartProps = {
   data: QmsData;
   spec: ChartSpec;
+  domainState?: StateHook<Range>;
+  showDomainSlider?: boolean;
 };
 
-export default ({ data, spec }: ChartProps) => {
-  return ChartSpecRT.match(
-    () => <TrackMap data={data} spec={spec as TrackMapSpec} />,
+export default ({ spec, ...rest }: ChartProps) =>
+  ChartSpecRT.match(
+    () => <TrackMap spec={spec as TrackMapSpec} {...rest} />,
 
     // choose chart type based on domain
     ChartSpecRT.alternatives[1].intersectees[0].match(
-      () => <Line data={data} spec={spec as LineChartSpec} />,
-      () => <Scatter data={data} spec={spec as ScatterChartSpec} />,
-      () => <Histogram data={data} spec={spec as HistogramChartSpec} />
+      () => <Line spec={spec as LineChartSpec} {...rest} />,
+      () => <Scatter spec={spec as ScatterChartSpec} {...rest} />,
+      () => <Histogram spec={spec as HistogramChartSpec} {...rest} />
     )
   )(spec);
-};

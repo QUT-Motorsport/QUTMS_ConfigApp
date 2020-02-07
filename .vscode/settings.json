@@ -10,5 +10,5 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "python.linting.enabled": true,
-  "python.pythonPath": "C:\\Users\\cal\\Miniconda3\\envs\\qev3-config-app\\python.exe"
+  "python.pythonPath": "C:\\Users\\n9464263\\.conda\\envs\\qev3-config-app\\python.exe"
 }

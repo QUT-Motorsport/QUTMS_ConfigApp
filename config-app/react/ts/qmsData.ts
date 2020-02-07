@@ -11,6 +11,7 @@ export type QmsData = {
 };
 
 export type Channel = {
+  idx: number;
   name: string;
   freq: number;
   unit: string;

@@ -1,27 +1,38 @@
 import Plot from "react-plotly.js";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Spin } from "antd";
 
-import { Range, LineChartSpec } from "../../ts/chartTypes";
+import {
+  Range,
+  LineChartSpec,
+  RangeTypesWithYAxisRT
+} from "../../ts/chartTypes";
 import { StateHook } from "../../ts/hooks";
 import { QmsData, ChannelGroup, useChannelGroup } from "../../ts/qmsData";
 
 export default ({
   // xAxis, TODO: Handle vs distance
-  spec: { yAxis },
+  spec,
   // rangeType,
   data,
-  showRangeSlider = false,
+  showDomainSlider = false,
   domainState: [domain, setDomain] = useState(),
   _rangeState: [range, setRange] = useState(),
   _channelGroup: channelGroup = useChannelGroup(
     data,
-    Array.isArray(yAxis) ? yAxis.flatMap(axes => axes.flat()) : [yAxis]
+    useMemo(
+      () =>
+        RangeTypesWithYAxisRT.match(
+          ({ yAxis }) => [yAxis],
+          ({ yAxes }) => yAxes.flat()
+        )(spec),
+      [spec]
+    )
   )
 }: {
   spec: LineChartSpec;
   data: QmsData;
-  showRangeSlider?: boolean;
+  showDomainSlider?: boolean;
   domainState?: StateHook<Range>;
   _rangeState?: StateHook<Range>;
   _channelGroup?: ChannelGroup | null;
@@ -38,7 +49,7 @@ export default ({
       layout={{
         xaxis: {
           range: domain,
-          ...(showRangeSlider
+          ...(showDomainSlider
             ? {
                 rangeslider: {
                   range: [0, channelGroup.x[channelGroup.x.length - 1]]

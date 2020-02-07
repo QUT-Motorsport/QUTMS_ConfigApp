@@ -22,24 +22,32 @@ const ColorScaledBaseRT = Record({
   nColorBins: Number.Or(Undefined), // if undefined, use continous-colorscale
   colorAxis: ChannelIdxRT // typically Throttle Pos
 });
-export const ColorScaledRT = ColorScaledBaseRT.Or(
-  ColorScaledBaseRT.And(
-    Record({
-      yAxis: ChannelIdxRT
-    })
-  )
+export type ColorScaledBase = Static<typeof ColorScaledBaseRT>;
+
+const ColorScaledWithYAxisRT = ColorScaledBaseRT.And(
+  Record({
+    yAxis: ChannelIdxRT
+  })
 );
+export type ColorScaledWithYAxis = Static<typeof ColorScaledWithYAxisRT>;
+
+export const ColorScaledRT = ColorScaledBaseRT.Or(ColorScaledWithYAxisRT);
 export type ColorScaled = Static<typeof ColorScaledRT>;
-type ColorScaledWithYAxis = Static<typeof ColorScaledRT.alternatives[1]>;
 
 const MultiChannelRT = Record({
   rangeType: Literal("Multi-Channel"),
 
   // outer array = y axis (can have multiple per plot)
   // inner array = different colours on same y axis
-  yAxis: Array(Array(ChannelIdxRT))
+  yAxes: Array(Array(ChannelIdxRT))
 });
 export type MultiChannel = Static<typeof MultiChannelRT>;
+
+export const RangeTypesWithYAxisRT = Union(
+  ColorScaledWithYAxisRT,
+  MultiChannelRT
+);
+type RangeTypesWithYAxis = Static<typeof RangeTypesWithYAxisRT>;
 
 // TODO if necessary: don't assume true
 const isGeoJsonPolygon = (_poly: unknown): _poly is Polygon => true;
@@ -61,8 +69,7 @@ const LineDomainRT = Record({
   xAxis: LineDomainXAxisRT
 });
 export type LineChartDomain = Static<typeof LineDomainRT>;
-export type LineChartSpec = LineChartDomain &
-  (ColorScaledWithYAxis | MultiChannel);
+export type LineChartSpec = LineChartDomain & RangeTypesWithYAxis;
 
 const ScatterDomainRT = Record({
   domainType: Literal("Scatter"),
@@ -70,21 +77,19 @@ const ScatterDomainRT = Record({
   trendline: Boolean
 });
 export type ScatterChartDomain = Static<typeof ScatterDomainRT>;
-export type ScatterChartSpec = ScatterChartDomain &
-  (ColorScaledWithYAxis | MultiChannel);
+export type ScatterChartSpec = ScatterChartDomain & RangeTypesWithYAxis;
 
 const HistogramDomainRT = Record({
   domainType: Literal("Histogram"),
   nBins: Number
 });
 export type HistogramChartDomain = Static<typeof HistogramDomainRT>;
-export type HistogramChartSpec = HistogramChartDomain &
-  (ColorScaledWithYAxis | MultiChannel);
+export type HistogramChartSpec = HistogramChartDomain & RangeTypesWithYAxis;
 
 // TODO: Separate domain and range types into generic types... How to do that with runtypes???
 export const ChartSpecRT = TrackMapDomainRT.And(ColorScaledBaseRT).Or(
   Union(LineDomainRT, ScatterDomainRT, HistogramDomainRT).And(
-    Union(ColorScaledRT, MultiChannelRT)
+    RangeTypesWithYAxisRT
   )
 );
 export type ChartSpec = Static<typeof ChartSpecRT>;
