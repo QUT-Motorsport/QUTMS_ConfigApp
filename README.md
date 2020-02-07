@@ -1,6 +1,6 @@
 # QUTMS_ConfigApp
 
-![QUTMS_Banner](https://raw.githubusercontent.com/Technosasquach/QUTMS_Master/master/src/qutmsBanner.jpg)
+![ConfigApp](/wiki/banner.png)
 
 ## Table of Contents
 
