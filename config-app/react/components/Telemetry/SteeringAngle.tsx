@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider, Statistic } from "antd";
+import { Statistic } from "antd";
 import SteeringWheel from "../../public/images/steering-wheel.svg";
 import DividerBar from "../DividerBar";
 
@@ -12,7 +12,7 @@ const SteeringAngle = () => {
         flexDirection: "column"
       }}
     >
-      <h3 style={{ padding: "0", color: "#0F406A" }}>Steering Angle</h3>
+      <h3 style={{ color: "#0F406A" }}>Steering Angle</h3>
       <DividerBar />
 
       <div
@@ -23,9 +23,12 @@ const SteeringAngle = () => {
           alignItems: "center"
         }}
       >
+        {/* The Wheel SVG */}
         <div style={{ marginTop: "5px", width: "40%" }}>
           <SteeringWheel width="100px" height="100%" margin="0" padding="0" />
         </div>
+
+        {/* Angle Reading of Steering Wheel */}
         <div>
           <Statistic
             valueStyle={{ color: "#0F406A" }}

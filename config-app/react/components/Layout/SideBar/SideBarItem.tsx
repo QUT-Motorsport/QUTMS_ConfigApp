@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Layout, Icon, Menu } from "antd";
+import { Icon, Menu } from "antd";
 
 const SideBar = ({
   link,

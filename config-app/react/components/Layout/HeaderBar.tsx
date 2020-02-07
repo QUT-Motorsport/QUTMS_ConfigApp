@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Layout, Avatar } from "antd";
+import { Layout } from "antd";
 const { Header } = Layout;
-import UserInfo from "../Layout/UserInfo";
+import UserInfo from "./UserInfo";
 
 const HeaderBar = () => {
   return (

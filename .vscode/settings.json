@@ -9,6 +9,5 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "python.linting.enabled": true,
-  "python.pythonPath": "C:\\Users\\William\\Miniconda3\\envs\\qev3-config-app\\python.exe"
+  "python.linting.enabled": true
 }

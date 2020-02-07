@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { Select, Button, Modal, Icon, Input, Menu } from "antd";
-import { useState, useEffect } from "react";
-import { useQmsData, QmsData } from "../../ts/qmsData";
+import React from "react";
+import { Button, Modal, Icon, Input } from "antd";
+import { useState } from "react";
+import { QmsData } from "../../ts/qmsData";
 import { StateHook } from "../../ts/hooks";
 
 const { Option } = Select;

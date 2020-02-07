@@ -2,7 +2,7 @@ import "antd/dist/antd.css";
 
 import { ComponentType, ComponentProps } from "react";
 import { Layout } from "antd";
-import Header from "../components/Layout/Header";
+import Header from "../components/Layout/HeaderBar";
 import SideBar from "../components/Layout/SideBar/SideBar";
 
 const { Content } = Layout;
