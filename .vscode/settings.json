@@ -6,8 +6,7 @@
   ],
   "editor.formatOnSave": true,
   "python.formatting.provider": "black",
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "python.linting.enabled": true
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "python.linting.enabled": true,
+  "python.pythonPath": "C:\\Users\\n9464263\\.conda\\envs\\qev3-config-app\\python"
 }

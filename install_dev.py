@@ -47,7 +47,7 @@ if __name__ == "__main__":
     if cache_env is not None and cache_env.exists():
 
         if not target_env_dir.exists():
-            target_env_dir.mkdir()
+            target_env_dir.mkdir(parents=True)
 
         tarfile.open(cache_env, "r:gz").extractall(target_env_dir)
 
@@ -108,7 +108,9 @@ if __name__ == "__main__":
         + " && code --install-extension blanu.vscode-styled-jsx"
     )
 
+    with open("./.vscode/settings.json", "r") as vscode_settings_f:
+        vscode_settings = json.load(vscode_settings_f)
+
     with open("./.vscode/settings.json", "w") as vscode_settings_f:
-        vscode_settings = json.loads(vscode_settings_f)
         vscode_settings["python.pythonPath"] = f"{target_env_dir}\\python"
         json.dump(vscode_settings, vscode_settings_f)
