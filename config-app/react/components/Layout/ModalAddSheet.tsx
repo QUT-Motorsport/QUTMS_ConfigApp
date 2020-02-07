@@ -6,6 +6,8 @@ import { StateHook } from "../../ts/hooks";
 
 const { Option } = Select;
 
+// Modal for user input to create sheet
+// Returns input to AnalysisMenu workbooks.worksheets.name_sheet state array
 export default ({
   data,
   groupName,
@@ -19,6 +21,7 @@ export default ({
   _selectionState?: StateHook<string>;
   _visibleState?: StateHook<boolean>;
 }) => {
+  // returns input (sheet name) to Analysis Menu and the group it belongs to
   const onSubmit = (selection: string) => {
     setVisible(false);
     onCreateSheet(selection, groupName);

@@ -57,7 +57,7 @@ const AddChartModal = ({
           title="Add Chart"
           visible={visible}
           width={800}
-          onOk={onSubmit} //use this to handle add component
+          onOk={onSubmit}
           okButtonProps={{ disabled: !isValid }}
           onCancel={() => setVisible(false)}
         >
@@ -172,12 +172,12 @@ export default ({
   data ? (
     <>
       <div className="flex-container-menu">
+        {/* Side bar menu  */}
         <div>
           <AnalysisMenu data={data} />
         </div>
+        {/* Content of page - i.e. graphing/data goes here */}
         <div className="flex-container-analysis">
-          {/* <SubHeader /> */}
-
           <Timeline data={data} domainState={domainState} />
           {charts.map((chartSpec, idx) => (
             <Chart

@@ -6,6 +6,8 @@ import { StateHook } from "../../ts/hooks";
 
 const { Option } = Select;
 
+// Modal for user input to create group
+// Returns input to AnalysisMenu workbooks.name_book state array
 export default ({
   data,
   onCreate,
@@ -17,6 +19,7 @@ export default ({
   _selectionState?: StateHook<string>;
   _visibleState?: StateHook<boolean>;
 }) => {
+  // returns input (group name) to Analysis Menu
   const onSubmit = (selection: string) => {
     setVisible(false);
     onCreate(selection);
@@ -38,6 +41,7 @@ export default ({
           <Button
             key="submit"
             type="primary"
+            // submit will trigger a state change on 'selection' value (effectively adding the input to the workbooks array)
             onClick={() => onSubmit(selection)}
           >
             Submit
@@ -53,7 +57,9 @@ export default ({
               placeholder="Name of new group"
               style={{ width: 210, marginLeft: "15px" }}
               value={selection}
+              // set selection value to user input
               onChange={e => setSelection(e.target.value)}
+              // return key press will trigger a state change on 'selection' value (effectively adding the input to the workbooks array)
               onPressEnter={() => onSubmit(selection)}
             />
           </div>

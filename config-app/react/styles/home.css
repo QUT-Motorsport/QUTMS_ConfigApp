@@ -15,7 +15,7 @@
 
 .flex-container-analysis {
   display: flex;
-  width: 88%;
+  min-width: 88%;
   align-items: stretch;
   flex-direction: column;
 }

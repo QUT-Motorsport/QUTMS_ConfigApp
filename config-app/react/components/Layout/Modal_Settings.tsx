@@ -3,6 +3,7 @@ import { Select, Button, Modal, Avatar } from "antd";
 
 const { Option } = Select;
 
+// settings modal currently tied to the SubHeader component
 class ModalSettings extends Component {
   state = { visible: false };
 

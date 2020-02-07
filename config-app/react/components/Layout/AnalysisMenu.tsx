@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import ExplorerGroup from "../Layout/Explorer/ExplorerGroup";
 import ExplorerItem from "../Layout/Explorer/ExplorerItem";
 import SubMenu from "antd/lib/menu/SubMenu";
-import DividerBar from "../DividerBar";
 import { Menu, Icon, Popconfirm, message, Layout } from "antd";
 import { useState } from "react";
 import { StateHook } from "../../ts/hooks";
@@ -12,8 +11,10 @@ import ModalAddSheet from "./ModalAddSheet";
 
 const { Header, Content, Footer, Sider } = Layout;
 
+// object to hold all side menu data
 type Workbook = { name_book: string; worksheets: { name_sheet: string }[] };
 
+// renders the analysis side menu
 export default ({
   data,
   _collapsedState: [collapsed, setCollapsed] = useState<boolean>(false),
@@ -23,10 +24,13 @@ export default ({
   _collapsedState?: StateHook<boolean>;
   _workbooksState?: StateHook<Workbook[]>;
 }) => {
+  // append new input to workbooks array while preserving existing state
+  // this is passed to the ModalCreateGroup modal to retrieve user input
   const onCreate = (selection: string) => {
     setWorkbooks([...workbooks, { name_book: selection, worksheets: [] }]);
   };
 
+  // append to worksheet array
   const onCreateSheet = (selection: string, groupName: string) => {
     for (let i = 0; i < workbooks.length; i++) {
       if (workbooks[i].name_book == groupName) {
@@ -37,6 +41,7 @@ export default ({
     setWorkbooks([...workbooks]);
   };
 
+  // remove from workbook array
   const deleteGroup = (groupName: string) => {
     for (var i = 0; i < workbooks.length; i++) {
       if (workbooks[i].name_book == groupName) {
@@ -48,6 +53,7 @@ export default ({
     setWorkbooks([...workbooks]);
   };
 
+  // remove from worksheet array
   const deleteSheet = (sheetName: string) => {
     for (var i = 0; i < workbooks.length; i++) {
       for (var x = 0; x < workbooks[i].worksheets.length; x++) {
@@ -61,6 +67,7 @@ export default ({
     setWorkbooks([...workbooks]);
   };
 
+  // generate list of current group names (for openKeys)
   const returnGroups = () => {
     var bookNames: string[] = [];
     workbooks.map(names => bookNames.push(names.name_book));
@@ -97,8 +104,8 @@ export default ({
               textOverflow: "ellipsis"
             }}
           >
-            Electical Workbook
-            {/* {data.filename} */}
+            {/* This should probably be made editable */}
+            {data.filename}
           </h3>
           <span
             style={{
@@ -112,12 +119,14 @@ export default ({
           </span>
         </div>
 
+        {/* Dynamic Group/Sheet Menu */}
         <Menu
           theme="dark"
           mode="inline"
           openKeys={returnGroups()}
           style={{ backgroundColor: "#0F406A" }}
         >
+          {/* for each group in the current workbooks array, render the group as its own submenu */}
           {workbooks.map(group => (
             <SubMenu
               key={group.name_book}
@@ -125,6 +134,7 @@ export default ({
                 <>
                   <Icon type="diff" />
                   <span>{group.name_book}</span>
+                  {/* delete sheet button */}
                   <Popconfirm
                     title="Are you sure you want to delete this group?"
                     onConfirm={() => deleteGroup(group.name_book)}
@@ -136,6 +146,7 @@ export default ({
                       style={{ float: "right", marginTop: "14px" }}
                     ></Icon>
                   </Popconfirm>
+                  {/* add worksheets button */}
                   <ModalAddSheet
                     data={data}
                     groupName={group.name_book}
@@ -144,6 +155,7 @@ export default ({
                 </>
               }
             >
+              {/* for each worksheet in the current group, render the sheet name as its own Menu.Item */}
               {group.worksheets.map(worksheet => (
                 <Menu.Item
                   key={worksheet.name_sheet}
@@ -155,6 +167,7 @@ export default ({
                 >
                   <Icon type="diff" />
                   {worksheet.name_sheet}
+                  {/* delete sheet button */}
                   <Popconfirm
                     title="Are you sure you want to delete this sheet?"
                     onConfirm={() => deleteSheet(worksheet.name_sheet)}
@@ -170,6 +183,7 @@ export default ({
               ))}
             </SubMenu>
           ))}
+          {/* Import button */}
           <ExplorerItem
             name="Import"
             iconType="import"
@@ -181,7 +195,7 @@ export default ({
               marginLeft: "80px"
             }}
           />
-
+          {/* Houses the group add button/modal */}
           <Menu.Item
             style={{
               position: "fixed",
