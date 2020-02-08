@@ -4,7 +4,7 @@ from sanic_cors import CORS
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from qev2.ldparser import read_ldfile
+from motec.ldparser import read_ldfile
 
 load_dotenv()
 

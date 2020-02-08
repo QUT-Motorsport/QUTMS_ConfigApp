@@ -5,9 +5,9 @@ import {
   WorkspaceTabbedModel
 } from "@projectstorm/react-workspaces";
 
-import { DefaultWorkspacePanelFactory } from "./WorkSpace/DefaultWorkspacePanelFactory";
-import { DefaultWorkspacePanelModel } from "./WorkSpace/DefaultWorkspacePanelModel";
-import { DefaultTrayFactory } from "./WorkSpace/DefaultTrayFactory";
+import { DefaultWorkspacePanelFactory } from "./DefaultWorkspacePanelFactory";
+import { DefaultWorkspacePanelModel } from "./DefaultWorkspacePanelModel";
+import { DefaultTrayFactory } from "./DefaultTrayFactory";
 
 export default () => {
   const engine = new WorkspaceEngine();

@@ -39,12 +39,7 @@ export class DefaultWorkspacePanelFactory extends WorkspacePanelFactory<
 
   generateMicroButton = (
     event: GenerateMicroButtonEvent<DefaultWorkspacePanelModel>
-  ) => (
-    <DefaultPanelMicroButtonWidget
-      selected={event.selected}
-      icon={event.model.icon}
-    />
-  );
+  ) => <DefaultPanelMicroButtonWidget selected={event.selected} icon={"poo"} />;
 
   generateModel = () => new DefaultWorkspacePanelModel("Test");
 }

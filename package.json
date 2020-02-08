@@ -16,6 +16,10 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.27",
+    "@emotion/styled": "^10.0.27",
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/react-fontawesome": "^0.1.8",
     "@jupyter-widgets/base": "^2.0.2",
     "@jupyter-widgets/html-manager": "^0.18.4",
     "@jupyterlab/services": "^4.2.0",

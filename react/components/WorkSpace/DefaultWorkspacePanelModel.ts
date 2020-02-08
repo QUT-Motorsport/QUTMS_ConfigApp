@@ -1,4 +1,3 @@
-import { IconName } from "@fortawesome/free-solid-svg-icons";
 import {
   WorkspaceModel,
   WorkspaceEngine
@@ -6,24 +5,20 @@ import {
 
 export class DefaultWorkspacePanelModel extends WorkspaceModel {
   displayName: string;
-  icon: IconName;
 
-  constructor(displayName: string, icon: IconName = "cube") {
+  constructor(displayName: string) {
     super("default");
     this.displayName = displayName;
-    this.icon = icon;
     this.setExpand(false, true);
   }
 
   toArray = () => ({
     ...super.toArray(),
-    displayName: this.displayName,
-    icon: this.icon
+    displayName: this.displayName
   });
 
   fromArray(payload: any, engine: WorkspaceEngine) {
     super.fromArray(payload, engine);
     this.displayName = payload["displayName"];
-    this.icon = payload["icon"];
   }
 }

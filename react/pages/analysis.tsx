@@ -144,7 +144,7 @@ export default ({
           <BaseChart
             key={idx}
             data={data}
-            // domainState={domainState}
+            domainState={domainState}
             spec={chartSpec}
           />
         ))}
