@@ -53,10 +53,10 @@ The final installer runs in a regular command prompt. If you click on it, it wil
 
 <div style="display:flex">
      <div style="flex:1;padding-right:5px;">
-          <img src="./wiki/DisableQuickEdit1.png">
+          <img src="https://github.com/QUT-Motorsport/QUTMS_ConfigApp/raw/master/wiki/disableQuickEdit1.png">
      </div>
      <div style="flex:1;padding-left:5px;">
-          <img src="./wiki/DisableQuickEdit2.png">
+          <img src="https://github.com/QUT-Motorsport/QUTMS_ConfigApp/raw/master/wiki/disableQuickEdit2.png">
      </div>
 </div>
 
