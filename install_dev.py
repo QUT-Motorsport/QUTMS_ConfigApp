@@ -8,10 +8,15 @@ import json
 
 JUPYTER_LABEXTENSION_PKGS = {
     "@jupyter-widgets/jupyterlab-manager": "1.0.3",
-    "bqplot": "0.5.2",
     "jupyterlab-plotly": "1.4.0",
     "plotlywidget": "1.4.0",
 }
+
+VSCODE_EXTENSIONS = [
+    "ms-python.python",
+    "esbenp.prettier-vscode",
+    "blanu.vscode-styled-jsx",
+]
 
 
 def call(cmd, **kwargs):
@@ -91,8 +96,7 @@ if __name__ == "__main__":
             f' && jupyter labextension install {" ".join(labextensions_install_list)}'
             if any(labextensions_install_list)
             else ""
-        ),
-        cwd=Path(__file__).parent / "config-app",
+        )
     )
 
     # if env_cache was specified, use conda-pack to update / create the cache
@@ -102,11 +106,7 @@ if __name__ == "__main__":
         )
 
     # install vscode extensions helpful for development
-    call(
-        "code --install-extension ms-python.python"
-        + " && code --install-extension esbenp.prettier-vscode"
-        + " && code --install-extension blanu.vscode-styled-jsx"
-    )
+    call(" && ".join([f"code --install-extension {ext}" for ext in VSCODE_EXTENSIONS]))
 
     with open("./.vscode/settings.json", "r") as vscode_settings_f:
         vscode_settings = json.load(vscode_settings_f)

@@ -2,3 +2,9 @@ node_modules
 *.pyc
 .ipynb_checkpoints
 .vscode
+__pycache__
+*.log
+.next
+app
+dist
+pythondist

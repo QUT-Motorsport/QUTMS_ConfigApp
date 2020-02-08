@@ -1,18 +1,43 @@
 # QUTMS_ConfigApp
 
-![QUTMS_Banner](https://raw.githubusercontent.com/Technosasquach/QUTMS_Master/master/src/qutmsBanner.jpg)
+![ConfigApp](/wiki/banner.png)
 
-## Setup Development Environment
+## Table of Contents
+
+- [Project Architecture and Release Plan](#architecture-and-release-plan)
+- [Development Environment Setup](#dev-env-setup)
+
+  - [Windows Install Bundle](#windows-install-bundle)
+  - [Cross-Platform Install Script](#cross-platform-install-script)
+  - [Manual Installation](#manual-installation)
+  - [Environment Activation](#environment-activation)
+
+- [App Development](#app-development)
+
+  - [As Website](#development-as-website)
+  - [As Electron App](#development-as-electron-app)
+  - [Editing the Frontend / UI (Typescript & React)](#editing-frontend)
+  - [Editing the Backend (Python & Sanic WebServer)](#editing-backend)
+
+- [Building Production App](#building-production)
+- [Want to Get Involved?](#getting-involved)
+
+<a name="architecture-and-release-plan"></a>
+
+## Project Architecture and Release Plan
+
+![Architecture Diagram](/wiki/the_plan.png)
+
+<a name="dev-env-setup"></a>
+
+## Development Environment Setup
 
 First you will want to have 3 things installed.
 
 - [git](https://git-scm.com/download)
-- [vscode](https://code.visualstudio.com/)
+- [vscode](https://code.visualstudio.com/) (recommended)
 - and [conda](https://docs.conda.io/en/latest/miniconda.html) (if installing on windows, selecting `ADD TO PATH (not recommended)`
   during the installation is actually recommended by us. Although it can cause issues, it makes everything else easier.)
-
-If you are using the university computers to develop, we recommend saving the installers for these programs on your network `H:\` drive
-so that you can quickly install them between sessions like so:
 
 ![example of installers folder on H drive](/wiki/qut_tips_installers.PNG)
 
@@ -27,15 +52,45 @@ So if you are using the uni computers I recommend providing a cache path to the 
 python install_dev.py --cache-env=H:\qev3-config-app.tar.gz
 ```
 
-If you're installing to a personal computer, the cache can be ommitted:
+<a name="windows-install-bundle"></a>
+
+### Windows Install bundle
+
+If you are using the university computers to develop, we recommend saving the installers for these programs on your network `H:\` drive
+so that you can quickly install them between sessions like so:
+
+<a name="cross-platform-install-script"></a>
+
+### Cross-Platform Install Script
 
 ```bash
 python install_dev.py
 ```
 
-### Activate Conda Environment
+<a name="manual-installation"></a>
 
-**_THIS MUST BE DONE BEFORE RUNNING ANY OTHER COMMAND RELATED TO THE CONFIG APP IN THE TERMINAL, EVERY TIME YOU OPEN A NEW TERMINAL_**
+### Manual Installation
+
+If you don't trust us to install the dev environment for you, or something goes wrong, you can do it manually.
+
+The first step is to install the conda environment from the `environment.yml`:
+
+```
+conda env update -f environment.yml
+```
+
+The second step is to install the npm packages for the app itself:
+
+```
+conda activate qev3-config-app
+npm i
+```
+
+<a name="environment-activation"></a>
+
+### Environment Activation
+
+_*THIS MUST BE DONE BEFORE RUNNING ANY OTHER COMMAND RELATED TO THE CONFIG APP IN THE TERMINAL, EVERY TIME YOU OPEN A NEW TERMINAL*_
 
 ```bash
 conda activate qev3-config-app
@@ -45,47 +100,50 @@ Or, if you are using vscode as we recommend, this repository includes vscode set
 
 ![allow_shell_injection_vscode](/wiki/allow_shell_injection.png)
 
-## Project Overview
+You have to then open up a new terminal for the auto-activation t take effect.
 
-![Architecture Diagram](/wiki/the_plan.png)
+<a name="app-development"></a>
 
-## Run config-app as website in development mode (hot-reloading)
+## App Development
+
+<a name="development-as-website"></a>
+
+### As website
 
 ```bash
 # in the `config-app` directory
 npm run dev
 ```
 
-## Run config-app as electron-app in development mode (cold reloading)
+This is recommended over electron-app as it includes hot-module-reloading
+
+<a name="development-as-electron-app"></a>
+
+### As electron app
 
 ```bash
 # in the `config-app` directory
 npm run dev:electron
 ```
 
-## Editing the Frontend/UI (Typescript & React Development)
+<a name="editing-frontend"></a>
 
-All the top-level page components are in `qev2-config/react/pages/`. These page components may also import re-usable React components that are defined in `qev2-config/react/components/`. Open them in your favourite editor (VSCode is recommended). If you have run the app in development mode, editing any of these pages and saving the file (ctrl-s) will cause the development app to restart and show your changes.
+### Editing the Frontend / UI (Typescript & React)
 
-## Editing the Backend (Python & Sanic WebServer Development)
+All the top-level page components are in `config-app/react/pages/`. These page components may also import re-usable React components that are defined in `config-app/react/components/`.
 
-To make changes to the backend, edit the files in `qev2-config/python/`. The main python file is `qev2-config/python/api.py` which contains a Sanic server.
+Open them in your favourite editor (VSCode is recommended). If you have run the app in development mode, editing any of these pages and saving the file (ctrl-s) will cause the development app to restart and show your changes. Hot-reloading is currently pretty slow and we're working to fix that.
 
-## Experimentation via Jupyter Lab
+When writing your React components, please stick to functional components!
+Using pure functional components with hooks is the new and best way to write react components since 2019. Please check [this guide](https://www.valentinog.com/blog/hooks/) to understand how to implement traditional class components as functional components.
 
-Then open the browser-based IDE with:
+<a name="editing-backend"></a>
 
-```bash
-jupyter lab notebooks
-```
+### Editing the Backend (Python & Sanic WebServer)
 
-Jupyter-lab makes incremental research and development super easy and intuitive (imo). Widgets are great for incremental data-analysis and visualization. To make one, its easiest develop them in a notebook (`.ipynb` file in the `notebooks` folder) and then move it into its own `.py` file in the `widgets` folder when you are happy with the results, so that it can be used by the React/Flask app as well.
+To make changes to the backend, edit the files in `config-app/python/`. The main python file is `config-app/python/api.py` which contains a Sanic server.
 
-The main 3 widget libraries I would recommend having a look at are:
-
-- [ipywidgets](https://ipywidgets.readthedocs.io/en/latest/examples/Widget%20Basics.html) - Buttons, Sliders, Dropdowns, general UI
-- [bqplot](https://bqplot.readthedocs.io/en/latest/) - Incredibly interactive 2D plotting library by Bloomberg Financial
-- [plotly](https://plot.ly/python/) - Easy to use 2D/3D plotting library by plotly. Not as interactive as bqplot but more efficient front-end and better default user experience. Integrates with the `pandas DataFrame` api. Interaction is described decleratively wheras with BQplot the majority of animation is done mutatively through python callbacks.
+<a name="building-production"></a>
 
 ## Installing the Electron app permanently
 
@@ -97,6 +155,8 @@ First you need to build the desktop application for the desired operating system
 - Linux: `npm run build:linux`
 
 Then check the `dist` folder for resulting install packages for your desired platform
+
+<a name="getting-involved"></a>
 
 ## Want to Get Involved?
 

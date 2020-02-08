@@ -4,16 +4,11 @@ from sanic_cors import CORS
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-import sys
+from qev2.ldparser import read_ldfile
 
 load_dotenv()
 
-DIR = Path(__file__).parent
-sys.path.append(str((DIR / "../..").resolve()))
-
-from qev3.ldparser import read_ldfile
-
-head, channels = read_ldfile(DIR / "Sample.ld")
+head, channels = read_ldfile(Path(__file__).parent / "Sample.ld")
 
 
 app = Sanic(__name__)
