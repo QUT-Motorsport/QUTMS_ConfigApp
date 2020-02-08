@@ -5,66 +5,75 @@ import {
   TrackMapSpec,
   LineChartSpec,
   ScatterChartSpec,
-  HistogramChartSpec
+  HistogramChartSpec,
+  Domain
 } from "./chartTypes";
 import { Polygon } from "geojson";
 
 export const THROTTLE_POS_CH_IDX = 42;
 export const GROUND_SPEED_CH_IDX = 44;
 
-export const defaultBaseColorScaled: ColorScaledBase = {
+export const DEFAULT_BASE_COLOR_SCALED: ColorScaledBase = {
   rangeType: "Colour-Scaled",
   nColorBins: 10,
   colorAxis: THROTTLE_POS_CH_IDX
 };
 
-const defaultColorScaled: ColorScaledWithYAxis = {
-  ...defaultBaseColorScaled,
+export const DEFAULT_COLOR_SCALED: ColorScaledWithYAxis = {
+  ...DEFAULT_BASE_COLOR_SCALED,
   yAxis: GROUND_SPEED_CH_IDX
 };
 
-const defaultMultiChannel: MultiChannel = {
+export const DEFAULT_MULTI_CHANNEL: MultiChannel = {
   rangeType: "Multi-Channel",
   yAxes: [[GROUND_SPEED_CH_IDX]]
 };
 
-export const defaultRangeTypes = {
-  "Colour-Scaled": defaultColorScaled,
-  "Multi-Channel": defaultMultiChannel
+export const DEFAULT_RANGE_TYPES = {
+  "Colour-Scaled": DEFAULT_COLOR_SCALED,
+  "Multi-Channel": DEFAULT_MULTI_CHANNEL
 };
 
-const defaultTrackMap: TrackMapSpec = {
+export const DEFAULT_DOMAIN_CHART: Domain = {
+  title: ""
+};
+
+export const DEFAULT_TRACK_MAP: TrackMapSpec = {
+  ...DEFAULT_DOMAIN_CHART,
   domainType: "Track-Map",
   map: {
     inner: (null as unknown) as Polygon,
     outer: (null as unknown) as Polygon
   }, // TODO: populate with real data
   segments: 100,
-  ...defaultBaseColorScaled
+  ...DEFAULT_BASE_COLOR_SCALED
 };
 
-const defaultLineChart: LineChartSpec = {
+export const DEFAULT_LINE_CHART: LineChartSpec = {
+  ...DEFAULT_DOMAIN_CHART,
   domainType: "Line",
   xAxis: "Time",
-  ...defaultRangeTypes["Multi-Channel"]
+  ...DEFAULT_MULTI_CHANNEL
 };
 
-const defaultScatterChart: ScatterChartSpec = {
+export const DEFAULT_SCATTER_CHART: ScatterChartSpec = {
+  ...DEFAULT_DOMAIN_CHART,
   domainType: "Scatter",
   trendline: false,
   xAxis: GROUND_SPEED_CH_IDX,
-  ...defaultRangeTypes["Colour-Scaled"]
+  ...DEFAULT_COLOR_SCALED
 };
 
-const defaultHistogramChart: HistogramChartSpec = {
+export const DEFAULT_HISTOGRAM_CHART: HistogramChartSpec = {
+  ...DEFAULT_DOMAIN_CHART,
   domainType: "Histogram",
   nBins: 7,
-  ...defaultRangeTypes["Multi-Channel"]
+  ...DEFAULT_MULTI_CHANNEL
 };
 
-export const defaultCharts = {
-  "Track-Map": defaultTrackMap,
-  Line: defaultLineChart,
-  Scatter: defaultScatterChart,
-  Histogram: defaultHistogramChart
+export const DEFAULT_CHARTS = {
+  "Track-Map": DEFAULT_TRACK_MAP,
+  Line: DEFAULT_LINE_CHART,
+  Scatter: DEFAULT_SCATTER_CHART,
+  Histogram: DEFAULT_HISTOGRAM_CHART
 };

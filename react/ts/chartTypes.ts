@@ -7,7 +7,8 @@ import {
   Array,
   Record,
   Boolean,
-  Unknown
+  Unknown,
+  String
 } from "runtypes";
 import { Polygon } from "geojson";
 
@@ -52,37 +53,48 @@ type RangeTypesWithYAxis = Static<typeof RangeTypesWithYAxisRT>;
 // TODO if necessary: don't assume true
 const isGeoJsonPolygon = (_poly: unknown): _poly is Polygon => true;
 
-const TrackMapDomainRT = Record({
-  domainType: Literal("Track-Map"),
-  map: Record({
-    inner: Unknown.withGuard(isGeoJsonPolygon),
-    outer: Unknown.withGuard(isGeoJsonPolygon)
-  }),
-  segments: Number // maps are filled in in sections, can't be done otherwise
-});
+const DomainRT = Record({ title: String });
+export type Domain = Static<typeof DomainRT>;
+
+const TrackMapDomainRT = DomainRT.And(
+  Record({
+    domainType: Literal("Track-Map"),
+    map: Record({
+      inner: Unknown.withGuard(isGeoJsonPolygon),
+      outer: Unknown.withGuard(isGeoJsonPolygon)
+    }),
+    segments: Number // maps are filled in in sections, can't be done otherwise
+  })
+);
 export type TrackMapDomain = Static<typeof TrackMapDomainRT>;
 export type TrackMapSpec = TrackMapDomain & Static<typeof ColorScaledBaseRT>;
 
 export const LineDomainXAxisRT = Union(Literal("Time"), Literal("Distance"));
-const LineDomainRT = Record({
-  domainType: Literal("Line"),
-  xAxis: LineDomainXAxisRT
-});
+const LineDomainRT = DomainRT.And(
+  Record({
+    domainType: Literal("Line"),
+    xAxis: LineDomainXAxisRT
+  })
+);
 export type LineChartDomain = Static<typeof LineDomainRT>;
 export type LineChartSpec = LineChartDomain & RangeTypesWithYAxis;
 
-const ScatterDomainRT = Record({
-  domainType: Literal("Scatter"),
-  xAxis: ChannelIdxRT,
-  trendline: Boolean
-});
+const ScatterDomainRT = DomainRT.And(
+  Record({
+    domainType: Literal("Scatter"),
+    xAxis: ChannelIdxRT,
+    trendline: Boolean
+  })
+);
 export type ScatterChartDomain = Static<typeof ScatterDomainRT>;
 export type ScatterChartSpec = ScatterChartDomain & RangeTypesWithYAxis;
 
-const HistogramDomainRT = Record({
-  domainType: Literal("Histogram"),
-  nBins: Number
-});
+const HistogramDomainRT = DomainRT.And(
+  Record({
+    domainType: Literal("Histogram"),
+    nBins: Number
+  })
+);
 export type HistogramChartDomain = Static<typeof HistogramDomainRT>;
 export type HistogramChartSpec = HistogramChartDomain & RangeTypesWithYAxis;
 

@@ -37,7 +37,7 @@ export const useQmsData = (filename: string): QmsData | null => {
         channel.idx = idx;
       });
       setQmsData({
-        ...(await get(`qms/${filename}`)),
+        ...data,
         filename
       });
     })();

@@ -48,14 +48,16 @@ export default ({
           ) : null}
         </div>
       ))}
-      <Button
-        onClick={() => {
-          spec.yAxes.push([]);
-          setSpec({ ...spec });
-        }}
-      >
-        Add Y Axis
-      </Button>
+      {spec.yAxes.length < 2 ? (
+        <Button
+          onClick={() => {
+            spec.yAxes.push([]);
+            setSpec({ ...spec });
+          }}
+        >
+          Add Y Axis
+        </Button>
+      ) : null}
     </Form.Item>
   </div>
 );

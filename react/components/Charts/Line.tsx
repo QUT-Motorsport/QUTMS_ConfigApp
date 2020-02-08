@@ -40,7 +40,7 @@ export default ({
   channelGroup ? (
     <Plot
       data={channelGroup.channels.map(({ channel, y }) => ({
-        name: `${channel.name} [${channel.freq}]`,
+        name: channel.name,
         x: channelGroup.x,
         y: y,
         yaxis: `y${RangeTypesWithYAxisRT.match(
@@ -54,6 +54,7 @@ export default ({
       }))}
       useResizeHandler={true}
       layout={{
+        title: spec.title,
         xaxis: {
           title: spec.xAxis === "Time" ? "Time (s)" : "Distance (m)",
           range: domain,
@@ -71,10 +72,12 @@ export default ({
           ({ yAxes }) => {
             const axesLayout: any = {};
 
-            yAxes.forEach((yAxis, idx) => {
+            yAxes.forEach((_, idx) => {
               const axisNo = idx + 1;
               axesLayout[`yaxis${axisNo}`] = {
-                title: `Axis ${axisNo}`
+                overlaying: idx > 0 ? "y" : undefined,
+                side: idx % 2 === 0 ? "left" : "right",
+                range: idx === 0 ? range : undefined
               };
             });
 
@@ -86,29 +89,9 @@ export default ({
         width: "100%",
         height: "450px"
       }}
-      onRelayout={(e: any) => {
-        [
-          { name: "xaxis", set: setDomain },
-          { name: "yaxis", set: setRange }
-        ].forEach(({ name, set }) => {
-          if (set !== undefined) {
-            // axisChange events come in 3 consumable forms
-            const event_newrange_attr = `${name}.range`;
-            const event_newrange_attrs = [
-              `${name}.range[0]`,
-              `${name}.range[1]`
-            ];
-            const event_resetrange_attr = `${name}.autorange`;
-
-            if (event_newrange_attr in e) {
-              set(e[event_newrange_attr]);
-            } else if (event_newrange_attrs.every(attr => attr in e)) {
-              set(event_newrange_attrs.map(attr => e[attr]) as Range);
-            } else if (event_resetrange_attr in e) {
-              set(undefined); // if axis range == undefined, plotly sets it to 100%
-            }
-          }
-        });
+      onUpdate={(e: any) => {
+        setDomain(e.layout.xaxis.range);
+        setRange(e.layout.yaxis.range);
       }}
     />
   ) : (

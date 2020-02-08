@@ -2,13 +2,12 @@ import { Button, Modal, Spin } from "antd";
 import dynamic from "next/dynamic";
 import { ComponentProps, useState } from "react";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
-import Explorer from "../components/Layout/Explorer/Explorer";
 import SubHeader from "../components/Layout/SubHeader";
 import Head from "next/head";
 import { ChartSpec, Range, LineChartSpec } from "../ts/chartTypes";
 import { StateHook } from "../ts/hooks";
 import { QmsData, useQmsData } from "../ts/qmsData";
-import { GROUND_SPEED_CH_IDX, defaultCharts } from "../ts/defaults";
+import { GROUND_SPEED_CH_IDX, DEFAULT_LINE_CHART } from "../ts/defaults";
 
 import BaseChartEditor from "../components/Charts/Editors/Base";
 
@@ -26,13 +25,14 @@ const AddChartModal = ({
   onAddChartSpec,
   data,
   _visibleState: [visible, setVisible] = useState<boolean>(false),
-  _chartSpecState: chartSpecState = useState<ChartSpec>(defaultCharts["Line"])
+  _chartSpecState: chartSpecState = useState<ChartSpec>(DEFAULT_LINE_CHART)
 }: {
   onAddChartSpec: (type: ChartSpec) => void;
   data: QmsData;
   _visibleState?: StateHook<boolean>;
   _chartSpecState?: StateHook<ChartSpec>;
 }) => {
+  const [chartSpec, setChartSpec] = chartSpecState;
   return (
     <div className="root">
       <style jsx>{`
@@ -52,17 +52,22 @@ const AddChartModal = ({
         title="Add Chart"
         visible={visible}
         width={800}
-        onOk={() => setVisible(false)} // use this to handle add component
+        onOk={() => {
+          onAddChartSpec(chartSpec);
+          setChartSpec(DEFAULT_LINE_CHART);
+          setVisible(false);
+        }} // use this to handle add component
         onCancel={() => setVisible(false)}
       >
         <BaseChartEditor data={data} specState={chartSpecState} />
-        <BaseChart data={data} spec={chartSpecState[0]} />
+        <BaseChart data={data} spec={chartSpec} />
       </Modal>
     </div>
   );
 };
 
 const TIMELINE_SPEC: LineChartSpec = {
+  title: "",
   domainType: "Line",
   xAxis: "Time",
   rangeType: "Multi-Channel",

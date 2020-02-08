@@ -1,9 +1,9 @@
-import { Form, Radio } from "antd";
+import { Form, Radio, Input } from "antd";
 
 import { QmsData } from "../../../ts/qmsData";
 import { ChartSpec, ChartSpecRT, ColorScaled } from "../../../ts/chartTypes";
 import { StateHook } from "../../../ts/hooks";
-import { defaultRangeTypes, defaultCharts } from "../../../ts/defaults";
+import { DEFAULT_RANGE_TYPES, DEFAULT_CHARTS } from "../../../ts/defaults";
 
 import TrackMap from "./Domain/TrackMap";
 import Line from "./Domain/Line";
@@ -45,18 +45,32 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
         }
       `}</style>
       <Form labelCol={{ xs: { span: 6 } }}>
+        <Form.Item
+          label="Title"
+          wrapperCol={{ xs: { span: 18 }, sm: { span: 11 } }}
+        >
+          <Input
+            value={chartSpec.title}
+            onChange={e =>
+              setChartSpec({
+                ...chartSpec,
+                title: e.target.value
+              })
+            }
+          />
+        </Form.Item>
         <Form.Item label="Chart Type" wrapperCol={{ xs: { span: 18 } }}>
           <Radio.Group
             value={chartSpec.domainType}
             onChange={e => {
-              const domainType: keyof typeof defaultCharts = e.target.value;
+              const domainType: keyof typeof DEFAULT_CHARTS = e.target.value;
               setChartSpec({
                 ...chartSpec,
-                ...defaultCharts[domainType]
+                ...DEFAULT_CHARTS[domainType]
               } as ChartSpec);
             }}
           >
-            {Object.keys(defaultCharts).map((domainType, idx) => (
+            {Object.keys(DEFAULT_CHARTS).map((domainType, idx) => (
               <Radio key={idx} value={domainType}>
                 {domainType}
               </Radio>
@@ -82,15 +96,15 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
                 <Radio.Group
                   value={chartSpec.rangeType}
                   onChange={e => {
-                    const rangeType: keyof typeof defaultRangeTypes =
+                    const rangeType: keyof typeof DEFAULT_RANGE_TYPES =
                       e.target.value;
                     setChartSpec({
                       ...chartSpec,
-                      ...defaultRangeTypes[rangeType]
+                      ...DEFAULT_RANGE_TYPES[rangeType]
                     } as ChartSpec);
                   }}
                 >
-                  {Object.keys(defaultRangeTypes).map((rangeType, idx) => (
+                  {Object.keys(DEFAULT_RANGE_TYPES).map((rangeType, idx) => (
                     <Radio key={idx} value={rangeType}>
                       {rangeType}
                     </Radio>
