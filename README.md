@@ -45,21 +45,20 @@ First you will want to have 3 things installed.
 
 A bundle of everything you need to get started on windows is downloadable from [Callum Hays' Google Drive Here](https://drive.google.com/open?id=1zfqokZkqXZxnlcENICYbVcJj3-7xquXT)
 
-If you are using the university computers to develop, we recommend saving the installers for these programs on your network `H:\` drive
-so that you can quickly install them between sessions like so:
+The extracted bundle contains multiple installers and are prefaced by the order in which you need to run them. You can skip any of these that you already have installed (except the last one).
 
-![example of installers folder on H drive](/wiki/qut_tips_installers.PNG)
+![WindowsInstallerBundle](/wiki/WindowsInstallerBundle.png)
 
-Notice the `qev3-config-app.tar.gz` in that folder? Installation can take a while,
-so we provide a method to cache project installs on the network drive (`H:\`),
-and load them back onto the session drive (`C:\`) where your fresh conda install resides. This lets you skip the most lengthy parts
-of the installation after the first install on QUT's computers, and still gives you a fast conda environment to work with.
+The final installer runs in a regular command prompt. If you click on it, it will pause the installation. This is a "Windows Feature" called Quick-Edit that you can either avoid by not clicking, typing keypresses in the window to resume the installation, or disable entirely through the command prompt 'Properties' menu:
 
-So if you are using the uni computers I recommend providing a cache path to the installer. This will create the file if it doesn't exist, or use it and update it with any dependency changes if it does:
-
-```bash
-python install_dev.py --cache-env=H:\qev3-config-app.tar.gz
-```
+<div style="display:flex">
+     <div style="flex:1;padding-right:5px;">
+          <img src="./wiki/DisableQuickEdit1.png">
+     </div>
+     <div style="flex:1;padding-left:5px;">
+          <img src="./wiki/DisableQuickEdit2.png">
+     </div>
+</div>
 
 <a name="cross-platform-install-script"></a>
 
