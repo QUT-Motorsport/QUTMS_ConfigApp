@@ -39,6 +39,15 @@ First you will want to have 3 things installed.
 - and [conda](https://docs.conda.io/en/latest/miniconda.html) (if installing on windows, selecting `ADD TO PATH (not recommended)`
   during the installation is actually recommended by us. Although it can cause issues, it makes everything else easier.)
 
+<a name="windows-install-bundle"></a>
+
+### Windows Install bundle
+
+A bundle of everything you need to get started on windows is downloadable from [Callum Hays' Google Drive Here](https://drive.google.com/open?id=1zfqokZkqXZxnlcENICYbVcJj3-7xquXT)
+
+If you are using the university computers to develop, we recommend saving the installers for these programs on your network `H:\` drive
+so that you can quickly install them between sessions like so:
+
 ![example of installers folder on H drive](/wiki/qut_tips_installers.PNG)
 
 Notice the `qev3-config-app.tar.gz` in that folder? Installation can take a while,
@@ -52,16 +61,12 @@ So if you are using the uni computers I recommend providing a cache path to the 
 python install_dev.py --cache-env=H:\qev3-config-app.tar.gz
 ```
 
-<a name="windows-install-bundle"></a>
-
-### Windows Install bundle
-
-If you are using the university computers to develop, we recommend saving the installers for these programs on your network `H:\` drive
-so that you can quickly install them between sessions like so:
-
 <a name="cross-platform-install-script"></a>
 
 ### Cross-Platform Install Script
+
+This install script is cross-platform, and should work on windows, mac or linux.
+All the aforementioned requirements are... required =)
 
 ```bash
 python install_dev.py
