@@ -115,7 +115,6 @@ You have to then open up a new terminal for the auto-activation t take effect.
 ### As website
 
 ```bash
-# in the `config-app` directory
 npm run dev
 ```
 
@@ -126,7 +125,6 @@ This is recommended over electron-app as it includes hot-module-reloading
 ### As electron app
 
 ```bash
-# in the `config-app` directory
 npm run dev:electron
 ```
 
@@ -134,7 +132,7 @@ npm run dev:electron
 
 ### Editing the Frontend / UI (Typescript & React)
 
-All the top-level page components are in `config-app/react/pages/`. These page components may also import re-usable React components that are defined in `config-app/react/components/`.
+All the top-level page components are in `react/pages/`. These page components may also import re-usable React components that are defined in `react/components/`.
 
 Open them in your favourite editor (VSCode is recommended). If you have run the app in development mode, editing any of these pages and saving the file (ctrl-s) will cause the development app to restart and show your changes. Hot-reloading is currently pretty slow and we're working to fix that.
 
@@ -145,7 +143,7 @@ Using pure functional components with hooks is the new and best way to write rea
 
 ### Editing the Backend (Python & Sanic WebServer)
 
-To make changes to the backend, edit the files in `config-app/python/`. The main python file is `config-app/python/api.py` which contains a Sanic server.
+To make changes to the backend, edit the files in `python/`. The main python file is `python/api.py` which contains a Sanic server.
 
 <a name="building-production"></a>
 
