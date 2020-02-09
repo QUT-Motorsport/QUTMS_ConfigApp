@@ -68,7 +68,15 @@ export default ({
         },
         autosize: true,
         ...RangeTypesWithYAxisRT.match(
-          () => ({ yaxis1: { range } }),
+          () => ({
+            yaxis1: {
+              range,
+              title:
+                channelGroup.channels.length > 0
+                  ? `${channelGroup.channels[0].channel.name} (${channelGroup.channels[0].channel.unit})`
+                  : undefined
+            }
+          }),
           ({ yAxes }) => {
             const axesLayout: any = {};
 
@@ -77,7 +85,12 @@ export default ({
               axesLayout[`yaxis${axisNo}`] = {
                 overlaying: idx > 0 ? "y" : undefined,
                 side: idx % 2 === 0 ? "left" : "right",
-                range: idx === 0 && range !== undefined ? [...range] : undefined
+                range:
+                  idx === 0 && range !== undefined ? [...range] : undefined,
+                title:
+                  channelGroup.channels.length === 1
+                    ? `${channelGroup.channels[0].channel.name} (${channelGroup.channels[0].channel.unit})`
+                    : undefined
               };
             });
 
