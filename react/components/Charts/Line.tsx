@@ -57,7 +57,7 @@ export default ({
         title: spec.title,
         xaxis: {
           title: spec.xAxis === "Time" ? "Time (s)" : "Distance (m)",
-          range: domain,
+          range: domain === undefined ? domain : [...domain],
           ...(showDomainSlider
             ? {
                 rangeslider: {
@@ -77,7 +77,7 @@ export default ({
               axesLayout[`yaxis${axisNo}`] = {
                 overlaying: idx > 0 ? "y" : undefined,
                 side: idx % 2 === 0 ? "left" : "right",
-                range: idx === 0 ? range : undefined
+                range: idx === 0 && range !== undefined ? [...range] : undefined
               };
             });
 
@@ -89,9 +89,25 @@ export default ({
         width: "100%",
         height: "450px"
       }}
-      onUpdate={(e: any) => {
-        setDomain(e.layout.xaxis.range);
-        setRange(e.layout.yaxis.range);
+      onUpdate={(
+        {
+          layout: {
+            xaxis: { range: newDomain },
+            yaxis: { range: newRange }
+          }
+        }: any // Figure, with 100% defined xaxis and yaxis atts
+      ) => {
+        const anyChange = (old: Range, new_: Range) =>
+          (old === undefined && new_ !== undefined) ||
+          (old !== undefined && new_ === undefined) ||
+          old!.find((r, idx) => r !== new_![idx]) !== undefined;
+
+        if (anyChange(domain, newDomain)) {
+          setDomain(newDomain);
+        }
+        if (anyChange(range, newRange)) {
+          setRange(newRange);
+        }
       }}
     />
   ) : (
