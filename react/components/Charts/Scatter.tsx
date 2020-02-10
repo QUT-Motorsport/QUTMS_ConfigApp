@@ -64,8 +64,10 @@ export default ({
             () => ({
               yaxis1: {
                 range: yRange,
-                title: (({ name, unit } = yChannels[0]) =>
-                  `${name} (${unit})`)()
+                title:
+                  yChannels.length > 0
+                    ? (({ name, unit } = yChannels[0]) => `${name} (${unit})`)()
+                    : undefined
               }
             }),
             ({ yAxes }) => {

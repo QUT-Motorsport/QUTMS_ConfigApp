@@ -69,8 +69,11 @@ export default ({
           () => ({
             yaxis1: {
               range,
-              title: (({ name, unit } = channelGroup.channels[0].channel) =>
-                `${name} (${unit})`)()
+              title:
+                channelGroup.channels.length > 0
+                  ? (({ name, unit } = channelGroup.channels[0].channel) =>
+                      `${name} (${unit})`)()
+                  : undefined
             }
           }),
           ({ yAxes }) => {
