@@ -39,16 +39,14 @@ export default ({
 }) =>
   channelGroup ? (
     <Plot
-      data={channelGroup.channels.map(({ channel, y }) => ({
-        name: channel.name,
+      data={channelGroup.channels.map(({ channel: { name, idx }, y }) => ({
+        name,
         x: channelGroup.x,
         y: y,
         yaxis: `y${RangeTypesWithYAxisRT.match(
           () => 1,
           ({ yAxes }) =>
-            yAxes.findIndex(yAxis =>
-              yAxis.find(chIdx => channel.idx === chIdx)
-            ) + 1
+            yAxes.findIndex(yAxis => yAxis.find(chIdx => idx === chIdx)) + 1
         )(spec)}`,
         mode: "lines"
       }))}
@@ -72,8 +70,9 @@ export default ({
             yaxis1: {
               range,
               title:
-                channelGroup.channels.length > 0
-                  ? `${channelGroup.channels[0].channel.name} (${channelGroup.channels[0].channel.unit})`
+                channelGroup.channels.length === 1
+                  ? ({ name, unit } = channelGroup.channels[0].channel) =>
+                      `${name} (${unit})`
                   : undefined
             }
           }),
@@ -85,12 +84,7 @@ export default ({
               axesLayout[`yaxis${axisNo}`] = {
                 overlaying: idx > 0 ? "y" : undefined,
                 side: idx % 2 === 0 ? "left" : "right",
-                range:
-                  idx === 0 && range !== undefined ? [...range] : undefined,
-                title:
-                  channelGroup.channels.length === 1
-                    ? `${channelGroup.channels[0].channel.name} (${channelGroup.channels[0].channel.unit})`
-                    : undefined
+                range: idx === 0 && range !== undefined ? [...range] : undefined
               };
             });
 
@@ -99,8 +93,7 @@ export default ({
         )(spec)
       }}
       style={{
-        width: "100%",
-        height: "450px"
+        width: "100%"
       }}
       onUpdate={(
         {

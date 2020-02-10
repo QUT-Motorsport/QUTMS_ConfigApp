@@ -10,5 +10,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "python.linting.enabled": true,
-  "python.pythonPath": "C:\\Users\\cal\\Miniconda3\\envs\\qev3-config-app\\python.exe"
+  "python.pythonPath": "C:\\Users\\cal\\Miniconda3\\envs\\qev3-config-app\\python.exe",
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }
