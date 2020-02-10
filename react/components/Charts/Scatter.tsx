@@ -55,7 +55,7 @@ export default ({
         layout={{
           title: spec.title,
           xaxis: {
-            title: xChannel.name,
+            title: (({ name, unit } = xChannel) => `${name} (${unit})`)(),
             range: xRange
           },
           autosize: true,
@@ -63,10 +63,8 @@ export default ({
             () => ({
               yaxis1: {
                 range: yRange,
-                title:
-                  yChannels.length === 1
-                    ? (({ name, unit } = yChannels[0]) => `${name} (${unit})`)()
-                    : undefined
+                title: (({ name, unit } = yChannels[0]) =>
+                  `${name} (${unit})`)()
               }
             }),
             ({ yAxes }) => {
@@ -78,7 +76,12 @@ export default ({
                   overlaying: idx > 0 ? "y" : undefined,
                   side: idx % 2 === 0 ? "left" : "right",
                   range:
-                    idx === 0 && yRange !== undefined ? [...yRange] : undefined
+                    idx === 0 && yRange !== undefined ? [...yRange] : undefined,
+                  title:
+                    yChannels.length === 1
+                      ? (({ name, unit } = yChannels[0]) =>
+                          `${name} (${unit})`)()
+                      : undefined
                 };
               });
 

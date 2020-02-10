@@ -69,11 +69,8 @@ export default ({
           () => ({
             yaxis1: {
               range,
-              title:
-                channelGroup.channels.length === 1
-                  ? ({ name, unit } = channelGroup.channels[0].channel) =>
-                      `${name} (${unit})`
-                  : undefined
+              title: (({ name, unit } = channelGroup.channels[0].channel) =>
+                `${name} (${unit})`)()
             }
           }),
           ({ yAxes }) => {
@@ -84,7 +81,13 @@ export default ({
               axesLayout[`yaxis${axisNo}`] = {
                 overlaying: idx > 0 ? "y" : undefined,
                 side: idx % 2 === 0 ? "left" : "right",
-                range: idx === 0 && range !== undefined ? [...range] : undefined
+                range:
+                  idx === 0 && range !== undefined ? [...range] : undefined,
+                title:
+                  channelGroup.channels.length === 1
+                    ? (({ name, unit } = channelGroup.channels[0].channel) =>
+                        `${name} (${unit})`)()
+                    : undefined
               };
             });
 
