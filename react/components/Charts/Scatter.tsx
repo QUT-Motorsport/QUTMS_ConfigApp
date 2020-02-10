@@ -41,6 +41,7 @@ export default ({
     (([xChannel, ...yChannels] = channels) => (
       <Plot
         data={yChannels.map(({ name, data, idx }) => ({
+          type: "scattergl", // its faster! like, WAY faster!
           name,
           x: xChannel.data!,
           y: data!,
