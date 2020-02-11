@@ -52,7 +52,8 @@ export default ({
           xaxis: {
             title: axisTitle(xChannel),
             range: xRange
-          }
+          },
+          hovermode: "closest"
         }}
         onUpdate={getUpdateHandler([xRange, setXRange], [yRange, setYRange])}
       />
