@@ -48,7 +48,7 @@ export default ({
         layout={{
           title: spec.title,
           autosize: true,
-          ...yAxesLayout(yRange, channels),
+          ...yAxesLayout(yRange, channels)(spec),
           xaxis: {
             title: axisTitle(xChannel),
             range: xRange

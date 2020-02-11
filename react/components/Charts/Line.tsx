@@ -49,7 +49,7 @@ export default ({
         ...yAxesLayout(
           range,
           channelGroup.channels.map(({ channel }) => channel)
-        ),
+        )(spec),
         xaxis: {
           title: spec.xAxis === "Time" ? "Time (s)" : "Distance (m)",
           range: domain === undefined ? undefined : [...domain],

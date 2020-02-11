@@ -46,11 +46,10 @@ export const yAxesLayout = (range: Range, channels: Channel[]) =>
       }
     }),
     ({ yAxes }) => {
-      const axesLayout: any = {};
+      const yAxesLayout: any = {};
 
       yAxes.forEach((_, idx) => {
-        const axisNo = idx + 1;
-        axesLayout[`yaxis${axisNo}`] = {
+        yAxesLayout[`yaxis${idx + 1}`] = {
           overlaying: idx > 0 ? "y" : undefined,
           side: idx % 2 === 0 ? "left" : "right",
           range: idx === 0 && range !== undefined ? [...range] : undefined,
@@ -58,7 +57,7 @@ export const yAxesLayout = (range: Range, channels: Channel[]) =>
         };
       });
 
-      return axesLayout;
+      return yAxesLayout;
     }
   );
 

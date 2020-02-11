@@ -22,7 +22,7 @@ export default ({
         ))}
       </Select>
     </Form.Item>
-    <Form.Item label="Show Trendline">
+    <Form.Item label="Show Trendlines">
       <Checkbox
         checked={spec.trendline}
         onChange={e => {

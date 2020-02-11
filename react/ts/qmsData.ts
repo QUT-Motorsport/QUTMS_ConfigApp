@@ -85,7 +85,7 @@ export const useChannelGroup = (
       const maxFreq = Math.max(...groupChannels.map(({ freq }) => freq));
       const maxLen = Math.max(...groupChannels.map(({ data }) => data!.length));
       const x =
-        maxLen !== undefined
+        groupChannels.length > 0
           ? [...Array(maxLen).keys()].map(idx => idx / maxFreq)
           : [];
 
