@@ -7,7 +7,7 @@ import {
   ScatterChartSpec,
   HistogramChartSpec,
   Range
-} from "../../ts/chartTypes";
+} from "../../ts/chart/types";
 
 import Histogram from "./Histogram";
 import Line from "./Line";

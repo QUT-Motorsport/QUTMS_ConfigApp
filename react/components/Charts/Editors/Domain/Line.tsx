@@ -1,6 +1,6 @@
 import { Form, Radio } from "antd";
 import { EditorProps } from "../Base";
-import { LineChartDomain, LineDomainXAxisRT } from "../../../../ts/chartTypes";
+import { LineChartDomain, LineDomainXAxisRT } from "../../../../ts/chart/types";
 
 export default ({
   specState: [spec, setSpec]

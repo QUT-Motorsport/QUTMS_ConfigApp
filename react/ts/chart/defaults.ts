@@ -7,7 +7,7 @@ import {
   ScatterChartSpec,
   HistogramChartSpec,
   Domain
-} from "./chartTypes";
+} from "./types";
 import { Polygon } from "geojson";
 
 export const THROTTLE_POS_CH_IDX = 42;

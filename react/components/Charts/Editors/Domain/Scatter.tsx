@@ -1,6 +1,6 @@
 import { Form, Select, Checkbox } from "antd";
 import { EditorProps } from "../Base";
-import { ScatterChartDomain } from "../../../../ts/chartTypes";
+import { ScatterChartDomain } from "../../../../ts/chart/types";
 
 export default ({
   data,

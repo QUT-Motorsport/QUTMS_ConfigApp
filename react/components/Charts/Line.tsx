@@ -2,12 +2,15 @@ import Plot from "react-plotly.js";
 import { useState, useMemo } from "react";
 import { Spin } from "antd";
 
-import {
-  Range,
-  LineChartSpec,
-  RangeTypesWithYAxisRT
-} from "../../ts/chartTypes";
+import { Range, LineChartSpec } from "../../ts/chart/types";
 import { StateHook } from "../../ts/hooks";
+import {
+  spec2ChannelIdxs,
+  getUpdateHandler,
+  yAxesLayout,
+  yAxisName,
+  baseChartSettings
+} from "../../ts/chart/helpers";
 import { QmsData, ChannelGroup, useChannelGroup } from "../../ts/qmsData";
 
 export default ({
@@ -20,14 +23,7 @@ export default ({
   _rangeState: [range, setRange] = useState(),
   _channelGroup: channelGroup = useChannelGroup(
     data,
-    useMemo(
-      () =>
-        RangeTypesWithYAxisRT.match(
-          ({ yAxis }) => [yAxis],
-          ({ yAxes }) => yAxes.flat()
-        )(spec),
-      [spec]
-    )
+    useMemo(() => spec2ChannelIdxs(spec), [spec])
   )
 }: {
   spec: LineChartSpec;
@@ -39,23 +35,24 @@ export default ({
 }) =>
   channelGroup ? (
     <Plot
+      {...baseChartSettings}
       data={channelGroup.channels.map(({ channel: { name, idx }, y }) => ({
         name,
         x: channelGroup.x,
         y: y,
-        yaxis: `y${RangeTypesWithYAxisRT.match(
-          () => 1,
-          ({ yAxes }) =>
-            yAxes.findIndex(yAxis => yAxis.find(chIdx => idx === chIdx)) + 1
-        )(spec)}`,
+        yaxis: yAxisName(idx)(spec),
         mode: "lines"
       }))}
-      useResizeHandler={true}
       layout={{
         title: spec.title,
+        autosize: true,
+        ...yAxesLayout(
+          range,
+          channelGroup.channels.map(({ channel }) => channel)
+        ),
         xaxis: {
           title: spec.xAxis === "Time" ? "Time (s)" : "Distance (m)",
-          range: domain === undefined ? domain : [...domain],
+          range: domain === undefined ? undefined : [...domain],
           ...(showDomainSlider
             ? {
                 rangeslider: {
@@ -63,64 +60,9 @@ export default ({
                 }
               }
             : {})
-        },
-        autosize: true,
-        ...RangeTypesWithYAxisRT.match(
-          () => ({
-            yaxis1: {
-              range,
-              title:
-                channelGroup.channels.length > 0
-                  ? (({ name, unit } = channelGroup.channels[0].channel) =>
-                      `${name} (${unit})`)()
-                  : undefined
-            }
-          }),
-          ({ yAxes }) => {
-            const axesLayout: any = {};
-
-            yAxes.forEach((_, idx) => {
-              const axisNo = idx + 1;
-              axesLayout[`yaxis${axisNo}`] = {
-                overlaying: idx > 0 ? "y" : undefined,
-                side: idx % 2 === 0 ? "left" : "right",
-                range:
-                  idx === 0 && range !== undefined ? [...range] : undefined,
-                title:
-                  channelGroup.channels.length === 1
-                    ? (({ name, unit } = channelGroup.channels[0].channel) =>
-                        `${name} (${unit})`)()
-                    : undefined
-              };
-            });
-
-            return axesLayout;
-          }
-        )(spec)
-      }}
-      style={{
-        width: "100%"
-      }}
-      onUpdate={(
-        {
-          layout: {
-            xaxis: { range: newDomain },
-            yaxis: { range: newRange }
-          }
-        }: any // Figure, with 100% defined xaxis and yaxis atts
-      ) => {
-        const anyChange = (old: Range, new_: Range) =>
-          (old === undefined && new_ !== undefined) ||
-          (old !== undefined && new_ === undefined) ||
-          old!.find((r, idx) => r !== new_![idx]) !== undefined;
-
-        if (anyChange(domain, newDomain)) {
-          setDomain(newDomain);
-        }
-        if (anyChange(range, newRange)) {
-          setRange(newRange);
         }
       }}
+      onUpdate={getUpdateHandler([domain, setDomain], [range, setRange])}
     />
   ) : (
     <Spin />

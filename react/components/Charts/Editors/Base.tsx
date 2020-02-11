@@ -1,9 +1,12 @@
 import { Form, Radio, Input } from "antd";
 
 import { QmsData } from "../../../ts/qmsData";
-import { ChartSpec, ChartSpecRT, ColorScaled } from "../../../ts/chartTypes";
+import { ChartSpec, ChartSpecRT, ColorScaled } from "../../../ts/chart/types";
 import { StateHook } from "../../../ts/hooks";
-import { DEFAULT_RANGE_TYPES, DEFAULT_CHARTS } from "../../../ts/defaults";
+import {
+  DEFAULT_RANGE_TYPES,
+  DEFAULT_CHARTS
+} from "../../../ts/chart/defaults";
 
 import TrackMap from "./Domain/TrackMap";
 import Line from "./Domain/Line";

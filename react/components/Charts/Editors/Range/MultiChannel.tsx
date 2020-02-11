@@ -1,6 +1,6 @@
 import { Form, Select, Button, Icon } from "antd";
 import { EditorProps } from "../Base";
-import { MultiChannel } from "../../../../ts/chartTypes";
+import { MultiChannel } from "../../../../ts/chart/types";
 
 export default ({
   data,

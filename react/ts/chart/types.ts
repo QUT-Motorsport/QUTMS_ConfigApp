@@ -12,6 +12,8 @@ import {
 } from "runtypes";
 import { Polygon } from "geojson";
 
+// CHART TYPES
+
 const ChannelIdxRT = Number;
 
 export type ChannelIdx = Static<typeof ChannelIdxRT>;

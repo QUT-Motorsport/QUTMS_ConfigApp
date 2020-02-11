@@ -4,10 +4,10 @@ import { ComponentProps, useState } from "react";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import SubHeader from "../components/Layout/SubHeader";
 import Head from "next/head";
-import { ChartSpec, Range, LineChartSpec } from "../ts/chartTypes";
+import { ChartSpec, Range, LineChartSpec } from "../ts/chart/types";
 import { StateHook } from "../ts/hooks";
 import { QmsData, useQmsData } from "../ts/qmsData";
-import { GROUND_SPEED_CH_IDX, DEFAULT_LINE_CHART } from "../ts/defaults";
+import { GROUND_SPEED_CH_IDX, DEFAULT_LINE_CHART } from "../ts/chart/defaults";
 
 import BaseChartEditor from "../components/Charts/Editors/Base";
 
