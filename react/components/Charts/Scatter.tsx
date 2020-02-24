@@ -43,7 +43,8 @@ export default ({
           x: xChannel.data!,
           y: data!,
           yaxis: yAxisName(idx)(spec),
-          mode: "markers"
+          mode: "markers",
+          opacity: 1 - yChannels.length * 0.1
         }))}
         layout={{
           title: spec.title,

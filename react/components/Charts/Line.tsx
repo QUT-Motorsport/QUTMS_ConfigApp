@@ -41,7 +41,8 @@ export default ({
         x: channelGroup.x,
         y: y,
         yaxis: yAxisName(idx)(spec),
-        mode: "lines"
+        mode: "lines",
+        opacity: 1 - channelGroup.channels.length * 0.1
       }))}
       layout={{
         title: spec.title,

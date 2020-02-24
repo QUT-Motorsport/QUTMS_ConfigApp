@@ -30,9 +30,7 @@ export const useQmsData = (filename: string): QmsData | null => {
   const [qmsData, setQmsData] = useState<QmsData | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const data = await get(`qms/${filename}`);
-      // add index data to channels for later use
+    get(`qms/${filename}`).then(data => {
       data.channels.forEach((channel: Channel, idx: number) => {
         channel.idx = idx;
       });
@@ -40,7 +38,7 @@ export const useQmsData = (filename: string): QmsData | null => {
         ...data,
         filename
       });
-    })();
+    });
   }, []);
 
   return qmsData;
