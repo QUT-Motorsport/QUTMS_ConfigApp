@@ -7,9 +7,9 @@ import re
 import json
 
 JUPYTER_LABEXTENSION_PKGS = {
-    "@jupyter-widgets/jupyterlab-manager": "1.0.3",
-    "jupyterlab-plotly": "1.4.0",
-    "plotlywidget": "1.4.0",
+    # "@jupyter-widgets/jupyterlab-manager": "1.0.3",
+    # "jupyterlab-plotly": "1.4.0",
+    # "plotlywidget": "1.4.0",
 }
 
 VSCODE_EXTENSIONS = [
