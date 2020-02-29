@@ -68,19 +68,15 @@ export class WidgetManager extends HTMLManager {
 }
 
 const useJupyter = () => {
-  const BASE_URL = `http://localhost:${process.env.JUPYTER_PORT}`;
+  const HOST = `localhost:${process.env.JUPYTER_PORT}`;
 
   const [code, setCode] = useState("");
 
   // Connect to the notebook webserver.
   const kernelManager = new KernelManager({
     serverSettings: ServerConnection.makeSettings({
-      baseUrl: BASE_URL,
-      wsUrl:
-        "ws:" +
-        BASE_URL.split(":")
-          .slice(1)
-          .join(":")
+      baseUrl: `http://${HOST}`,
+      wsUrl: `ws://${HOST}`
     })
   });
   const ref: MutableRefObject<null | HTMLDivElement> = useRef(null);
