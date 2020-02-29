@@ -8,7 +8,7 @@ const apiUrl = `http://${
     ? "localhost"
     : process.env.NODE_ENV === "development"
     ? ip.address()
-    : process.env.GLOBAL_HOST
+    : process.env.HOSTNAME
 }:${process.env.SANIC_PORT}/`;
 
 const fetchJson = (uri: string, opts = {}) =>

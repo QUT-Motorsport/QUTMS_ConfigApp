@@ -11,7 +11,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 dotenv.config();
 
-const { WEBPACK_TARGET, SANIC_PORT, GLOBAL_HOST, JUPYTER_PORT } = process.env;
+const { WEBPACK_TARGET, SANIC_PORT, HOSTNAME, JUPYTER_PORT } = process.env;
 
 const handleErr = (err, fatal = true) => {
   console.error(err);
@@ -96,7 +96,7 @@ module.exports = withLess(
         WEBPACK_TARGET,
         SANIC_PORT,
         JUPYTER_PORT,
-        GLOBAL_HOST
+        HOSTNAME
       },
 
       webpack: (config, { isServer }) => {
