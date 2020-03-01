@@ -2,7 +2,7 @@ import React from "react";
 import { Progress, Statistic } from "antd";
 import PedalPositions from "./PedalPosition";
 import DividerBar from "./DividerBar";
-import Label from "../Label";
+import Label from "./Label";
 
 const EngineAndPower = () => {
   return (
