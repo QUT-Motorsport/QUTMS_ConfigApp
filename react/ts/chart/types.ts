@@ -8,7 +8,8 @@ import {
   Record,
   Boolean,
   Unknown,
-  String
+  String,
+  Null
 } from "runtypes";
 import { Polygon } from "geojson";
 
@@ -22,7 +23,7 @@ export type Range = [number, number] | undefined;
 
 const ColorScaledBaseRT = Record({
   rangeType: Literal("Colour-Scaled"),
-  nColorBins: Number.Or(Undefined), // if undefined, use continous-colorscale
+  nColorBins: Number.Or(Null), // if undefined, use continous-colorscale
   colorAxis: ChannelIdxRT // typically Throttle Pos
 });
 export type ColorScaledBase = Static<typeof ColorScaledBaseRT>;
@@ -50,7 +51,7 @@ export const RangeTypesWithYAxisRT = Union(
   ColorScaledWithYAxisRT,
   MultiChannelRT
 );
-type RangeTypesWithYAxis = Static<typeof RangeTypesWithYAxisRT>;
+export type RangeTypesWithYAxis = Static<typeof RangeTypesWithYAxisRT>;
 
 // TODO if necessary: don't assume true
 const isGeoJsonPolygon = (_poly: unknown): _poly is Polygon => true;

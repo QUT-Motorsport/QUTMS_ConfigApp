@@ -11,17 +11,18 @@ import {
 import { Polygon } from "geojson";
 
 export const THROTTLE_POS_CH_IDX = 42;
+export const WHEEL_SLIP_IDX = 38;
 export const GROUND_SPEED_CH_IDX = 44;
 
 export const DEFAULT_BASE_COLOR_SCALED: ColorScaledBase = {
   rangeType: "Colour-Scaled",
-  nColorBins: 10,
+  nColorBins: null,
   colorAxis: THROTTLE_POS_CH_IDX
 };
 
 export const DEFAULT_COLOR_SCALED: ColorScaledWithYAxis = {
   ...DEFAULT_BASE_COLOR_SCALED,
-  yAxis: GROUND_SPEED_CH_IDX
+  yAxis: WHEEL_SLIP_IDX
 };
 
 export const DEFAULT_MULTI_CHANNEL: MultiChannel = {

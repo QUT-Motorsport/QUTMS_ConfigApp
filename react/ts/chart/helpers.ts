@@ -3,7 +3,7 @@ import { Channel } from "../../ts/qmsData";
 import { StateHook } from "../../ts/hooks";
 
 export const spec2ChannelIdxs = RangeTypesWithYAxisRT.match(
-  ({ yAxis }) => [yAxis],
+  ({ yAxis, colorAxis }) => [yAxis, colorAxis],
   ({ yAxes }) => yAxes.flat()
 );
 
