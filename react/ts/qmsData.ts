@@ -1,14 +1,54 @@
 import { useState, useEffect } from "react";
 import interpolate from "everpolate";
 import { get } from "./ajax";
+import crossfilter from "crossfilter2";
+import range from "./range";
 
 // object acts as both the file interface and a cache for channel data
 export type QmsData = {
   filename: string;
-  totalTime: number;
-  lapTimes: number[];
+  // totalTime: number;
+  // lapTimes: number[];
   channels: Channel[];
+
+  // objects related to crossfiltering
+  // null if no data downloaded yet
+  crossfilter: null | QmsCrossfilter.Source;
 };
+
+namespace QmsCrossfilter {
+  export type Entries = {
+    // may contain channels that aren't currently in use if that channel was in use for a component
+    // and then later unused; may change if memory requirements forbid this behaviour.
+    [channelIdx: number]: number[];
+  };
+
+  export type Time = number;
+  export type Record = {
+    time: Time; // the timestep when this took place - used to index
+  } & Entries;
+
+  export type Dimension<
+    T extends crossfilter.NaturallyOrderedValue
+  > = crossfilter.Dimension<Record, T>;
+
+  export type Source = {
+    // the frequency at which records are currently listed.
+    // Should always be the lowest of all channels being filtered.
+    freq: number;
+
+    // the crossfilter 'god object'
+    index: crossfilter.Crossfilter<QmsCrossfilter.Record>;
+
+    // crossfilter dimensions to be accessed by multiple components
+    dimensions: {
+      byTime: QmsCrossfilter.Dimension<QmsCrossfilter.Time>;
+      byChannels: {
+        [channelIdx: number]: QmsCrossfilter.Dimension<number>;
+      };
+    };
+  };
+}
 
 export type Channel = {
   idx: number;
@@ -19,10 +59,11 @@ export type Channel = {
 };
 
 export type ChannelGroup = {
-  x: number[];
+  time: number[];
+
   channels: {
     channel: Channel;
-    y: number[];
+    data: number[];
   }[];
 };
 
@@ -30,13 +71,17 @@ export const useQmsData = (filename: string): QmsData | null => {
   const [qmsData, setQmsData] = useState<QmsData | null>(null);
 
   useEffect(() => {
-    get(`qms/${filename}`).then(data => {
-      data.channels.forEach((channel: Channel, idx: number) => {
+    // todo: implement ts-deserializer
+    get(`qms/${filename}`).then((data: Partial<QmsData>) => {
+      data.channels!.forEach((channel: Channel, idx: number) => {
         channel.idx = idx;
       });
+
       setQmsData({
         ...data,
-        filename
+        channels: data.channels!,
+        filename,
+        crossfilter: null
       });
     });
   }, []);
@@ -44,7 +89,7 @@ export const useQmsData = (filename: string): QmsData | null => {
   return qmsData;
 };
 
-const hydrateChannels = async (
+const hydrateChannels = (
   { filename, channels }: QmsData,
   channelIdxs: number[]
 ) =>
@@ -56,21 +101,6 @@ const hydrateChannels = async (
     })
   );
 
-export const useChannels = (
-  data: QmsData,
-  channelIdxs: number[]
-): Channel[] | null => {
-  const [channels, setChannels] = useState<Channel[] | null>(null);
-
-  useEffect(() => {
-    hydrateChannels(data, channelIdxs).then(() => {
-      setChannels(channelIdxs.map(idx => data.channels[idx]));
-    });
-  }, [channelIdxs]);
-
-  return channels;
-};
-
 export const useChannelGroup = (
   data: QmsData,
   channelIdxs: number[]
@@ -79,29 +109,99 @@ export const useChannelGroup = (
 
   useEffect(() => {
     hydrateChannels(data, channelIdxs).then(() => {
-      const groupChannels = channelIdxs.map(idx => data.channels[idx]);
-      const maxFreq = Math.max(...groupChannels.map(({ freq }) => freq));
-      const maxLen = Math.max(...groupChannels.map(({ data }) => data!.length));
-      const x =
-        groupChannels.length > 0
-          ? [...Array(maxLen).keys()].map(idx => idx / maxFreq)
-          : [];
+      const channels = channelIdxs.map(idx => data.channels[idx]);
 
-      setChannelGroup({
-        x,
-        channels: groupChannels.map(channel => ({
-          channel,
-          // the interpolation function used can be swapped out if need be. Right now use 'step',
-          // which uses the last REAL recorded value at each timestep
-          y: interpolate.step(
-            x,
-            [...Array(channel.data!.length).keys()].map(
-              idx => idx / channel.freq
-            ),
-            channel.data!
-          )
-        }))
+      const createCrossfilter = (
+        channels: Channel[]
+      ): QmsCrossfilter.Source => {
+        const records = [];
+        const minFreq = Math.min(...channels.map(({ freq }) => freq));
+        const lowestFreqChannel = channels.find(
+          ({ freq }) => freq === minFreq
+        )!;
+
+        for (let idx = 0; idx < lowestFreqChannel.data!.length; idx++) {
+          const record: QmsCrossfilter.Record = {
+            time: idx / minFreq
+          };
+
+          // add data to the record for all channels
+          for (const channel of channels) {
+            // how much more often this channel lists data compared to the minimum
+            const freqRatio = channel.freq / minFreq;
+
+            // add all the data points between this time and the next (at lower frequency) for this channel
+            record[channel.idx] = channel.data!.slice(
+              Math.round(idx * freqRatio),
+              Math.round((idx + 1) * freqRatio)
+            );
+          }
+
+          records.push(record);
+        }
+
+        const index = crossfilter(records);
+
+        return {
+          freq: minFreq,
+          index,
+          dimensions: {
+            byTime: index.dimension(({ time }) => time),
+            byChannels: {}
+          }
+        };
+      };
+
+      if (data.crossfilter === null) {
+        // create the crossfilter for the first time
+        data.crossfilter = createCrossfilter(channels);
+      } else {
+        // recreate the crossfilter with added channels
+        data.crossfilter = createCrossfilter([
+          // spread a set to keep the channels unique
+          ...new Set([
+            // get the channels from the crossfilter
+            ...Object.keys(data.crossfilter.index.all()[0])
+              .filter(key => key !== "time")
+              .map(idxStr => data.channels[parseInt(idxStr)]),
+            // and append it to the new channels
+            ...channels
+          ])
+        ]);
+      }
+
+      // create the channel group skeleton
+      const channelGroup: ChannelGroup = {
+        time: [],
+        channels: channels.map(channel => ({ channel, data: [] }))
+      };
+
+      const maxFreq = Math.max(...channels.map(({ freq }) => freq));
+
+      // loop over the crossfilter records and interpolate the data
+      const { index, freq: minFreq } = data.crossfilter;
+      const records = index.all();
+
+      records.forEach(record => {
+        const recordTimes = range(
+          record.time,
+          record.time + 1 / minFreq,
+          1 / maxFreq
+        );
+        channelGroup.time.push(...recordTimes);
+
+        // perform step interpolation for lower frequency channels
+        channels.forEach(({ freq, idx: channelIdx }, idx) => {
+          const freqRatio = maxFreq / freq;
+          for (const point of record[channelIdx]) {
+            for (let repeatIdx = 0; repeatIdx < freqRatio; repeatIdx++) {
+              channelGroup.channels[idx].data.push(point);
+            }
+          }
+        });
       });
+
+      setChannelGroup(channelGroup);
     });
   }, [channelIdxs]);
 

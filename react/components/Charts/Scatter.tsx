@@ -13,7 +13,8 @@ import {
   axisTitle,
   baseChartSettings
 } from "../../ts/chart/helpers";
-import { QmsData, Channel, useChannels } from "../../ts/qmsData";
+import { QmsData, Channel, useChannelGroup } from "../../ts/qmsData";
+import range from "../../ts/range";
 
 export default ({
   spec,
@@ -25,9 +26,8 @@ export default ({
   data: QmsData;
   _xRangeState?: StateHook<Range>;
   _yRangeState?: StateHook<Range>;
-  _channels?: Channel[] | null;
 }) => {
-  const channels = useChannels(
+  const channels = useChannelGroup(
     data,
     useMemo(() => [spec.xAxis, ...spec2ChannelIdxs(spec)], [spec])
   );
@@ -35,31 +35,32 @@ export default ({
   if (channels === null) {
     return <Spin />;
   } else {
-    const [xChannel, ...yzChannels] = channels;
+    const [xChannel, ...yzChannels] = channels.channels;
 
     let data;
-    const defaults = (yChannel: Channel) => ({
+    const defaults = (channelIdx: number, channelData: number[]) => ({
       type: "scattergl" as any,
       mode: "markers" as any,
       name,
-      yaxis: yAxisName(yChannel.idx)(spec),
+      yaxis: yAxisName(channelIdx)(spec),
       x: xChannel.data!,
-      y: yChannel.data!
+      y: channelData
     });
+
     if (spec.rangeType === "Colour-Scaled") {
       const [yChannel, colorChannel] = yzChannels;
       if (spec.nColorBins === null) {
         // continuous color-scale
         data = [
           {
-            ...defaults(yChannel),
+            ...defaults(yChannel.channel.idx, yChannel.data),
 
             marker: {
               color: colorChannel.data!,
               colorscale: "Jet",
               colorbar: {
                 title: {
-                  text: axisTitle(colorChannel),
+                  text: axisTitle(colorChannel.channel),
                   side: "right"
                 } as any
               }
@@ -73,9 +74,7 @@ export default ({
         const span = max - min;
         const step = span / spec.nColorBins;
 
-        const midpoints = [...Array(spec.nColorBins).keys()].map(
-          idx => min + step * (idx + 0.5)
-        );
+        const midpoints = range(min + step / 2, max, step);
 
         // plotly jet color-scale
         // ripped from https://github.com/plotly/plotly.js/blob/be93eb6e48d130b6419202e8b3aae28156dfdfbe/src/components/colorscale/scales.js#L90
@@ -107,7 +106,7 @@ export default ({
         data = midpoints
           .map((_x, idx) => ({
             // doesn't make sense right now - needs crossfilter. But demonstrates the colorbar
-            ...defaults(yChannel),
+            ...defaults(yChannel.channel.idx, yChannel.data),
             name: `${(min + step * idx).toPrecision(3)} - ${(
               min +
               step * (idx + 1)
@@ -120,7 +119,7 @@ export default ({
       }
     } else {
       data = yzChannels.map(yChannel => ({
-        ...defaults(yChannel),
+        ...defaults(yChannel.channel.idx, yChannel.data),
 
         opacity: 1 - yzChannels.length * 0.1
       }));
@@ -133,9 +132,12 @@ export default ({
         layout={{
           title: spec.title,
           autosize: true,
-          ...yAxesLayout(yRange, channels)(spec),
+          ...yAxesLayout(
+            yRange,
+            yzChannels.map(({ channel }) => channel)
+          )(spec),
           xaxis: {
-            title: axisTitle(xChannel),
+            title: axisTitle(xChannel.channel),
             range: xRange
           },
           hovermode: "closest"

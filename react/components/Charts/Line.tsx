@@ -11,39 +11,39 @@ import {
   yAxisName,
   baseChartSettings
 } from "../../ts/chart/helpers";
-import { QmsData, ChannelGroup, useChannelGroup } from "../../ts/qmsData";
+import { QmsData, useChannelGroup } from "../../ts/qmsData";
 
 export default ({
   // xAxis, TODO: Handle vs distance
   spec,
-  // rangeType,
   data,
   showDomainSlider = false,
-  domainState: [domain, setDomain] = useState(),
-  _rangeState: [range, setRange] = useState(),
-  _channelGroup: channelGroup = useChannelGroup(
-    data,
-    useMemo(() => spec2ChannelIdxs(spec), [spec])
-  )
+  domainState: [domain, setDomain] = useState()
 }: {
   spec: LineChartSpec;
   data: QmsData;
   showDomainSlider?: boolean;
   domainState?: StateHook<Range>;
-  _rangeState?: StateHook<Range>;
-  _channelGroup?: ChannelGroup | null;
-}) =>
-  channelGroup ? (
+}) => {
+  const [range, setRange] = useState<Range>();
+  const channelGroup = useChannelGroup(
+    data,
+    useMemo(() => spec2ChannelIdxs(spec), [spec])
+  );
+
+  return channelGroup ? (
     <Plot
       {...baseChartSettings}
-      data={channelGroup.channels.map(({ channel: { name, idx }, y }) => ({
-        name,
-        x: channelGroup.x,
-        y: y,
-        yaxis: yAxisName(idx)(spec),
-        mode: "lines",
-        opacity: 1 - channelGroup.channels.length * 0.1
-      }))}
+      data={Object.values(channelGroup.channels).map(
+        ({ channel: { name, idx }, data }) => ({
+          name,
+          x: channelGroup.time,
+          y: data,
+          yaxis: yAxisName(idx)(spec),
+          mode: "lines",
+          opacity: 1 - channelGroup.channels.length * 0.1
+        })
+      )}
       layout={{
         title: spec.title,
         autosize: true,
@@ -57,7 +57,7 @@ export default ({
           ...(showDomainSlider
             ? {
                 rangeslider: {
-                  range: [0, channelGroup.x[channelGroup.x.length - 1]]
+                  range: [0, channelGroup.time[channelGroup.time.length - 1]]
                 }
               }
             : {})
@@ -68,3 +68,4 @@ export default ({
   ) : (
     <Spin />
   );
+};

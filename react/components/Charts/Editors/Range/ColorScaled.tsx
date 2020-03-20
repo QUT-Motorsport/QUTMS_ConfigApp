@@ -9,10 +9,7 @@ export default ({
 }: EditorProps<ColorScaled>) => (
   <>
     {"yAxis" in spec ? ( // if not a colorscale-only plot
-      <Form.Item
-        label="Y Axis"
-        wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
-      >
+      <Form.Item label="Y Axis" wrapperCol={{ xs: { span: 10 } }}>
         <Select
           optionFilterProp="children"
           value={spec.yAxis}
@@ -27,10 +24,7 @@ export default ({
       </Form.Item>
     ) : null}
 
-    <Form.Item
-      label="Color Axis"
-      wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
-    >
+    <Form.Item label="Color Axis" wrapperCol={{ xs: { span: 10 } }}>
       <Select
         optionFilterProp="children"
         value={spec.colorAxis}

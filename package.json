@@ -27,7 +27,7 @@
     "@projectstorm/react-workspaces": "2.2.2",
     "antd": "3.26.7",
     "cross-spawn": "6.0.5",
-    "crossfilter": "1.3.12",
+    "crossfilter2": "^1.5.2",
     "electron-serve": "0.4.1",
     "electron-store": "5.1.0",
     "everpolate": "0.0.3",
