@@ -28,7 +28,8 @@ export default ({
   const [range, setRange] = useState<Range>();
   const channelGroup = useChannelGroup(
     data,
-    useMemo(() => spec2ChannelIdxs(spec), [spec])
+    useMemo(() => spec2ChannelIdxs(spec), [spec]),
+    { byTime: undefined, byChannels: {} }
   );
 
   return channelGroup ? (

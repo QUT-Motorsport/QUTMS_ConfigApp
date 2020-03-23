@@ -13,7 +13,7 @@ import {
   axisTitle,
   baseChartSettings
 } from "../../ts/chart/helpers";
-import { QmsData, Channel, useChannelGroup } from "../../ts/qmsData";
+import { QmsData, useChannelGroup } from "../../ts/qmsData";
 import range from "../../ts/range";
 
 export default ({
@@ -29,7 +29,8 @@ export default ({
 }) => {
   const channels = useChannelGroup(
     data,
-    useMemo(() => [spec.xAxis, ...spec2ChannelIdxs(spec)], [spec])
+    useMemo(() => [spec.xAxis, ...spec2ChannelIdxs(spec)], [spec]),
+    { byTime: undefined, byChannels: {} }
   );
 
   if (channels === null) {
@@ -37,7 +38,7 @@ export default ({
   } else {
     const [xChannel, ...yzChannels] = channels.channels;
 
-    let data;
+    let chartData;
     const defaults = (channelIdx: number, channelData: number[]) => ({
       type: "scattergl" as any,
       mode: "markers" as any,
@@ -51,7 +52,7 @@ export default ({
       const [yChannel, colorChannel] = yzChannels;
       if (spec.nColorBins === null) {
         // continuous color-scale
-        data = [
+        chartData = [
           {
             ...defaults(yChannel.channel.idx, yChannel.data),
 
@@ -103,22 +104,23 @@ export default ({
           )
         };
 
-        data = midpoints
-          .map((_x, idx) => ({
-            // doesn't make sense right now - needs crossfilter. But demonstrates the colorbar
-            ...defaults(yChannel.channel.idx, yChannel.data),
-            name: `${(min + step * idx).toPrecision(3)} - ${(
-              min +
-              step * (idx + 1)
-            ).toPrecision(3)}`,
-            marker: {
-              color: `rgb(${midpointColors.red[idx]}, ${midpointColors.green[idx]}, ${midpointColors.blue[idx]})`
-            }
-          }))
+        chartData = midpoints
+          .map((midpoint, idx) => {
+            return {
+              ...defaults(yChannel.channel.idx, yChannel.channel.data!),
+              name: `${(min + step * idx).toPrecision(3)} - ${(
+                min +
+                step * (idx + 1)
+              ).toPrecision(3)}`,
+              marker: {
+                color: `rgb(${midpointColors.red[idx]}, ${midpointColors.green[idx]}, ${midpointColors.blue[idx]})`
+              }
+            };
+          })
           .reverse();
       }
     } else {
-      data = yzChannels.map(yChannel => ({
+      chartData = yzChannels.map(yChannel => ({
         ...defaults(yChannel.channel.idx, yChannel.data),
 
         opacity: 1 - yzChannels.length * 0.1
@@ -128,7 +130,7 @@ export default ({
     return (
       <Plot
         {...baseChartSettings}
-        data={data}
+        data={chartData}
         layout={{
           title: spec.title,
           autosize: true,
