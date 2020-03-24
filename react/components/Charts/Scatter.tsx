@@ -19,113 +19,118 @@ import range from "../../ts/range";
 export default ({
   spec,
   data,
+  domainState: [domain] = useState(),
   _xRangeState: [xRange, setXRange] = useState(),
   _yRangeState: [yRange, setYRange] = useState()
 }: {
   spec: ScatterChartSpec;
   data: QmsData;
+  domainState?: StateHook<Range>;
   _xRangeState?: StateHook<Range>;
   _yRangeState?: StateHook<Range>;
 }) => {
-  const channels = useChannelGroup(
+  const channelGroup = useChannelGroup(
     data,
     useMemo(() => [spec.xAxis, ...spec2ChannelIdxs(spec)], [spec]),
-    { byTime: undefined, byChannels: {} }
+    useMemo(() => ({ byTime: domain, byChannels: {} }), [domain])
   );
 
-  if (channels === null) {
+  if (channelGroup === null) {
     return <Spin />;
   } else {
-    const [xChannel, ...yzChannels] = channels.channels;
-
-    let chartData;
-    const defaults = (channelIdx: number, channelData: number[]) => ({
+    const defaults = (channelIdx: number) => ({
       type: "scattergl" as any,
       mode: "markers" as any,
       name,
-      yaxis: yAxisName(channelIdx)(spec),
-      x: xChannel.data!,
-      y: channelData
+      yaxis: yAxisName(channelIdx)(spec)
     });
 
-    if (spec.rangeType === "Colour-Scaled") {
-      const [yChannel, colorChannel] = yzChannels;
-      if (spec.nColorBins === null) {
-        // continuous color-scale
-        chartData = [
-          {
-            ...defaults(yChannel.channel.idx, yChannel.data),
+    const chartData = Array.isArray(channelGroup)
+      ? (() => {
+          return [];
+          //     // split up the jet color-scale according to nBins
+          // const min = Math.min(...colorChannel.data!);
+          // const max = Math.max(...colorChannel.data!);
+          // const span = max - min;
+          // const step = span / spec.nColorBins;
 
-            marker: {
-              color: colorChannel.data!,
-              colorscale: "Jet",
-              colorbar: {
-                title: {
-                  text: axisTitle(colorChannel.channel),
-                  side: "right"
-                } as any
+          // const midpoints = range(min + step / 2, max, step);
+
+          // // plotly jet color-scale
+          // // ripped from https://github.com/plotly/plotly.js/blob/be93eb6e48d130b6419202e8b3aae28156dfdfbe/src/components/colorscale/scales.js#L90
+          // const jetColorScale = {
+          //   x: [0, 0.125, 0.375, 0.625, 0.875, 1].map(x => min + span * x),
+          //   red: [0, 0, 5, 255, 250, 128],
+          //   green: [0, 60, 255, 255, 0, 0],
+          //   blue: [131, 170, 255, 0, 0, 0]
+          // };
+
+          // const midpointColors = {
+          //   red: interpolate.linear(
+          //     midpoints,
+          //     jetColorScale.x,
+          //     jetColorScale.red
+          //   ),
+          //   green: interpolate.linear(
+          //     midpoints,
+          //     jetColorScale.x,
+          //     jetColorScale.green
+          //   ),
+          //   blue: interpolate.linear(
+          //     midpoints,
+          //     jetColorScale.x,
+          //     jetColorScale.blue
+          //   )
+          // };
+
+          // return midpoints
+          //   .map((midpoint, idx) => {
+          //     return {
+          //       ...defaults(yChannel.channel.idx, yChannel.channel.data!),
+          //       name: `${(min + step * idx).toPrecision(3)} - ${(
+          //         min +
+          //         step * (idx + 1)
+          //       ).toPrecision(3)}`,
+          //       marker: {
+          //         color: `rgb(${midpointColors.red[idx]}, ${midpointColors.green[idx]}, ${midpointColors.blue[idx]})`
+          //       }
+          //     };
+          //   })
+          //   .reverse();
+        })()
+      : spec.rangeType === "Colour-Scaled"
+      ? (() => {
+          const [xChannel, yChannel, colorChannel] = channelGroup.channels;
+          return [
+            {
+              ...defaults(yChannel.channel.idx),
+              x: xChannel.data,
+              y: yChannel.data,
+
+              marker: {
+                color: colorChannel.data!,
+                colorscale: "Jet",
+                colorbar: {
+                  title: {
+                    text: axisTitle(colorChannel.channel),
+                    side: "right"
+                  } as any
+                }
               }
             }
-          }
-        ];
-      } else {
-        // split up the jet color-scale according to nBins
-        const min = Math.min(...colorChannel.data!);
-        const max = Math.max(...colorChannel.data!);
-        const span = max - min;
-        const step = span / spec.nColorBins;
+          ];
+        })()
+      : (() => {
+          const [xChannel, ...yChannels] = channelGroup.channels;
 
-        const midpoints = range(min + step / 2, max, step);
+          return yChannels.map(yChannel => ({
+            ...defaults(yChannel.channel.idx),
+            x: xChannel.data,
+            y: yChannel.data,
 
-        // plotly jet color-scale
-        // ripped from https://github.com/plotly/plotly.js/blob/be93eb6e48d130b6419202e8b3aae28156dfdfbe/src/components/colorscale/scales.js#L90
-        const jetColorScale = {
-          x: [0, 0.125, 0.375, 0.625, 0.875, 1].map(x => min + span * x),
-          red: [0, 0, 5, 255, 250, 128],
-          green: [0, 60, 255, 255, 0, 0],
-          blue: [131, 170, 255, 0, 0, 0]
-        };
-
-        const midpointColors = {
-          red: interpolate.linear(
-            midpoints,
-            jetColorScale.x,
-            jetColorScale.red
-          ),
-          green: interpolate.linear(
-            midpoints,
-            jetColorScale.x,
-            jetColorScale.green
-          ),
-          blue: interpolate.linear(
-            midpoints,
-            jetColorScale.x,
-            jetColorScale.blue
-          )
-        };
-
-        chartData = midpoints
-          .map((midpoint, idx) => {
-            return {
-              ...defaults(yChannel.channel.idx, yChannel.channel.data!),
-              name: `${(min + step * idx).toPrecision(3)} - ${(
-                min +
-                step * (idx + 1)
-              ).toPrecision(3)}`,
-              marker: {
-                color: `rgb(${midpointColors.red[idx]}, ${midpointColors.green[idx]}, ${midpointColors.blue[idx]})`
-              }
-            };
-          })
-          .reverse();
-      }
-    } else {
-      chartData = yzChannels.map(yChannel => ({
-        ...defaults(yChannel.channel.idx, yChannel.data),
-
-        opacity: 1 - yzChannels.length * 0.1
-      }));
-    }
+            opacity: 1 - yChannels.length * 0.1
+          }));
+        })();
 
     return (
       <Plot
@@ -136,10 +141,18 @@ export default ({
           autosize: true,
           ...yAxesLayout(
             yRange,
-            yzChannels.map(({ channel }) => channel)
+            (Array.isArray(channelGroup)
+              ? channelGroup[0].channels[1]
+              : channelGroup.channels[1]
+            ).channel
           )(spec),
           xaxis: {
-            title: axisTitle(xChannel.channel),
+            title: axisTitle(
+              (Array.isArray(channelGroup)
+                ? channelGroup[0].channels[0]
+                : channelGroup.channels[0]
+              ).channel
+            ),
             range: xRange
           },
           hovermode: "closest"

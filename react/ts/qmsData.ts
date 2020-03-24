@@ -104,13 +104,24 @@ export const useChannelGroup = (
   channelIdxs: number[],
 
   filters: {
-    byTime: Range;
-    byChannels: {
+    byTime?: Range;
+    byChannels?: {
       [channelIdx: number]: Range;
     };
+  },
+
+  // if included, return array of channelgroup
+  groupBy?: {
+    channelIdx: number;
+    grouper: (val: number) => number; // return group index
   }
-): ChannelGroup | null => {
-  const [channelGroup, setChannelGroup] = useState<ChannelGroup | null>(null);
+): ChannelGroup | ChannelGroup[] | null => {
+  const [channelGroup, setChannelGroup] = useState<
+    ChannelGroup | ChannelGroup[] | null
+  >(null);
+  // just a toggler for state update so that QmsData can be kept out of state
+  // no real reason for this over putting QmsData into state, just easier to do right now.
+  const [crossfilterChannels, setCrossfilterChannels] = useState<Channel[]>([]);
 
   useEffect(() => {
     hydrateChannels(data, channelIdxs).then(() => {
@@ -131,7 +142,7 @@ export const useChannelGroup = (
 
       const {
         index,
-        dimensions: { byTime, byChannels }
+        dimensions: { byTime }
       } = data.crossfilter;
 
       // cache a lookup table time for use in the next bit
@@ -145,77 +156,128 @@ export const useChannelGroup = (
       })();
       let prevRecord = time2record[0] ?? {};
 
-      // for each channel not yet in the crossfilter, add it to the lookup table
       const channelsMissing = channels.filter(
         channel => !(channel.idx in prevRecord)
       );
-      for (const channel of channelsMissing) {
-        channel.data!.forEach((val, idx) => {
-          const time = idx / channel.freq;
-          time2record[time] = {
-            ...prevRecord,
-            ...time2record[time],
-            time,
-            [channel.idx]: val
-          };
-          prevRecord = time2record[time];
+
+      if (channelsMissing.length > 0) {
+        // for each channel not yet in the crossfilter, add it to the lookup table
+        for (const channel of channelsMissing) {
+          channel.data!.forEach((val, idx) => {
+            const time = idx / channel.freq;
+            time2record[time] = {
+              ...prevRecord,
+              ...time2record[time],
+              time,
+              [channel.idx]: val
+            };
+            prevRecord = time2record[time];
+          });
+        }
+
+        // convert the lookup table to an ordered array of records
+        const records = Object.values(time2record).sort(
+          (a, b) => a.time - b.time
+        );
+
+        // perform step interpolation for all lower frequency channels
+        const maxFreq = Math.max(...channels.map(({ freq }) => freq));
+        const channelsNeedingInterpolation = channelsMissing.filter(
+          channel => channel.freq < maxFreq
+        );
+        prevRecord = records[0];
+        records.forEach((_, idx) => {
+          for (const channel of channelsNeedingInterpolation) {
+            if (!(channel.idx in records[idx])) {
+              records[idx][channel.idx] = prevRecord[channel.idx];
+            }
+          }
+          prevRecord = records[idx];
         });
+
+        // reconstruct the crossfilter
+        byTime.filterAll(); // clear the time filter - we're done with it
+        index.remove();
+        index.add(records);
       }
 
-      // convert the lookup table to an ordered array of records
-      const records = Object.values(time2record).sort(
-        (a, b) => a.time - b.time
-      );
+      // trigger the other effect to update
+      setCrossfilterChannels(channels);
+    });
+  }, [channelIdxs]);
 
-      // perform step interpolation for all lower frequency channels
-      const maxFreq = Math.max(...channels.map(({ freq }) => freq));
-      const channelsNeedingInterpolation = channelsMissing.filter(
-        channel => channel.freq < maxFreq
-      );
-      prevRecord = records[0];
-      records.forEach((_, idx) => {
-        for (const channel of channelsNeedingInterpolation) {
-          if (!(channel.idx in records[idx])) {
-            records[idx][channel.idx] = prevRecord[channel.idx];
-          }
-        }
-        prevRecord = records[idx];
-      });
-
-      // reconstruct the crossfilter
-      byTime.filterAll(); // clear the time filter - we're done with it
-      index.remove();
-      index.add(records);
+  useEffect(() => {
+    console.log(crossfilterChannels);
+    if (crossfilterChannels.length > 0) {
+      const {
+        index,
+        dimensions: { byTime, byChannels }
+      } = data.crossfilter!;
 
       // apply all filters before preparing the channelgroup
       if (filters.byTime !== undefined) {
         byTime.filter(filters.byTime);
       }
-      Object.entries(filters.byChannels).forEach(([channelIdxStr, range]) => {
-        const channelIdx = parseInt(channelIdxStr);
-        if (byChannels[channelIdx] === undefined) {
-          byChannels[channelIdx] = index.dimension(
-            record => record[channelIdx]
-          );
-        }
-        byChannels[channelIdx].filter(range!);
-      });
-
-      // loop over the records and channels and construct the channel group
-      const channelGroup: ChannelGroup = {
-        time: [],
-        channels: channels.map(channel => ({ channel, data: [] }))
-      };
-      for (const record of index.allFiltered()) {
-        channelGroup.time.push(record.time);
-        channels.forEach(({ idx: channelIdx }, idx) => {
-          channelGroup.channels[idx].data.push(record[channelIdx]);
+      if (filters.byChannels !== undefined) {
+        Object.entries(filters.byChannels).forEach(([channelIdxStr, range]) => {
+          const channelIdx = parseInt(channelIdxStr);
+          if (byChannels[channelIdx] === undefined) {
+            byChannels[channelIdx] = index.dimension(
+              record => record[channelIdx]
+            );
+          }
+          byChannels[channelIdx].filter(range!);
         });
       }
 
-      setChannelGroup(channelGroup);
-    });
-  }, [channelIdxs]);
+      const createChannelGroup = (records: QmsCrossfilter.Record[]) => {
+        const channelGroup: ChannelGroup = {
+          time: [],
+          channels: crossfilterChannels.map(channel => ({ channel, data: [] }))
+        };
+        // loop over the records and channels and construct the channel group
+        for (const record of records) {
+          channelGroup.time.push(record.time);
+          crossfilterChannels.forEach(({ idx: channelIdx }, idx) => {
+            channelGroup.channels[idx].data.push(record[channelIdx]);
+          });
+        }
+        return channelGroup;
+      };
+
+      if (groupBy === undefined) {
+        setChannelGroup(createChannelGroup(index.allFiltered()));
+      } else {
+        if (byChannels[groupBy.channelIdx] === undefined) {
+          byChannels[groupBy.channelIdx] = index.dimension(
+            record => record[groupBy.channelIdx]
+          );
+        }
+
+        const recordGroups = byChannels[groupBy.channelIdx]
+          .group<number, QmsCrossfilter.Record[]>(groupBy.grouper)
+          .reduce(
+            (group, record) => {
+              group.push(record);
+              return group;
+            },
+            () => {
+              throw Error("Unexpected callback involving group removal");
+            },
+            () => []
+          )
+          .all();
+
+        setChannelGroup(
+          recordGroups.map(recordGroup => createChannelGroup(recordGroup.value))
+        );
+      }
+
+      // we're done. clear all filters.
+      byTime.filterAll();
+      Object.values(byChannels).forEach(dimension => dimension.filterAll());
+    }
+  }, [crossfilterChannels, filters]);
 
   return channelGroup;
 };

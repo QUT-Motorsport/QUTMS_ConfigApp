@@ -34,14 +34,14 @@ export const getUpdateHandler = (
 
 export const axisTitle = ({ name, unit }: Channel) => `${name} (${unit})`;
 
-export const yAxesLayout = (range: Range, channels: Channel[]) =>
+export const yAxesLayout = (range: Range, channel: Channel | undefined) =>
   RangeTypesWithYAxisRT.match(
     () => ({
       yaxis1: {
         range,
         title:
-          channels.length > 0
-            ? (({ name, unit } = channels[0]) => `${name} (${unit})`)()
+          channel !== undefined
+            ? (({ name, unit } = channel) => `${name} (${unit})`)()
             : undefined
       }
     }),
@@ -53,7 +53,7 @@ export const yAxesLayout = (range: Range, channels: Channel[]) =>
           overlaying: idx > 0 ? "y" : undefined,
           side: idx % 2 === 0 ? "left" : "right",
           range: idx === 0 && range !== undefined ? [...range] : undefined,
-          title: channels.length === 1 ? axisTitle(channels[0]) : undefined
+          title: channel !== undefined ? axisTitle(channel) : undefined
         };
       });
 
@@ -73,4 +73,9 @@ export const baseChartSettings = {
     width: "100%"
   },
   useResizeHandler: true
+};
+
+export const display: <T>(item: T) => T = item => {
+  console.log(item);
+  return item;
 };

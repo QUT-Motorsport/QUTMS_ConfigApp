@@ -9,7 +9,8 @@ import {
   getUpdateHandler,
   yAxesLayout,
   yAxisName,
-  baseChartSettings
+  baseChartSettings,
+  display
 } from "../../ts/chart/helpers";
 import { QmsData, useChannelGroup } from "../../ts/qmsData";
 
@@ -26,31 +27,40 @@ export default ({
   domainState?: StateHook<Range>;
 }) => {
   const [range, setRange] = useState<Range>();
-  const channelGroup = useChannelGroup(
-    data,
-    useMemo(() => spec2ChannelIdxs(spec), [spec]),
-    { byTime: undefined, byChannels: {} }
+  const channelGroup = display(
+    useChannelGroup(
+      data,
+      useMemo(() => spec2ChannelIdxs(spec), [spec]),
+      useMemo(() => ({ byTime: undefined, byChannels: {} }), [])
+    )
   );
 
   return channelGroup ? (
     <Plot
       {...baseChartSettings}
-      data={Object.values(channelGroup.channels).map(
-        ({ channel: { name, idx }, data }) => ({
-          name,
-          x: channelGroup.time,
-          y: data,
-          yaxis: yAxisName(idx)(spec),
-          mode: "lines",
-          opacity: 1 - channelGroup.channels.length * 0.1
-        })
-      )}
+      data={
+        Array.isArray(channelGroup)
+          ? [] // TODO: discretely color-scaled line plots
+          : Object.values(channelGroup.channels).map(
+              ({ channel: { name, idx }, data }) => ({
+                name,
+                x: channelGroup.time,
+                y: data,
+                yaxis: yAxisName(idx)(spec),
+                mode: "lines",
+                opacity: 1 - channelGroup.channels.length * 0.1
+              })
+            )
+      }
       layout={{
         title: spec.title,
         autosize: true,
         ...yAxesLayout(
           range,
-          channelGroup.channels.map(({ channel }) => channel)
+          (Array.isArray(channelGroup)
+            ? channelGroup[0].channels[1]
+            : channelGroup.channels[0]
+          ).channel
         )(spec),
         xaxis: {
           title: spec.xAxis === "Time" ? "Time (s)" : "Distance (m)",
@@ -58,10 +68,15 @@ export default ({
           ...(showDomainSlider
             ? {
                 rangeslider: {
-                  range: [0, channelGroup.time[channelGroup.time.length - 1]]
+                  range: [
+                    0,
+                    Array.isArray(channelGroup)
+                      ? channelGroup[channelGroup.length - 1]
+                      : channelGroup.time[channelGroup.time.length - 1]
+                  ]
                 }
               }
-            : {})
+            : null)
         }
       }}
       onUpdate={getUpdateHandler([domain, setDomain], [range, setRange])}
