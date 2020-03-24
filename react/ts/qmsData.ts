@@ -32,6 +32,8 @@ namespace QmsCrossfilter {
   export type Filter = number | [number, number];
 
   export type Source = {
+    frequency: number;
+
     // the crossfilter 'god object'
     index: crossfilter.Crossfilter<Record>;
 
@@ -118,6 +120,7 @@ export const useChannelGroup = (
         // create the crossfilter for the first time
         const index = crossfilter([]);
         data.crossfilter = {
+          frequency: 0,
           index,
           dimensions: {
             byTime: index.dimension(({ time }) => time),
@@ -140,40 +143,48 @@ export const useChannelGroup = (
 
         return time2record;
       })();
+      let prevRecord = time2record[0] ?? {};
 
-      // for each channel not yet in the crossfilter, to the lookup table
-      for (const channel of channels.filter(
-        ({ idx }) => !(idx in (time2record[0] ?? {}))
-      )) {
-        let prevRecord: QmsCrossfilter.Record | null = null;
-
-        channel.data!.forEach((val, idx2) => {
-          const time = idx2 / channel.freq;
-          let record = time2record[time];
-          if (record !== undefined) {
-            record[channel.idx] = val;
-            prevRecord = record;
-          } else {
-            record = {
-              // spread the previous record if it exists, effectively performing step interpolation
-              ...prevRecord,
-              time,
-              [channel.idx]: val
-            };
-          }
-          time2record[time] = record;
+      // for each channel not yet in the crossfilter, add it to the lookup table
+      const channelsMissing = channels.filter(
+        channel => !(channel.idx in prevRecord)
+      );
+      for (const channel of channelsMissing) {
+        channel.data!.forEach((val, idx) => {
+          const time = idx / channel.freq;
+          time2record[time] = {
+            ...prevRecord,
+            ...time2record[time],
+            time,
+            [channel.idx]: val
+          };
+          prevRecord = time2record[time];
         });
       }
+
+      // convert the lookup table to an ordered array of records
+      const records = Object.values(time2record).sort(
+        (a, b) => a.time - b.time
+      );
+
+      // perform step interpolation for all lower frequency channels
+      const maxFreq = Math.max(...channels.map(({ freq }) => freq));
+      const channelsNeedingInterpolation = channelsMissing.filter(
+        channel => channel.freq < maxFreq
+      );
+      prevRecord = records[0];
+      records.forEach((_, idx) => {
+        for (const channel of channelsNeedingInterpolation) {
+          if (!(channel.idx in records[idx])) {
+            records[idx][channel.idx] = prevRecord[channel.idx];
+          }
+        }
+        prevRecord = records[idx];
+      });
 
       // reconstruct the crossfilter
       byTime.filterAll(); // clear the time filter - we're done with it
       index.remove();
-
-      const records = Object.values(time2record).sort(
-        (a, b) => b.time - a.time
-      );
-      console.log(records);
-
       index.add(records);
 
       // apply all filters before preparing the channelgroup
