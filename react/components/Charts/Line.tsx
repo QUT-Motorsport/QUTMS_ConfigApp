@@ -27,13 +27,10 @@ export default ({
   domainState?: StateHook<Range>;
 }) => {
   const [range, setRange] = useState<Range>();
-  const channelGroup = display(
-    useChannelGroup(
-      data,
-      useMemo(() => spec2ChannelIdxs(spec), [spec]),
-      useMemo(() => ({ byTime: undefined, byChannels: {} }), [])
-    )
-  );
+  const channelGroup = useChannelGroup(data, {
+    channelIdxs: useMemo(() => spec2ChannelIdxs(spec), [spec]),
+    filters: useMemo(() => ({ byTime: undefined, byChannels: {} }), [])
+  });
 
   return channelGroup ? (
     <Plot

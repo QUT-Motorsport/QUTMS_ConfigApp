@@ -62,6 +62,8 @@ export type ChannelGroup = {
   channels: {
     channel: Channel;
     data: number[];
+    min: number;
+    max: number;
   }[];
 };
 
@@ -101,21 +103,25 @@ const hydrateChannels = (
 
 export const useChannelGroup = (
   data: QmsData,
-  channelIdxs: number[],
+  args: {
+    channelIdxs: number[];
 
-  filters: {
-    byTime?: Range;
-    byChannels?: {
-      [channelIdx: number]: Range;
+    filters: {
+      byTime?: Range;
+      byChannels?: {
+        [channelIdx: number]: Range;
+      };
     };
-  },
 
-  // if included, return array of channelgroup
-  groupBy?: {
-    channelIdx: number;
-    grouper: (val: number) => number; // return group index
+    // if included, return array of channelgroup
+    groupBy?: {
+      channelIdx: number;
+      grouper: (info: { min: number; max: number }) => (val: number) => number; // return group index
+    };
   }
 ): ChannelGroup | ChannelGroup[] | null => {
+  const { channelIdxs, filters, groupBy } = args;
+
   const [channelGroup, setChannelGroup] = useState<
     ChannelGroup | ChannelGroup[] | null
   >(null);
@@ -207,7 +213,6 @@ export const useChannelGroup = (
   }, [channelIdxs]);
 
   useEffect(() => {
-    console.log(crossfilterChannels);
     if (crossfilterChannels.length > 0) {
       const {
         index,
@@ -231,9 +236,12 @@ export const useChannelGroup = (
       }
 
       const createChannelGroup = (records: QmsCrossfilter.Record[]) => {
-        const channelGroup: ChannelGroup = {
+        const channelGroup: any = {
           time: [],
-          channels: crossfilterChannels.map(channel => ({ channel, data: [] }))
+          channels: crossfilterChannels.map(channel => ({
+            channel,
+            data: []
+          }))
         };
         // loop over the records and channels and construct the channel group
         for (const record of records) {
@@ -245,8 +253,38 @@ export const useChannelGroup = (
         return channelGroup;
       };
 
+      const minimum = (arr: Iterable<number>) => {
+        let min = Number.MAX_VALUE;
+        for (const num of arr) {
+          if (num < min) {
+            min = num;
+          }
+        }
+        return min;
+      };
+
+      const maximum = (arr: Iterable<number>) => {
+        let max = Number.MIN_VALUE;
+        for (const num of arr) {
+          if (num > max) {
+            max = num;
+          }
+        }
+        return max;
+      };
+
+      const mins = crossfilterChannels.map(channel => minimum(channel.data!));
+      const maxs = crossfilterChannels.map(channel => maximum(channel.data!));
+
       if (groupBy === undefined) {
-        setChannelGroup(createChannelGroup(index.allFiltered()));
+        const channelGroup = createChannelGroup(index.allFiltered());
+        channelGroup.channels.forEach(
+          (channel: ChannelGroup["channels"][0], idx: number) => {
+            channel.min = mins[idx];
+            channel.max = maxs[idx];
+          }
+        );
+        setChannelGroup(channelGroup);
       } else {
         if (byChannels[groupBy.channelIdx] === undefined) {
           byChannels[groupBy.channelIdx] = index.dimension(
@@ -254,23 +292,51 @@ export const useChannelGroup = (
           );
         }
 
+        console.log(index.allFiltered());
+
         const recordGroups = byChannels[groupBy.channelIdx]
-          .group<number, QmsCrossfilter.Record[]>(groupBy.grouper)
+          .group<number, { [time: number]: QmsCrossfilter.Record }>(val => {
+            const crossfilterChannelIdxs = crossfilterChannels.map(
+              channel => channel.idx
+            );
+            const groupByChannelIdx = crossfilterChannelIdxs.indexOf(
+              groupBy.channelIdx
+            );
+            return groupBy.grouper({
+              min: mins[groupByChannelIdx],
+              max: maxs[groupByChannelIdx]
+            })(val);
+          })
           .reduce(
+            // incremental reduce
             (group, record) => {
-              group.push(record);
+              // reduce-add
+              group[record.time] = record;
               return group;
             },
-            () => {
-              throw Error("Unexpected callback involving group removal");
+            (group, record) => {
+              // reduce-remove
+              delete group[record.time];
+              return group;
             },
-            () => []
+            () => ({}) // reduce-init
           )
           .all();
 
-        setChannelGroup(
-          recordGroups.map(recordGroup => createChannelGroup(recordGroup.value))
+        const channelGroups = recordGroups.map(recordGroup =>
+          createChannelGroup(
+            Object.values(recordGroup.value).sort((a, b) => a.time - b.time)
+          )
         );
+
+        for (const idx in channelGroups[0].channels) {
+          for (const channelGroup of channelGroups) {
+            channelGroup.channels[idx].min = mins[idx as any];
+            channelGroup.channels[idx].max = maxs[idx as any];
+          }
+        }
+
+        setChannelGroup(channelGroups);
       }
 
       // we're done. clear all filters.
