@@ -44,12 +44,13 @@ export default ({
     >
       <Radio.Group
         value={spec.nColorBins === null ? "continuous" : "discrete"}
-        onChange={e =>
+        onChange={e => {
+          console.log("setting spec to ", e.target.value);
           setSpec({
             ...spec,
             nColorBins: e.target.value === "continuous" ? null : 8
-          })
-        }
+          });
+        }}
       >
         <Radio.Button value="continuous">Continous</Radio.Button>
         <Radio.Button value="discrete">Discrete</Radio.Button>

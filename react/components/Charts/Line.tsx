@@ -9,8 +9,7 @@ import {
   getUpdateHandler,
   yAxesLayout,
   yAxisName,
-  baseChartSettings,
-  display
+  baseChartSettings
 } from "../../ts/chart/helpers";
 import { QmsData, useChannelGroup } from "../../ts/qmsData";
 

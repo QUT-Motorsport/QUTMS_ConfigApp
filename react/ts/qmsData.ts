@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { get } from "./ajax";
 import crossfilter from "crossfilter2";
 import { Range } from "./chart/types";
@@ -70,7 +70,7 @@ export type ChannelGroup = {
 export const useQmsData = (filename: string): QmsData | null => {
   const [qmsData, setQmsData] = useState<QmsData | null>(null);
 
-  useEffect(() => {
+  useMemo(() => {
     // todo: implement ts-deserializer
     get(`qms/${filename}`).then((data: Partial<QmsData>) => {
       data.channels!.forEach((channel: Channel, idx: number) => {
@@ -125,11 +125,9 @@ export const useChannelGroup = (
   const [channelGroup, setChannelGroup] = useState<
     ChannelGroup | ChannelGroup[] | null
   >(null);
-  // just a toggler for state update so that QmsData can be kept out of state
-  // no real reason for this over putting QmsData into state, just easier to do right now.
   const [crossfilterChannels, setCrossfilterChannels] = useState<Channel[]>([]);
 
-  useEffect(() => {
+  useMemo(() => {
     hydrateChannels(data, channelIdxs).then(() => {
       const channels = channelIdxs.map(idx => data.channels[idx]);
 
@@ -212,7 +210,7 @@ export const useChannelGroup = (
     });
   }, [channelIdxs]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (crossfilterChannels.length > 0) {
       const {
         index,
@@ -253,28 +251,25 @@ export const useChannelGroup = (
         return channelGroup;
       };
 
-      const minimum = (arr: Iterable<number>) => {
+      const mins = crossfilterChannels.map(channel => {
         let min = Number.MAX_VALUE;
-        for (const num of arr) {
+        for (const num of channel.data!) {
           if (num < min) {
             min = num;
           }
         }
         return min;
-      };
+      });
 
-      const maximum = (arr: Iterable<number>) => {
+      const maxs = crossfilterChannels.map(channel => {
         let max = Number.MIN_VALUE;
-        for (const num of arr) {
+        for (const num of channel.data!) {
           if (num > max) {
             max = num;
           }
         }
         return max;
-      };
-
-      const mins = crossfilterChannels.map(channel => minimum(channel.data!));
-      const maxs = crossfilterChannels.map(channel => maximum(channel.data!));
+      });
 
       if (groupBy === undefined) {
         const channelGroup = createChannelGroup(index.allFiltered());
@@ -291,8 +286,6 @@ export const useChannelGroup = (
             record => record[groupBy.channelIdx]
           );
         }
-
-        console.log(index.allFiltered());
 
         const recordGroups = byChannels[groupBy.channelIdx]
           .group<number, { [time: number]: QmsCrossfilter.Record }>(val => {
@@ -340,10 +333,10 @@ export const useChannelGroup = (
       }
 
       // we're done. clear all filters.
-      byTime.filterAll();
-      Object.values(byChannels).forEach(dimension => dimension.filterAll());
+      // byTime.filterAll();
+      // Object.values(byChannels).forEach(dimension => dimension.filterAll());
     }
-  }, [crossfilterChannels, filters]);
+  }, [crossfilterChannels, filters, groupBy]);
 
   return channelGroup;
 };

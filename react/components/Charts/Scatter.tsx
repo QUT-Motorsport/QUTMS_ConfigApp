@@ -14,7 +14,6 @@ import {
   discreteJetColorsCalculator
 } from "../../ts/chart/helpers";
 import { QmsData, useChannelGroup } from "../../ts/qmsData";
-import { AssertionError } from "assert";
 import { PlotData } from "plotly.js";
 
 export default ({
@@ -60,83 +59,76 @@ export default ({
       yaxis: yAxisName(channelIdx)(spec)
     });
 
-    const chartData = Array.isArray(channelGroup)
-      ? channelGroup
-          .map(
-            (channelGroup, idx): Partial<PlotData> => {
-              if (
-                spec.rangeType === "Colour-Scaled" &&
-                spec.nColorBins !== null
-              ) {
-                const [
-                  xChannel,
-                  yChannel,
-                  colorChannel
-                ] = channelGroup.channels;
-
-                // repeat calls to this are cached
-                const { stop, color } = discreteJetColors(
-                  colorChannel.min,
-                  colorChannel.max,
-                  spec.nColorBins!
-                )[idx];
-
-                return {
-                  ...defaults(yChannel.channel.idx),
-                  x: xChannel.data,
-                  y: yChannel.data,
-                  name: `<= ${stop.toPrecision(3)}`,
-                  marker: { color }
-                };
-              } else {
-                throw new AssertionError({
-                  message:
-                    "rangeType should only be discrete color-scaled here",
-                  expected: "Colour-Scaled",
-                  actual: spec.rangeType
-                });
-              }
-            }
-          )
-          .reverse()
-      : spec.rangeType === "Colour-Scaled"
-      ? (() => {
-          const [xChannel, yChannel, colorChannel] = channelGroup.channels;
-          return [
-            {
-              ...defaults(yChannel.channel.idx),
-              x: xChannel.data,
-              y: yChannel.data,
-
-              marker: {
-                color: colorChannel.data!,
-                colorscale: "Jet",
-                colorbar: {
-                  title: {
-                    text: axisTitle(colorChannel.channel),
-                    side: "right"
-                  } as any
-                }
-              }
-            }
-          ];
-        })()
-      : (() => {
-          const [xChannel, ...yChannels] = channelGroup.channels;
-
-          return yChannels.map(yChannel => ({
-            ...defaults(yChannel.channel.idx),
-            x: xChannel.data,
-            y: yChannel.data,
-
-            opacity: 1 - yChannels.length * 0.1
-          }));
-        })();
-
     return (
       <Plot
         {...baseChartSettings}
-        data={chartData}
+        data={
+          Array.isArray(channelGroup) // if we're using discrete color-scale
+            ? (channelGroup
+                .map((thisChannelGroup, idx) => {
+                  if (
+                    spec.rangeType === "Colour-Scaled" &&
+                    spec.nColorBins !== null
+                  ) {
+                    const [
+                      xChannel,
+                      yChannel,
+                      colorChannel
+                    ] = thisChannelGroup.channels;
+
+                    // repeat calls to this are cached
+                    const { stop, color } = discreteJetColors(
+                      colorChannel.min,
+                      colorChannel.max,
+                      spec.nColorBins!
+                    )[idx];
+
+                    return {
+                      ...defaults(yChannel.channel.idx),
+                      x: xChannel.data,
+                      y: yChannel.data,
+                      name: `<= ${stop.toPrecision(3)}`,
+                      marker: { color, symbol: "circle-open" }
+                    };
+                  } else {
+                    return null;
+                  }
+                })
+                .filter(trace => trace !== null)
+                .reverse() as Partial<PlotData>[])
+            : spec.rangeType === "Colour-Scaled"
+            ? // continuous color-scale
+              (([xChannel, yChannel, colorChannel] = channelGroup.channels) => [
+                {
+                  ...defaults(yChannel.channel.idx),
+                  x: xChannel.data,
+                  y: yChannel.data,
+
+                  marker: {
+                    symbol: "circle-open",
+                    color: colorChannel.data!,
+                    colorscale: "Jet",
+                    colorbar: {
+                      title: {
+                        text: axisTitle(colorChannel.channel),
+                        side: "right"
+                      } as any
+                    }
+                  }
+                }
+              ])()
+            : ((
+                [xChannel, ...yChannels] = channelGroup.channels // must be multichannel
+              ) =>
+                yChannels.map(yChannel => ({
+                  ...defaults(yChannel.channel.idx),
+                  x: xChannel.data,
+                  y: yChannel.data,
+                  marker: {
+                    symbol: "circle-open"
+                  }
+                })))()
+        }
         layout={{
           title: spec.title,
           autosize: true,

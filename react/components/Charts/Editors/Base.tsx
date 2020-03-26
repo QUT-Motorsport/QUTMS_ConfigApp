@@ -1,6 +1,7 @@
 import { Form, Radio, Input } from "antd";
 
 import { QmsData } from "../../../ts/qmsData";
+import { display } from "../../../ts/chart/helpers";
 import { ChartSpec, ChartSpecRT, ColorScaled } from "../../../ts/chart/types";
 import { StateHook } from "../../../ts/hooks";
 import {
@@ -66,10 +67,9 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
           <Radio.Group
             value={chartSpec.domainType}
             onChange={e => {
-              const domainType: keyof typeof DEFAULT_CHARTS = e.target.value;
               setChartSpec({
                 ...chartSpec,
-                ...DEFAULT_CHARTS[domainType]
+                ...DEFAULT_CHARTS[e.target.value as keyof typeof DEFAULT_CHARTS]
               } as ChartSpec);
             }}
           >
@@ -99,12 +99,14 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
                 <Radio.Group
                   value={chartSpec.rangeType}
                   onChange={e => {
-                    const rangeType: keyof typeof DEFAULT_RANGE_TYPES =
-                      e.target.value;
-                    setChartSpec({
-                      ...chartSpec,
-                      ...DEFAULT_RANGE_TYPES[rangeType]
-                    } as ChartSpec);
+                    setChartSpec(
+                      display({
+                        ...chartSpec,
+                        ...DEFAULT_RANGE_TYPES[
+                          e.target.value as keyof typeof DEFAULT_RANGE_TYPES
+                        ]
+                      }) as ChartSpec
+                    );
                   }}
                 >
                   {Object.keys(DEFAULT_RANGE_TYPES).map((rangeType, idx) => (
