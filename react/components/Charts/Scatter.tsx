@@ -64,7 +64,7 @@ export default ({
         {...baseChartSettings}
         data={
           Array.isArray(channelGroup) // if we're using discrete color-scale
-            ? (channelGroup
+            ? channelGroup
                 .map((thisChannelGroup, idx) => {
                   if (
                     spec.rangeType === "Colour-Scaled" &&
@@ -91,11 +91,10 @@ export default ({
                       marker: { color, symbol: "circle-open" }
                     };
                   } else {
-                    return null;
+                    throw new Error("This should never be true");
                   }
                 })
-                .filter(trace => trace !== null)
-                .reverse() as Partial<PlotData>[])
+                .reverse()
             : spec.rangeType === "Colour-Scaled"
             ? // continuous color-scale
               (([xChannel, yChannel, colorChannel] = channelGroup.channels) => [

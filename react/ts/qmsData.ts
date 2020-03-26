@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { get } from "./ajax";
 import crossfilter from "crossfilter2";
-import { Range } from "./chart/types";
+import { Range, ChannelIdx } from "./chart/types";
 
 // object acts as both the file interface and a cache for channel data
 export type QmsData = {
@@ -9,77 +9,82 @@ export type QmsData = {
 
   // totalTime: number;
   // lapTimes: number[];
-  channels: Channel[];
+  channels: (ChannelHeader | Channel)[]; // just the header if un-hydrated
 
   // objects related to crossfiltering
   // null if no data downloaded yet
-  crossfilter: null | QmsCrossfilter.Source;
+  crossfilter: null | Source;
 };
 
-namespace QmsCrossfilter {
-  export type Time = number;
-  export type Record = {
-    time: Time; // the timestep when this took place - used to index
+export type Time = number;
+export type Datum = number; // singular of data (a single point)
+export type Data = Datum[];
 
-    // the data
-    // may contain channels that aren't currently in use if that channel was in use for a component
-    // and then later unused; may change if memory requirements forbid this behaviour.
-    [channelIdx: number]: number;
+export type Record = {
+  time: Time;
+  data: Map<Channel, Datum>;
+};
+
+export type DataDimension = crossfilter.Dimension<Record, Time>;
+
+export type Filter = number | [number, number];
+
+export type Source = {
+  // the crossfilter 'god object'
+  index: crossfilter.Crossfilter<Record>;
+
+  // crossfilter dimensions to be accessed by multiple components
+  dimensions: {
+    byTime: crossfilter.Dimension<Record, Time>;
+    byChannels: Map<Channel, DataDimension>;
   };
+};
 
-  export type DataDimension = crossfilter.Dimension<Record, Time>;
+export type GroupIdx = crossfilter.NaturallyOrderedValue;
 
-  export type Filter = number | [number, number];
-
-  export type Source = {
-    frequency: number;
-
-    // the crossfilter 'god object'
-    index: crossfilter.Crossfilter<Record>;
-
-    // crossfilter dimensions to be accessed by multiple components
-    dimensions: {
-      byTime: crossfilter.Dimension<Record, Time>;
-      byChannels: {
-        [channelIdx: number]: DataDimension;
-      };
-    };
-  };
-
-  export type GroupIdx = crossfilter.NaturallyOrderedValue;
-}
-
-export type Channel = {
-  idx: number;
+export type ChannelHeader = {
+  idx: ChannelIdx;
   name: string;
   freq: number;
   unit: string;
-  data?: number[]; // undefined unless hydrated
+};
+
+export type Channel = ChannelHeader & {
+  data: Data;
 };
 
 export type ChannelGroup = {
-  time: QmsCrossfilter.Time[];
-  channels: {
-    channel: Channel;
-    data: number[];
-    min: number;
-    max: number;
-  }[];
+  time: Time[];
+  channels: Map<Channel, Data>;
+};
+
+// used for grouping by eg, discrete color-scale, or track-map segment
+export type GroupedChannelGroups = {
+  // this is required (at least) for discrete color-scale colormap interpolation
+  channelsMeta: Map<
+    Channel,
+    {
+      min: Datum;
+      max: Datum;
+    }
+  >;
+
+  groups: Map<GroupIdx, ChannelGroup>;
 };
 
 export const useQmsData = (filename: string): QmsData | null => {
   const [qmsData, setQmsData] = useState<QmsData | null>(null);
 
-  useMemo(() => {
+  useEffect(() => {
     // todo: implement ts-deserializer
-    get(`qms/${filename}`).then((data: Partial<QmsData>) => {
-      data.channels!.forEach((channel: Channel, idx: number) => {
+    get(`qms/${filename}`).then((data: QmsData) => {
+      data.channels.forEach((channel: ChannelHeader, idx: number) => {
         channel.idx = idx;
       });
 
       setQmsData({
         ...data,
-        channels: data.channels!,
+        channels: data.channels,
         filename,
         crossfilter: null
       });
@@ -95,8 +100,8 @@ const hydrateChannels = (
 ) =>
   Promise.all(
     channelIdxs.map(async idx => {
-      if (channels[idx].data === undefined) {
-        channels[idx].data = await get(`qms/${filename}/${idx}`);
+      if ("data" in channels[idx]) {
+        (channels[idx] as Channel).data = await get(`qms/${filename}/${idx}`);
       }
     })
   );
@@ -108,15 +113,13 @@ export const useChannelGroup = (
 
     filters: {
       byTime?: Range;
-      byChannels?: {
-        [channelIdx: number]: Range;
-      };
+      byChannels?: Map<Channel, Range>;
     };
 
     // if included, return array of channelgroup
     groupBy?: {
-      channelIdx: number;
-      grouper: (info: { min: number; max: number }) => (val: number) => number; // return group index
+      channel: Channel;
+      grouper: (val: number) => number; // return group index
     };
   }
 ): ChannelGroup | ChannelGroup[] | null => {
@@ -125,57 +128,59 @@ export const useChannelGroup = (
   const [channelGroup, setChannelGroup] = useState<
     ChannelGroup | ChannelGroup[] | null
   >(null);
-  const [crossfilterChannels, setCrossfilterChannels] = useState<Channel[]>([]);
 
   useMemo(() => {
     hydrateChannels(data, channelIdxs).then(() => {
-      const channels = channelIdxs.map(idx => data.channels[idx]);
+      const channels = channelIdxs.map(idx => data.channels[idx]) as Channel[];
 
       if (data.crossfilter === null) {
         // create the crossfilter for the first time
-        const index = crossfilter([]);
+        const index = crossfilter<Record>([]);
         data.crossfilter = {
-          frequency: 0,
           index,
           dimensions: {
-            byTime: index.dimension(({ time }) => time),
-            byChannels: {}
+            byTime: index.dimension(record => record.time),
+            byChannels: new Map()
           }
         };
       }
 
       const {
         index,
-        dimensions: { byTime }
+        dimensions: { byTime, byChannels }
       } = data.crossfilter;
 
-      // cache a lookup table time for use in the next bit
-      const time2record = (() => {
-        let time2record: { [time: number]: QmsCrossfilter.Record } = {};
-        for (const record of index.all()) {
-          time2record[record.time] = record;
-        }
-
-        return time2record;
-      })();
-      let prevRecord = time2record[0] ?? {};
+      // start with firstRecord, use later
+      const firstRecord = index.all()[0] ?? {};
 
       const channelsMissing = channels.filter(
-        channel => !(channel.idx in prevRecord)
+        channel => !(channel.idx in firstRecord)
       );
 
       if (channelsMissing.length > 0) {
+        let prevRecord = firstRecord;
+        // cache a lookup table time for use in the next bit
+        let time2record = new Map<Time, Record>();
+        for (const record of index.all()) {
+          time2record.set(record.time, record);
+        }
         // for each channel not yet in the crossfilter, add it to the lookup table
         for (const channel of channelsMissing) {
           channel.data!.forEach((val, idx) => {
             const time = idx / channel.freq;
-            time2record[time] = {
+            const existingRecord = time2record.get(time);
+            for (const [channel, datum] of prevRecord.data.entries()) {
+            }
+            existingRecord.data;
+            const updatedRecord = new Map([
               ...prevRecord,
-              ...time2record[time],
-              time,
-              [channel.idx]: val
-            };
-            prevRecord = time2record[time];
+              ...existingRecord,
+              ["time", time],
+              [channel.idx, val]
+            ]);
+
+            time2record.set(time, updatedRecord);
+            prevRecord = updatedRecord;
           });
         }
 
@@ -193,7 +198,7 @@ export const useChannelGroup = (
         records.forEach((_, idx) => {
           for (const channel of channelsNeedingInterpolation) {
             if (!(channel.idx in records[idx])) {
-              records[idx][channel.idx] = prevRecord[channel.idx];
+              records[idx][channel.idx] = prevRecord.get(channel.idx);
             }
           }
           prevRecord = records[idx];
@@ -205,138 +210,128 @@ export const useChannelGroup = (
         index.add(records);
       }
 
-      // trigger the other effect to update
-      setCrossfilterChannels(channels);
-    });
-  }, [channelIdxs]);
-
-  useMemo(() => {
-    if (crossfilterChannels.length > 0) {
-      const {
-        index,
-        dimensions: { byTime, byChannels }
-      } = data.crossfilter!;
-
-      // apply all filters before preparing the channelgroup
-      if (filters.byTime !== undefined) {
-        byTime.filter(filters.byTime);
-      }
-      if (filters.byChannels !== undefined) {
-        Object.entries(filters.byChannels).forEach(([channelIdxStr, range]) => {
-          const channelIdx = parseInt(channelIdxStr);
-          if (byChannels[channelIdx] === undefined) {
-            byChannels[channelIdx] = index.dimension(
-              record => record[channelIdx]
-            );
-          }
-          byChannels[channelIdx].filter(range!);
-        });
-      }
-
-      const createChannelGroup = (records: QmsCrossfilter.Record[]) => {
-        const channelGroup: any = {
-          time: [],
-          channels: crossfilterChannels.map(channel => ({
-            channel,
-            data: []
-          }))
-        };
-        // loop over the records and channels and construct the channel group
-        for (const record of records) {
-          channelGroup.time.push(record.time);
-          crossfilterChannels.forEach(({ idx: channelIdx }, idx) => {
-            channelGroup.channels[idx].data.push(record[channelIdx]);
+      if (channels.length > 0) {
+        // apply all filters before preparing the channelgroup
+        if (filters.byTime) {
+          byTime.filter(filters.byTime);
+        }
+        if (filters.byChannels) {
+          filters.byChannels.forEach((range, channel) => {
+            if (!byChannels.has(channel)) {
+              byChannels.set(
+                channel,
+                index.dimension(record => record.get(channel.idx)!)
+              );
+            }
+            byChannels.get(channel)!.filter(range!);
           });
         }
-        return channelGroup;
-      };
 
-      const mins = crossfilterChannels.map(channel => {
-        let min = Number.MAX_VALUE;
-        for (const num of channel.data!) {
-          if (num < min) {
-            min = num;
+        const createChannelGroup = (records: Record[]) => {
+          const channelGroup: any = {
+            time: [],
+            channels: channels.map(channel => ({
+              channel,
+              data: []
+            }))
+          };
+          // loop over the records and channels and construct the channel group
+          for (const record of records) {
+            channelGroup.time.push(record.get("time"));
+            channels.forEach(({ idx: channelIdx }, idx) => {
+              channelGroup.channels[idx].data.push(record.get(channelIdx));
+            });
           }
-        }
-        return min;
-      });
+          return channelGroup;
+        };
 
-      const maxs = crossfilterChannels.map(channel => {
-        let max = Number.MIN_VALUE;
-        for (const num of channel.data!) {
-          if (num > max) {
-            max = num;
+        const mins = channels.map(channel => {
+          let min = Number.MAX_VALUE;
+          for (const num of channel.data!) {
+            if (num < min) {
+              min = num;
+            }
           }
-        }
-        return max;
-      });
+          return min;
+        });
 
-      if (groupBy === undefined) {
-        const channelGroup = createChannelGroup(index.allFiltered());
-        channelGroup.channels.forEach(
-          (channel: ChannelGroup["channels"][0], idx: number) => {
-            channel.min = mins[idx];
-            channel.max = maxs[idx];
+        const maxs = channels.map(channel => {
+          let max = Number.MIN_VALUE;
+          for (const num of channel.data!) {
+            if (num > max) {
+              max = num;
+            }
           }
-        );
-        setChannelGroup(channelGroup);
-      } else {
-        if (byChannels[groupBy.channelIdx] === undefined) {
-          byChannels[groupBy.channelIdx] = index.dimension(
-            record => record[groupBy.channelIdx]
+          return max;
+        });
+
+        if (groupBy === undefined) {
+          const channelGroup = createChannelGroup(index.allFiltered());
+          channelGroup.channels.forEach(
+            (channel: ChannelGroup["channels"][0], idx: number) => {
+              channel.min = mins[idx];
+              channel.max = maxs[idx];
+            }
           );
-        }
-
-        const recordGroups = byChannels[groupBy.channelIdx]
-          .group<number, { [time: number]: QmsCrossfilter.Record }>(val => {
-            const crossfilterChannelIdxs = crossfilterChannels.map(
-              channel => channel.idx
+          setChannelGroup(channelGroup);
+        } else {
+          if (byChannels[groupBy.channelIdx] === undefined) {
+            byChannels[groupBy.channelIdx] = index.dimension(
+              record => record[groupBy.channelIdx]
             );
-            const groupByChannelIdx = crossfilterChannelIdxs.indexOf(
-              groupBy.channelIdx
-            );
-            return groupBy.grouper({
-              min: mins[groupByChannelIdx],
-              max: maxs[groupByChannelIdx]
-            })(val);
-          })
-          .reduce(
-            // incremental reduce
-            (group, record) => {
-              // reduce-add
-              group[record.time] = record;
-              return group;
-            },
-            (group, record) => {
-              // reduce-remove
-              delete group[record.time];
-              return group;
-            },
-            () => ({}) // reduce-init
-          )
-          .all();
-
-        const channelGroups = recordGroups.map(recordGroup =>
-          createChannelGroup(
-            Object.values(recordGroup.value).sort((a, b) => a.time - b.time)
-          )
-        );
-
-        for (const idx in channelGroups[0].channels) {
-          for (const channelGroup of channelGroups) {
-            channelGroup.channels[idx].min = mins[idx as any];
-            channelGroup.channels[idx].max = maxs[idx as any];
           }
+
+          const recordGroups = byChannels[groupBy.channelIdx]
+            .group<number, { [time: number]: Record }>(val => {
+              const crossfilterChannelIdxs = channels.map(
+                channel => channel.idx
+              );
+              const groupByChannelIdx = crossfilterChannelIdxs.indexOf(
+                groupBy.channelIdx
+              );
+              return groupBy.grouper({
+                min: mins[groupByChannelIdx],
+                max: maxs[groupByChannelIdx]
+              })(val);
+            })
+            .reduce(
+              // incremental reduce
+              (group, record) => {
+                // reduce-add
+                group[record.time] = record;
+                return group;
+              },
+              (group, record) => {
+                // reduce-remove
+                delete group[record.time];
+                return group;
+              },
+              () => ({}) // reduce-init
+            )
+            .all();
+
+          const channelGroups = recordGroups.map(recordGroup =>
+            createChannelGroup(
+              Object.values(recordGroup.value).sort((a, b) => a.time - b.time)
+            )
+          );
+
+          for (const idx in channelGroups[0].channels) {
+            for (const channelGroup of channelGroups) {
+              channelGroup.channels[idx].min = mins[idx as any];
+              channelGroup.channels[idx].max = maxs[idx as any];
+            }
+          }
+
+          setChannelGroup(channelGroups);
         }
 
-        setChannelGroup(channelGroups);
+        // we're done. clear all filters.
+        // byTime.filterAll();
+        // Object.values(byChannels).forEach(dimension => dimension.filterAll());
       }
-
-      // we're done. clear all filters.
-      // byTime.filterAll();
-      // Object.values(byChannels).forEach(dimension => dimension.filterAll());
-    }
-  }, [crossfilterChannels, filters, groupBy]);
+    });
+  }, [channelIdxs, filters, groupBy]);
 
   return channelGroup;
 };
