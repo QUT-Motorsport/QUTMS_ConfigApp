@@ -22,13 +22,5 @@ export default ({
         ))}
       </Select>
     </Form.Item>
-    <Form.Item label="Show Trendlines">
-      <Checkbox
-        checked={spec.trendline}
-        onChange={e => {
-          setSpec({ ...spec, trendline: e.target.checked });
-        }}
-      />
-    </Form.Item>
   </>
 );

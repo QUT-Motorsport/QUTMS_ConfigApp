@@ -29,12 +29,6 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
     />
   );
   const [chartSpec, setChartSpec] = specState;
-  try {
-    ChartSpecRT.check(chartSpec);
-  } catch (e) {
-    console.error("chartspec failed to validate!\n", chartSpec);
-    throw e;
-  }
   const [
     ChartDomainRT,
     ChartRangeRT
@@ -66,10 +60,9 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
           <Radio.Group
             value={chartSpec.domainType}
             onChange={e => {
-              const domainType: keyof typeof DEFAULT_CHARTS = e.target.value;
               setChartSpec({
                 ...chartSpec,
-                ...DEFAULT_CHARTS[domainType]
+                ...DEFAULT_CHARTS[e.target.value as keyof typeof DEFAULT_CHARTS]
               } as ChartSpec);
             }}
           >
@@ -99,11 +92,11 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
                 <Radio.Group
                   value={chartSpec.rangeType}
                   onChange={e => {
-                    const rangeType: keyof typeof DEFAULT_RANGE_TYPES =
-                      e.target.value;
                     setChartSpec({
                       ...chartSpec,
-                      ...DEFAULT_RANGE_TYPES[rangeType]
+                      ...DEFAULT_RANGE_TYPES[
+                        e.target.value as keyof typeof DEFAULT_RANGE_TYPES
+                      ]
                     } as ChartSpec);
                   }}
                 >
