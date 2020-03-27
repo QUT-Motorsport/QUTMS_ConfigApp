@@ -1,4 +1,5 @@
 import { EditorProps } from "../Base";
+import { Channel } from "../../../../ts/qmsData";
 import { ColorScaled } from "../../../../ts/chart/types";
 import { Form, Select, InputNumber, Radio } from "antd";
 import { channelOptionAttrs } from "./_helpers";
@@ -18,7 +19,7 @@ export default ({
           }}
         >
           {data.channels.map((channel, idx) => (
-            <Select.Option {...channelOptionAttrs(channel, idx)} />
+            <Select.Option {...channelOptionAttrs(channel as Channel, idx)} />
           ))}
         </Select>
       </Form.Item>
@@ -33,7 +34,7 @@ export default ({
         }}
       >
         {data.channels.map((channel, idx) => (
-          <Select.Option {...channelOptionAttrs(channel, idx)} />
+          <Select.Option {...channelOptionAttrs(channel as Channel, idx)} />
         ))}
       </Select>
     </Form.Item>
@@ -45,7 +46,6 @@ export default ({
       <Radio.Group
         value={spec.nColorBins === null ? "continuous" : "discrete"}
         onChange={e => {
-          console.log("setting spec to ", e.target.value);
           setSpec({
             ...spec,
             nColorBins: e.target.value === "continuous" ? null : 8

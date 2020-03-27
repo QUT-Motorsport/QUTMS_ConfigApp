@@ -1,9 +1,11 @@
 import Plot from "react-plotly.js";
 import { useState, useMemo } from "react";
 import { Spin } from "antd";
+import iterate from "iterare";
 
-import { Range, ScatterChartSpec } from "../../ts/chart/types";
+import { Range, ScatterChartSpec, ChannelIdx } from "../../ts/chart/types";
 import { StateHook } from "../../ts/hooks";
+import { log } from "../../ts/debug";
 import {
   spec2ChannelIdxs,
   getUpdateHandler,
@@ -13,8 +15,8 @@ import {
   baseChartSettings,
   discreteJetColorsCalculator
 } from "../../ts/chart/helpers";
-import { QmsData, useChannelGroup } from "../../ts/qmsData";
-import { PlotData } from "plotly.js";
+import { QmsData, useCrossfilteredData, Channel } from "../../ts/qmsData";
+import { getChannels, useGroupByColorBins } from "./_helpers";
 
 export default ({
   spec,
@@ -29,122 +31,113 @@ export default ({
   _xRangeState?: StateHook<Range>;
   _yRangeState?: StateHook<Range>;
 }) => {
-  const discreteJetColors = useMemo(discreteJetColorsCalculator, []);
+  // jet colour interpolator with internal cache
+  const { discreteJetColors, groupBy } = useGroupByColorBins(data, spec);
 
-  const channelGroup = useChannelGroup(data, {
+  const crossfilterData = useCrossfilteredData(data, {
     channelIdxs: useMemo(() => [spec.xAxis, ...spec2ChannelIdxs(spec)], [spec]),
-    filters: useMemo(() => ({ byTime: domain, byChannels: {} }), [domain]),
-    groupBy: useMemo(
-      () =>
-        spec.rangeType === "Colour-Scaled" && spec.nColorBins !== null
-          ? {
-              channelIdx: spec.colorAxis,
-              grouper: ({ min, max }) => val =>
-                discreteJetColors(min, max, spec.nColorBins!).findIndex(
-                  ({ start, stop }) => val >= start && val <= stop
-                )
-            }
-          : undefined,
-      [(spec as any).nColorBins, (spec as any).colorAxis, spec.rangeType]
-    )
+    filters: useMemo(() => ({ byTime: domain, byChannels: new Map() }), [
+      domain
+    ]),
+    groupBy
   });
 
-  if (channelGroup === null) {
+  if (crossfilterData === null) {
     return <Spin />;
   } else {
-    const defaults = (channelIdx: number) => ({
+    const defaults = (yChannel: Channel) => ({
       type: "scattergl" as any,
       mode: "markers" as any,
-      name,
-      yaxis: yAxisName(channelIdx)(spec)
+      name: yChannel.name,
+      yaxis: yAxisName(yChannel.idx)(spec)
     });
+
+    const [xChannel] = getChannels(data, [spec.xAxis]);
 
     return (
       <Plot
         {...baseChartSettings}
         data={
-          Array.isArray(channelGroup) // if we're using discrete color-scale
-            ? channelGroup
-                .map((thisChannelGroup, idx) => {
+          "groups" in crossfilterData // if we're using discrete color-scale
+            ? iterate(crossfilterData.groups)
+                .map(([groupIdx, channelGroup]) => {
                   if (
                     spec.rangeType === "Colour-Scaled" &&
                     spec.nColorBins !== null
                   ) {
-                    const [
-                      xChannel,
-                      yChannel,
-                      colorChannel
-                    ] = thisChannelGroup.channels;
+                    const [yChannel] = getChannels(data, [spec.yAxis]);
+
+                    const [min, max] = crossfilterData.groupedRange;
 
                     // repeat calls to this are cached
                     const { stop, color } = discreteJetColors(
-                      colorChannel.min,
-                      colorChannel.max,
+                      min,
+                      max,
                       spec.nColorBins!
-                    )[idx];
+                    )[groupIdx];
 
                     return {
-                      ...defaults(yChannel.channel.idx),
-                      x: xChannel.data,
-                      y: yChannel.data,
+                      ...defaults(yChannel),
+                      x: channelGroup.channels.get(xChannel),
+                      y: channelGroup.channels.get(yChannel),
                       name: `<= ${stop.toPrecision(3)}`,
                       marker: { color, symbol: "circle-open" }
                     };
                   } else {
-                    throw new Error("This should never be true");
+                    // TODO: merge spec with channelGroup output so that this becomes a typeerror instead of a runtime error
+                    throw new Error("Code path should never resolve");
                   }
                 })
+                .toArray()
                 .reverse()
             : spec.rangeType === "Colour-Scaled"
             ? // continuous color-scale
-              (([xChannel, yChannel, colorChannel] = channelGroup.channels) => [
+              ((
+                [yChannel, colorChannel] = getChannels(data, [
+                  spec.yAxis,
+                  spec.colorAxis
+                ])
+              ) => [
                 {
-                  ...defaults(yChannel.channel.idx),
-                  x: xChannel.data,
-                  y: yChannel.data,
+                  ...defaults(yChannel),
+                  x: crossfilterData.channels.get(xChannel),
+                  y: crossfilterData.channels.get(yChannel),
 
                   marker: {
                     symbol: "circle-open",
-                    color: colorChannel.data!,
+                    color: crossfilterData.channels.get(colorChannel),
                     colorscale: "Jet",
                     colorbar: {
                       title: {
-                        text: axisTitle(colorChannel.channel),
+                        text: axisTitle(colorChannel),
                         side: "right"
-                      } as any
+                      }
                     }
                   }
                 }
               ])()
-            : ((
-                [xChannel, ...yChannels] = channelGroup.channels // must be multichannel
-              ) =>
-                yChannels.map(yChannel => ({
-                  ...defaults(yChannel.channel.idx),
-                  x: xChannel.data,
-                  y: yChannel.data,
-                  marker: {
-                    symbol: "circle-open"
-                  }
-                })))()
+            : getChannels(data, spec.yAxes.flat()).map(yChannel => ({
+                ...defaults(yChannel),
+                x: crossfilterData.channels.get(xChannel),
+                y: crossfilterData.channels.get(yChannel),
+                // TODO: properly support multiple y axes here
+                name: yChannel.name,
+                marker: {
+                  symbol: "circle-open"
+                }
+              }))
         }
         layout={{
           title: spec.title,
           autosize: true,
           ...yAxesLayout(
             yRange,
-            (Array.isArray(channelGroup)
-              ? channelGroup[0].channels[1]
-              : channelGroup.channels[1]
-            ).channel
+            data.channels[
+              spec.rangeType === "Colour-Scaled" ? spec.yAxis : spec.yAxes[0][0]
+            ] as Channel
           )(spec),
           xaxis: {
-            title: axisTitle(
-              (Array.isArray(channelGroup)
-                ? channelGroup[0].channels[0]
-                : channelGroup.channels[0]
-              ).channel
-            ),
+            title: axisTitle(data.channels[spec.xAxis] as Channel),
             range: xRange
           },
           hovermode: "closest"

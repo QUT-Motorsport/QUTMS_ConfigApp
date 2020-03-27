@@ -143,8 +143,3 @@ export const discreteJetColorsCalculator = () => {
     return result;
   };
 };
-
-export const display: <T>(item: T) => T = item => {
-  console.log(item);
-  return item;
-};

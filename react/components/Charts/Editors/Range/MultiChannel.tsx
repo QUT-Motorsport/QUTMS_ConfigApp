@@ -1,5 +1,6 @@
 import { Form, Select, Button, Icon } from "antd";
 import { EditorProps } from "../Base";
+import { Channel } from "../../../../ts/qmsData";
 import { MultiChannel } from "../../../../ts/chart/types";
 import { channelOptionAttrs } from "./_helpers";
 
@@ -30,7 +31,7 @@ export default ({
             }}
           >
             {data.channels.map((channel, idx) => (
-              <Select.Option {...channelOptionAttrs(channel, idx)} />
+              <Select.Option {...channelOptionAttrs(channel as Channel, idx)} />
             ))}
           </Select>
           {idx > 0 ? (

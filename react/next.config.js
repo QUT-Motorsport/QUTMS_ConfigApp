@@ -8,6 +8,7 @@ const withTM = require("next-transpile-modules")([
 const dotenv = require("dotenv");
 const { spawn } = require("child_process");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ClosurePlugin = require("closure-webpack-plugin");
 const path = require("path");
 dotenv.config();
 
@@ -143,6 +144,11 @@ module.exports = withLess(
           test: /\.svg$/,
           use: ["@svgr/webpack"]
         });
+
+        // add closure compiler for SPEED - doesnt minify as well as Terser (nextjs default) but it does make it faster
+        config.optimization.minimizer = [
+          new ClosurePlugin({ mode: "STANDARD" }, { debug: true })
+        ];
 
         return config;
       }

@@ -1,7 +1,6 @@
 import { Form, Radio, Input } from "antd";
 
 import { QmsData } from "../../../ts/qmsData";
-import { display } from "../../../ts/chart/helpers";
 import { ChartSpec, ChartSpecRT, ColorScaled } from "../../../ts/chart/types";
 import { StateHook } from "../../../ts/hooks";
 import {
@@ -30,12 +29,6 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
     />
   );
   const [chartSpec, setChartSpec] = specState;
-  try {
-    ChartSpecRT.check(chartSpec);
-  } catch (e) {
-    console.error("chartspec failed to validate!\n", chartSpec);
-    throw e;
-  }
   const [
     ChartDomainRT,
     ChartRangeRT
@@ -99,14 +92,12 @@ export default ({ data, specState }: EditorProps<ChartSpec>) => {
                 <Radio.Group
                   value={chartSpec.rangeType}
                   onChange={e => {
-                    setChartSpec(
-                      display({
-                        ...chartSpec,
-                        ...DEFAULT_RANGE_TYPES[
-                          e.target.value as keyof typeof DEFAULT_RANGE_TYPES
-                        ]
-                      }) as ChartSpec
-                    );
+                    setChartSpec({
+                      ...chartSpec,
+                      ...DEFAULT_RANGE_TYPES[
+                        e.target.value as keyof typeof DEFAULT_RANGE_TYPES
+                      ]
+                    } as ChartSpec);
                   }}
                 >
                   {Object.keys(DEFAULT_RANGE_TYPES).map((rangeType, idx) => (
