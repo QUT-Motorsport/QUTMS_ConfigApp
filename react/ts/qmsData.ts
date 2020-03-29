@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { get } from "./ajax";
-import crossfilter from "crossfilter2";
+import crossfilter, { NaturallyOrderedValue } from "crossfilter2";
 
 export type ChannelIdx = number;
 
@@ -20,16 +20,19 @@ export type QmsData = {
 export type Time = number;
 export type Datum = number; // singular of data (a single point)
 export type Data = Datum[];
-export type Range = [number, number];
+export type Range<T = Datum> = [T, T];
 
 export type Record = {
   time: Time;
   data: Map<Channel, Datum>;
 };
 
-export type DataDimension = crossfilter.Dimension<Record, Time>;
+export type Dimension<T extends NaturallyOrderedValue> = crossfilter.Dimension<
+  Record,
+  T
+>;
 
-export type Filter = number | [number, number];
+export type Filter<T = Datum> = T | Range<T> | T[];
 
 export type Source = {
   // the crossfilter 'god object'
@@ -37,8 +40,8 @@ export type Source = {
 
   // crossfilter dimensions to be accessed by multiple components
   dimensions: {
-    byTime: crossfilter.Dimension<Record, Time>;
-    byChannels: Map<Channel, DataDimension>;
+    byTime: Dimension<Time>;
+    byChannels: Map<Channel, Dimension<Datum>>;
   };
 };
 
@@ -109,8 +112,8 @@ export function useCrossfilteredData(
     channelIdxs: number[];
 
     filters: {
-      byTime?: Range;
-      byChannels?: Map<Channel, Range>;
+      byTime?: Filter;
+      byChannels?: Map<Channel, Filter>;
     };
 
     // if included, return array of channelgroup

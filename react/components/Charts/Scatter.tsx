@@ -12,11 +12,10 @@ import {
   yAxesLayout,
   yAxisName,
   axisTitle,
-  baseChartSettings,
-  discreteJetColorsCalculator
+  baseChartSettings
 } from "../../ts/chart/helpers";
 import { QmsData, useCrossfilteredData, Channel } from "../../ts/qmsData";
-import { getChannels, useGroupByColorBins } from "./_helpers";
+import { getChannels, useMaybeGroupByColorBins } from "./_helpers";
 
 export default ({
   spec,
@@ -32,7 +31,7 @@ export default ({
   _yRangeState?: StateHook<Range>;
 }) => {
   // jet colour interpolator with internal cache
-  const { discreteJetColors, groupBy } = useGroupByColorBins(data, spec);
+  const { discreteJetColors, groupBy } = useMaybeGroupByColorBins(data, spec);
 
   const crossfilterData = useCrossfilteredData(data, {
     channelIdxs: useMemo(() => [spec.xAxis, ...spec2ChannelIdxs(spec)], [spec]),

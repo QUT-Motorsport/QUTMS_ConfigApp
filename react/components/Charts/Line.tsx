@@ -16,8 +16,7 @@ import {
   getUpdateHandler,
   yAxesLayout,
   yAxisName,
-  baseChartSettings,
-  discreteJetColorsCalculator
+  baseChartSettings
 } from "../../ts/chart/helpers";
 import {
   QmsData,
@@ -25,7 +24,7 @@ import {
   ChannelGroup,
   Channel
 } from "../../ts/qmsData";
-import { getChannels, useGroupByColorBins } from "./_helpers";
+import { getChannels, useMaybeGroupByColorBins } from "./_helpers";
 import Unimplemented from "./Unimplemented";
 
 export default ({
@@ -40,7 +39,7 @@ export default ({
   showDomainSlider?: boolean;
   domainState?: StateHook<Range>;
 }) => {
-  const { discreteJetColors, groupBy } = useGroupByColorBins(data, spec);
+  const { discreteJetColors, groupBy } = useMaybeGroupByColorBins(data, spec);
   const [range, setRange] = useState<Range>();
   const crossfilterData = useCrossfilteredData(data, {
     channelIdxs: useMemo(() => spec2ChannelIdxs(spec), [spec]),
@@ -79,12 +78,15 @@ export default ({
 
                       // we need to let plotly know we don't want it to connect the gaps by inserting gaps into the data
                       // in order to do this we need to reconstruct the signal, while inserting NULLS in where gaps should be
-                      const maxPeriodBeforGap = // account for floating point errors
-                        (Math.round(
-                          100 * (channelGroup.time[1] - channelGroup.time[0])
-                        ) /
-                          100) *
-                        2; // mult by 2 because it takes 2 points to represent a line
+                      const maxPeriodBeforGap =
+                        (function round( // account for floating point errors
+                          num = channelGroup.time[1] - channelGroup.time[0],
+                          decimals = 2
+                        ) {
+                          const coeff = Math.pow(10, decimals);
+                          return Math.round(coeff * num) / coeff;
+                        })() * 2; // mult by 2 because it takes 2 points to represent a line
+
                       const yChannelData = channelGroup.channels.get(yChannel)!;
                       let prevTime = channelGroup.time[0];
                       const x = [];
@@ -99,8 +101,6 @@ export default ({
                         y.push(yChannelData[idx]);
                         prevTime = time;
                       }
-
-                      x.push(+maxPeriodBeforGap / 2);
 
                       return {
                         x,
