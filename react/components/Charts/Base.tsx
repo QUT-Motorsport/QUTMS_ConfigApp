@@ -1,4 +1,4 @@
-import { QmsData } from "../../ts/qmsData";
+import { QmsData, CrossFilters } from "../../ts/qmsData";
 import {
   ChartSpec,
   ChartSpecRT,
@@ -6,7 +6,6 @@ import {
   LineChartSpec,
   ScatterChartSpec,
   HistogramChartSpec,
-  Range
 } from "../../ts/chart/types";
 
 import Histogram from "./Histogram";
@@ -18,7 +17,7 @@ import { StateHook } from "../../ts/hooks";
 type ChartProps = {
   data: QmsData;
   spec: ChartSpec;
-  domainState?: StateHook<Range>;
+  filtersState: StateHook<CrossFilters>;
   showDomainSlider?: boolean;
 };
 

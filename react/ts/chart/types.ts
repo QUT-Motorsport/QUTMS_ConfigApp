@@ -9,9 +9,11 @@ import {
   Boolean,
   Unknown,
   String,
-  Null
+  Null,
 } from "runtypes";
 import { Polygon } from "geojson";
+
+import { Range } from "../qmsData";
 
 // CHART TYPES
 
@@ -19,18 +21,18 @@ const ChannelIdxRT = Number;
 
 export type ChannelIdx = Static<typeof ChannelIdxRT>;
 
-export type Range = [number, number] | undefined;
+export type MaybeRange = Range | undefined;
 
 const ColorScaledBaseRT = Record({
   rangeType: Literal("Colour-Scaled"),
   nColorBins: Number.Or(Null), // if undefined, use continous-colorscale
-  colorAxis: ChannelIdxRT // typically Throttle Pos
+  colorAxis: ChannelIdxRT, // typically Throttle Pos
 });
 export type ColorScaledBase = Static<typeof ColorScaledBaseRT>;
 
 const ColorScaledWithYAxisRT = ColorScaledBaseRT.And(
   Record({
-    yAxis: ChannelIdxRT
+    yAxis: ChannelIdxRT,
   })
 );
 export type ColorScaledWithYAxis = Static<typeof ColorScaledWithYAxisRT>;
@@ -43,7 +45,7 @@ const MultiChannelRT = Record({
 
   // outer array = y axis (can have multiple per plot)
   // inner array = different colours on same y axis
-  yAxes: Array(Array(ChannelIdxRT))
+  yAxes: Array(Array(ChannelIdxRT)),
 });
 export type MultiChannel = Static<typeof MultiChannelRT>;
 
@@ -64,9 +66,9 @@ const TrackMapDomainRT = DomainRT.And(
     domainType: Literal("Track-Map"),
     map: Record({
       inner: Unknown.withGuard(isGeoJsonPolygon),
-      outer: Unknown.withGuard(isGeoJsonPolygon)
+      outer: Unknown.withGuard(isGeoJsonPolygon),
     }),
-    segments: Number // maps are filled in in sections, can't be done otherwise
+    segments: Number, // maps are filled in in sections, can't be done otherwise
   })
 );
 export type TrackMapDomain = Static<typeof TrackMapDomainRT>;
@@ -76,7 +78,7 @@ export const LineDomainXAxisRT = Union(Literal("Time"), Literal("Distance"));
 const LineDomainRT = DomainRT.And(
   Record({
     domainType: Literal("Line"),
-    xAxis: LineDomainXAxisRT
+    xAxis: LineDomainXAxisRT,
   })
 );
 export type LineChartDomain = Static<typeof LineDomainRT>;
@@ -86,7 +88,7 @@ const ScatterDomainRT = DomainRT.And(
   Record({
     domainType: Literal("Scatter"),
     xAxis: ChannelIdxRT,
-    trendline: Boolean
+    trendline: Boolean,
   })
 );
 export type ScatterChartDomain = Static<typeof ScatterDomainRT>;
@@ -95,7 +97,7 @@ export type ScatterChartSpec = ScatterChartDomain & RangeTypesWithYAxis;
 const HistogramDomainRT = DomainRT.And(
   Record({
     domainType: Literal("Histogram"),
-    nBins: Number
+    nBins: Number,
   })
 );
 export type HistogramChartDomain = Static<typeof HistogramDomainRT>;

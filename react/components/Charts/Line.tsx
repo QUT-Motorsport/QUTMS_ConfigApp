@@ -1,55 +1,53 @@
 import Plot from "react-plotly.js";
-import { PlotData } from "plotly.js";
+import { PlotData, Icons, ModeBarButton } from "plotly.js";
 import { useState, useMemo } from "react";
 import { Spin } from "antd";
 import iterate from "iterare";
 
-import {
-  Range,
-  LineChartSpec,
-  ColorScaledWithYAxis,
-  MultiChannel
-} from "../../ts/chart/types";
-import { StateHook } from "../../ts/hooks";
+import { MaybeRange, LineChartSpec } from "../../ts/chart/types";
+import { log } from "../../ts/debug";
 import {
   spec2ChannelIdxs,
   getUpdateHandler,
   yAxesLayout,
   yAxisName,
-  baseChartSettings
+  baseChartSettings,
 } from "../../ts/chart/helpers";
 import {
   QmsData,
+  useCrossfilterState,
   useCrossfilteredData,
-  ChannelGroup,
-  Channel
+  getChannels,
 } from "../../ts/qmsData";
-import { getChannels, useMaybeGroupByColorBins } from "./_helpers";
+import { useMaybeGroupByColorBins } from "./_helpers";
 import Unimplemented from "./Unimplemented";
 
-export default ({
+export default function LineChart({
   // xAxis, TODO: Handle vs distance
   spec,
   data,
-  showDomainSlider = false,
-  domainState: [domain, setDomain] = useState()
+  filtersState: [filters, setFilters],
 }: {
   spec: LineChartSpec;
   data: QmsData;
-  showDomainSlider?: boolean;
-  domainState?: StateHook<Range>;
-}) => {
+  filtersState: ReturnType<typeof useCrossfilterState>;
+}) {
   const { discreteJetColors, groupBy } = useMaybeGroupByColorBins(data, spec);
-  const [range, setRange] = useState<Range>();
   const crossfilterData = useCrossfilteredData(data, {
     channelIdxs: useMemo(() => spec2ChannelIdxs(spec), [spec]),
-    filters: useMemo(() => ({ byTime: undefined, byChannels: new Map() }), []),
-    groupBy
+    filters,
+    groupBy,
   });
+
+  const yRangeChannel = getChannels(data, [
+    spec.rangeType == "Colour-Scaled" ? spec.yAxis : spec.yAxes[0][0],
+  ])[0];
+  const yRange = filters.show.byChannels.get(yRangeChannel);
 
   if (!crossfilterData) {
     return <Spin />;
   } else {
+    console.log(crossfilterData, filters);
     // TODO: handle this with the type-system after refactoring away from RunTypes
     if (spec.rangeType === "Colour-Scaled" && !("groups" in crossfilterData)) {
       return Unimplemented("Contiuously-Colour-Scaled LineChart")({});
@@ -57,6 +55,12 @@ export default ({
       return (
         <Plot
           {...baseChartSettings}
+          onSelected={(selected) => {
+            // filters.show.byChannels!.set();
+            console.log(selected);
+            // setSelected(selected?.range!.x as Range);
+            // setSelected(selected?.range!.y as Range);
+          }}
           data={
             "groups" in crossfilterData
               ? (iterate(crossfilterData.groups)
@@ -65,8 +69,6 @@ export default ({
                       spec.rangeType === "Colour-Scaled" &&
                       spec.nColorBins !== null
                     ) {
-                      const [yChannel] = getChannels(data, [spec.yAxis]);
-
                       const [min, max] = crossfilterData.groupedRange;
 
                       // repeat calls to this are cached
@@ -79,7 +81,7 @@ export default ({
                       // we need to let plotly know we don't want it to connect the gaps by inserting gaps into the data
                       // in order to do this we need to reconstruct the signal, while inserting NULLS in where gaps should be
                       const maxPeriodBeforGap =
-                        (function round( // account for floating point errors
+                        (function round( // round to account for floating point errors
                           num = channelGroup.time[1] - channelGroup.time[0],
                           decimals = 2
                         ) {
@@ -87,7 +89,9 @@ export default ({
                           return Math.round(coeff * num) / coeff;
                         })() * 2; // mult by 2 because it takes 2 points to represent a line
 
-                      const yChannelData = channelGroup.channels.get(yChannel)!;
+                      const yChannelData = channelGroup.channels.get(
+                        yRangeChannel
+                      )!;
                       let prevTime = channelGroup.time[0];
                       const x = [];
                       const y = [];
@@ -106,14 +110,14 @@ export default ({
                         x,
                         y,
                         name: `<= ${stop.toPrecision(3)}`,
-                        marker: { color, symbol: "circle-open" }
+                        marker: { color, symbol: "circle-open" },
                       };
                     } else {
-                      // TODO: merge spec with channelGroup output so that this becomes a typeerror instead of a runtime error
+                      // TODO: merge spec with channelGroup output so that this becomes a typeerror instead of needing to filter afterwards
                       return null;
                     }
                   })
-                  .filter(trace => trace !== null)
+                  .filter((trace) => trace !== null)
                   .toArray()
                   .reverse() as Partial<PlotData>[])
               : [
@@ -123,45 +127,67 @@ export default ({
                       x: crossfilterData.time,
                       y: data,
                       yaxis: yAxisName(idx)(spec),
-                      mode: "lines" as "lines" // smh sometimes typescript
+                      mode: "lines" as "lines", // smh sometimes typescript
                     })
-                  )
+                  ),
                 ]
           }
           layout={{
             title: spec.title,
             autosize: true,
-            ...yAxesLayout(
-              range,
-              data.channels[
-                spec.rangeType === "Colour-Scaled"
-                  ? spec.yAxis
-                  : spec.yAxes[0][0]
-              ] as Channel
-            )(spec),
+
+            ...(spec.rangeType === "Colour-Scaled"
+              ? (([yAxis] = getChannels(data, [spec.yAxis])) =>
+                  yAxesLayout(
+                    filters.show.byChannels.get(yAxis),
+                    yAxis
+                  )(spec))()
+              : (([yAxis] = getChannels(data, [spec.yAxes[0][0]])) =>
+                  yAxesLayout(
+                    filters.show.byChannels.get(yAxis),
+                    yAxis
+                  )(spec))()),
+
             xaxis: {
               title: spec.xAxis === "Time" ? "Time (s)" : "Distance (m)",
-              range: domain === undefined ? undefined : [...domain],
-              ...(showDomainSlider
-                ? {
-                    rangeslider: {
-                      range:
-                        "groups" in crossfilterData
-                          ? crossfilterData.timeRange
-                          : [
-                              crossfilterData.time[0],
-                              crossfilterData.time[
-                                crossfilterData.time.length - 1
-                              ]
-                            ]
-                    }
-                  }
-                : null)
-            }
+              range:
+                filters.show.byTime === undefined
+                  ? undefined
+                  : [...filters.show.byTime],
+            },
           }}
-          onUpdate={getUpdateHandler([domain, setDomain], [range, setRange])}
+          config={{
+            modeBarButtons: [
+              ["select2d"],
+              ["zoom2d", "pan2d", "autoScale2d"],
+              [
+                {
+                  name: "edit",
+                  title: "Edit Chart",
+                  icon: Icons["pencil"],
+                  click: () => {
+                    // TODO
+                    throw Error("Chart editing not implemented yet!");
+                  },
+                },
+              ],
+            ] as ModeBarButton[][],
+          }}
+          onUpdate={getUpdateHandler(
+            filters.show.byTime,
+            yRange,
+            (newTimeRange, newYRange) => {
+              filters.show.byTime = newTimeRange;
+              if (newYRange) {
+                filters.show.byChannels.set(yRangeChannel, newYRange);
+              } else {
+                filters.show.byChannels.delete(yRangeChannel);
+              }
+              setFilters({ ...filters });
+            }
+          )}
         />
       );
     }
   }
-};
+}
