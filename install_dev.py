@@ -35,6 +35,8 @@ if __name__ == "__main__":
         else None
     )
 
+    print("ensuring conda is up to date...")
+
     # ensure conda is at the latest version
     call("conda update -n base -y conda")
 
@@ -55,6 +57,8 @@ if __name__ == "__main__":
             target_env_dir.mkdir(parents=True)
 
         tarfile.open(cache_env, "r:gz").extractall(target_env_dir)
+
+    print("installing conda environment (binaries)")
 
     # install / update the "qev3-config-app" conda environment and all python / C++ dependencies
     call("conda env update -f ./environment.yml --prune")
@@ -86,18 +90,14 @@ if __name__ == "__main__":
         or existing_labextensions[npm_package] != version
     ]
 
-    print("installing labextensions:", labextensions_install_list)
+    print("installing npm packages...")
+    call(f"conda run -n {conda_env_name} npm i")
 
-    call(
-        # install js dependencies of the config app
-        f"conda run -n {conda_env_name} npm i"
-        # install any required js components of jupyterlab and their widgets at once
-        + (
-            f' && jupyter labextension install {" ".join(labextensions_install_list)}'
-            if any(labextensions_install_list)
-            else ""
+    if any(labextensions_install_list):
+        print("installing labextensions:", labextensions_install_list)
+        call(
+            f'conda run -n {conda_env_name} jupyter labextension install {" ".join(labextensions_install_list)}'
         )
-    )
 
     # if env_cache was specified, use conda-pack to update / create the cache
     if cache_env is not None:

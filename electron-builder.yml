@@ -1,7 +1,0 @@
-appId: com.qutmotorsport.qev2-config
-productName: QEV2 Config App
-copyright: Copyright © 2020 QUT Motorsport
-directories:
-  output: dist
-  buildResources: resources
-publish: null

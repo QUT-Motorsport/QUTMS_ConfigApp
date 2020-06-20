@@ -38,4 +38,4 @@ async def get_qms_headers(req, filename):
 
 
 if __name__ == "__main__":
-    app.run(port=os.getenv("SANIC_PORT"))
+    app.run(port=os.getenv("REACT_APP_SANIC_PORT"))

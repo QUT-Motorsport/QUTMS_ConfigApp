@@ -1,0 +1,21 @@
+.addChartModal {
+  position: absolute;
+  bottom: 10px;
+  align-self: center;
+  padding-right: 150px;
+}
+
+.page {
+  display: flex;
+  justify-content: flex-start;
+  height: 1000px;
+  align-items: stretch;
+  width: auto;
+}
+
+.workbook {
+  display: flex;
+  min-width: 88%;
+  align-items: stretch;
+  flex-direction: column;
+}

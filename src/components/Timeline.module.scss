@@ -1,0 +1,26 @@
+:global {
+  :local(.timeline) {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 10px;
+    height: 40px;
+    overflow: hidden;
+
+    > .js-plotly-plot {
+      width: calc(100% + 153px) !important;
+      height: 450px !important;
+
+      .modebar-container,
+      .cartesianlayer,
+      .hoverlayer,
+      .draglayer {
+        display: none;
+      }
+
+      .rangeslider-container {
+        transform: translate(3px, 0);
+      }
+    }
+  }
+}
