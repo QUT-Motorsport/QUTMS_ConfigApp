@@ -1,20 +1,21 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "jsx": "preserve",
-    "lib": ["DOM", "DOM.Iterable", "EsNext", "ScriptHost"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react",
+    "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "downlevelIteration": true
   },
-  "include": ["react/next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "react/next.config.js", "app", "dist"]
+  "include": ["src", "types/**.d.ts", "src/react-app-env.d.ts"]
 }
