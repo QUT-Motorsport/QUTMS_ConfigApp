@@ -32,7 +32,6 @@
     "react-plotly.js": "^2.4.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
-    "runtypes": "^4.2.0",
     "styled-jsx": "^3.3.0",
     "typescript": "^3.9.5"
   },

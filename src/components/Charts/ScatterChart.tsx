@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { Spin } from "antd";
 import iterate from "iterare";
 
-import { Range, ScatterChartSpec, ChannelIdx } from "../../ts/chart/types";
+import { ChannelIdx, RangeTypesWithYAxis } from "../../ts/chart/types";
 import { StateHook } from "../../ts/hooks";
 import {
   spec2ChannelIdxs,
@@ -13,10 +13,20 @@ import {
   yAxisName,
   axisTitle,
   baseChartSettings,
-  discreteJetColorsCalculator,
 } from "../../ts/chart/helpers";
 import { QmsData, useCrossfilteredData, Channel } from "../../ts/qmsData";
 import { getChannels, useGroupByColorBins } from "./_helpers";
+import { ChartSpec, ChartRange } from "./AnyChart";
+
+export type ScatterChartDomain = {
+  domainType: "Scatter";
+  xAxis: ChannelIdx;
+  showTrendline: Boolean;
+};
+
+export type ScatterChartSpec = ScatterChartDomain &
+  RangeTypesWithYAxis &
+  ChartSpec;
 
 export default function ScatterChart({
   spec,
@@ -25,7 +35,7 @@ export default function ScatterChart({
 }: {
   spec: ScatterChartSpec;
   data: QmsData;
-  domainState: StateHook<Range>;
+  domainState: StateHook<ChartRange>;
 }) {
   // jet colour interpolator with internal cache
   const { discreteJetColors, groupBy } = useGroupByColorBins(data, spec);

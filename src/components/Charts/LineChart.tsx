@@ -5,12 +5,6 @@ import { useState, useMemo } from "react";
 import { Spin } from "antd";
 import iterate from "iterare";
 
-import {
-  Range,
-  LineChartSpec,
-  ColorScaledWithYAxis,
-  MultiChannel,
-} from "../../ts/chart/types";
 import { StateHook } from "../../ts/hooks";
 import {
   spec2ChannelIdxs,
@@ -20,14 +14,18 @@ import {
   baseChartSettings,
   discreteJetColorsCalculator,
 } from "../../ts/chart/helpers";
-import {
-  QmsData,
-  useCrossfilteredData,
-  ChannelGroup,
-  Channel,
-} from "../../ts/qmsData";
+import { QmsData, useCrossfilteredData, Channel } from "../../ts/qmsData";
 import { getChannels, useGroupByColorBins } from "./_helpers";
 import Unimplemented from "./Unimplemented";
+import { ChartSpec, ChartRange } from "./AnyChart";
+import { RangeTypesWithYAxis } from "../../ts/chart/types";
+
+export type LineChartDomain = {
+  domainType: "Line";
+  xAxis: "Time" | "Distance";
+};
+
+export type LineChartSpec = LineChartDomain & RangeTypesWithYAxis & ChartSpec;
 
 const LineChart = ({
   // xAxis, TODO: Handle vs distance
@@ -39,10 +37,10 @@ const LineChart = ({
   spec: LineChartSpec;
   data: QmsData;
   showDomainSlider?: boolean;
-  domainState: StateHook<Range>;
+  domainState: StateHook<ChartRange>;
 }) => {
   const { discreteJetColors, groupBy } = useGroupByColorBins(data, spec);
-  const [range, setRange] = useState<Range>();
+  const [range, setRange] = useState<ChartRange>();
   const crossfilterData = useCrossfilteredData(data, {
     channelIdxs: useMemo(() => spec2ChannelIdxs(spec), [spec]),
     filters: useMemo(() => ({ byTime: undefined, byChannels: new Map() }), []),

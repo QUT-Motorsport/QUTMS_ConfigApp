@@ -1,29 +1,29 @@
-import React, { useEffect } from "react";
-import { Button, Modal, Spin } from "antd";
+import React from "react";
+import { Button, Modal, Spin, Avatar } from "antd";
 import { useState } from "react";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
-import SubHeader from "../components/Layout/SubHeader";
-import { ChartSpec, Range } from "../ts/chart/types";
+import { AnyChartSpec, ChartRange } from "../components/Charts/AnyChart";
 import { QmsData, useQmsData } from "../ts/qmsData";
 import { DEFAULT_LINE_CHART } from "../ts/chart/defaults";
+import { SettingOutlined } from "@ant-design/icons";
 
 import Timeline from "../components/Timeline";
 import BaseChartEditor from "../components/Charts/Editors/BaseChartEditor";
 
-import BaseChart from "../components/Charts/BaseChart";
+import BaseChart from "../components/Charts/AnyChart";
 import { useTitle } from "./_helpers";
 
 import styles from "./AnalysisPage.module.scss";
 
-const AddChartModal = ({
+function AddChartModal({
   onAddChartSpec,
   data,
 }: {
-  onAddChartSpec: (type: ChartSpec) => void;
+  onAddChartSpec: (type: AnyChartSpec) => void;
   data: QmsData;
-}) => {
+}) {
   const [visible, setVisible] = useState<boolean>(false);
-  const [chartSpec, setChartSpec] = useState<ChartSpec>(DEFAULT_LINE_CHART);
+  const [chartSpec, setChartSpec] = useState<AnyChartSpec>(DEFAULT_LINE_CHART);
 
   return (
     <div className={styles.addChartModal}>
@@ -46,17 +46,44 @@ const AddChartModal = ({
         <BaseChart
           data={data}
           spec={chartSpec}
-          domainState={useState<Range>()}
+          domainState={useState<ChartRange>()}
         />
       </Modal>
     </div>
   );
-};
+}
 
-function AnalysisPage() {
+function AnalysisSettingsModal() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div
+      style={{
+        float: "right",
+        paddingTop: "15px",
+        paddingRight: "26px",
+      }}
+    >
+      <a onClick={() => setVisible(true)}>
+        <Avatar size="large" icon={<SettingOutlined />} />
+      </a>
+      <Modal
+        title="Component Settings"
+        visible={visible}
+        onOk={() => setVisible(false)}
+        onCancel={() => setVisible(false)}
+        style={{ marginTop: "120px" }}
+      >
+        <p>Add settings</p>
+      </Modal>
+    </div>
+  );
+}
+
+export default function AnalysisPage() {
   const data = useQmsData("Sample");
-  const domainState = useState<Range>();
-  const [chartSpecs, setChartSpecs] = useState<ChartSpec[]>([]);
+  const domainState = useState<ChartRange>();
+  const [chartSpecs, setChartSpecs] = useState<AnyChartSpec[]>([]);
 
   useTitle("QUTMS Analysis");
 
@@ -64,10 +91,11 @@ function AnalysisPage() {
     <div className={styles.page}>
       <AnalysisMenu data={data} />
       <div className={styles.workbook}>
-        <SubHeader />
-
+        <div className={styles.headerBorder}>
+          <a className={styles.h1Alt}>Analysis</a>
+          <AnalysisSettingsModal />
+        </div>
         <Timeline data={data} domainState={domainState} />
-
         {chartSpecs.map((chartSpec, idx) => (
           <BaseChart
             key={idx}
@@ -88,5 +116,3 @@ function AnalysisPage() {
     <Spin />
   );
 }
-
-export default AnalysisPage;

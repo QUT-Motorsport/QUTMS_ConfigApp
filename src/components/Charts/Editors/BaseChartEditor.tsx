@@ -2,7 +2,7 @@ import React from "react";
 import { Form, Radio, Input } from "antd";
 
 import { QmsData } from "../../../ts/qmsData";
-import { ChartSpec, ChartSpecRT, ColorScaled } from "../../../ts/chart/types";
+import { AnyChartSpec, ChartSpec } from "../AnyChart";
 import { StateHook } from "../../../ts/hooks";
 import {
   DEFAULT_RANGE_TYPES,
@@ -14,10 +14,13 @@ import Line from "./Domain/LineDomainEditor";
 import Scatter from "./Domain/ScatterDomainEditor";
 import Histogram from "./Domain/HistogramDomainEditor";
 
-import ColorScaledEditor from "./Range/ColorScaledRangeEditor";
-import MultiChannelEditor from "./Range/MultiChannelRangeEditor";
+import ColourScaled from "./Range/ColorScaledRangeEditor";
+import MultiChannel from "./Range/MultiChannelRangeEditor";
 
 import styles from "./BaseChartEditor.module.scss";
+import { LineChartDomain } from "../LineChart";
+import { HistogramChartDomain } from "../HistogramChart";
+import { HistoryOutlined } from "@ant-design/icons";
 
 export type EditorProps<SpecType> = {
   data: QmsData;
@@ -27,21 +30,12 @@ export type EditorProps<SpecType> = {
 export default function BaseChartEditor({
   data,
   specState,
-}: EditorProps<ChartSpec>) {
-  const ColorScaledHelper = () => (
-    <ColorScaledEditor
-      data={data}
-      specState={(specState as unknown) as StateHook<ColorScaled>}
-    />
-  );
+}: EditorProps<AnyChartSpec>) {
   const [chartSpec, setChartSpec] = specState;
-  const [
-    ChartDomainRT,
-    ChartRangeRT,
-  ] = ChartSpecRT.alternatives[1].intersectees;
 
   return (
     <div className={styles.baseEditor}>
+      {/* Let user set general chartspec attrs */}
       <Form labelCol={{ xs: { span: 6 } }}>
         <Form.Item
           label="Title"
@@ -57,6 +51,8 @@ export default function BaseChartEditor({
             }
           />
         </Form.Item>
+
+        {/* Let user choose the domain type */}
         <Form.Item label="Chart Type" wrapperCol={{ xs: { span: 18 } }}>
           <Radio.Group
             value={chartSpec.domainType}
@@ -66,7 +62,7 @@ export default function BaseChartEditor({
                 ...DEFAULT_CHARTS[
                   e.target.value as keyof typeof DEFAULT_CHARTS
                 ],
-              } as ChartSpec);
+              });
             }}
           >
             {Object.keys(DEFAULT_CHARTS).map((domainType, idx) => (
@@ -77,82 +73,40 @@ export default function BaseChartEditor({
           </Radio.Group>
         </Form.Item>
 
-        {ChartSpecRT.match(
-          (trackMapState) => (
-            <>
-              <TrackMap
-                data={data}
-                specState={
-                  (specState as unknown) as StateHook<typeof trackMapState>
-                }
-              />
-              <ColorScaledHelper />
-            </>
-          ),
-          (spec) => (
-            <>
-              <Form.Item label="Plot Type" wrapperCol={{ xs: { span: 18 } }}>
-                <Radio.Group
-                  value={chartSpec.rangeType}
-                  onChange={(e) => {
-                    setChartSpec({
-                      ...chartSpec,
-                      ...DEFAULT_RANGE_TYPES[
-                        e.target.value as keyof typeof DEFAULT_RANGE_TYPES
-                      ],
-                    } as ChartSpec);
-                  }}
-                >
-                  {Object.keys(DEFAULT_RANGE_TYPES).map((rangeType, idx) => (
-                    <Radio key={idx} value={rangeType}>
-                      {rangeType}
-                    </Radio>
-                  ))}
-                </Radio.Group>
-              </Form.Item>
+        {/* Display the specific domain editor */}
+        {{ Line, Scatter, Histogram, TrackMap }[chartSpec.domainType]({
+          data,
+          specState,
+        })}
 
-              {ChartDomainRT.match(
-                (lineDomain) => (
-                  <Line
-                    data={data}
-                    specState={
-                      (specState as unknown) as StateHook<typeof lineDomain>
-                    }
-                  />
-                ),
-                (scatterDomain) => (
-                  <Scatter
-                    data={data}
-                    specState={
-                      (specState as unknown) as StateHook<typeof scatterDomain>
-                    }
-                  />
-                ),
-                (histogramDomain) => (
-                  <Histogram
-                    data={data}
-                    specState={
-                      (specState as unknown) as StateHook<
-                        typeof histogramDomain
-                      >
-                    }
-                  />
-                )
-              )(spec)}
+        {/* show the different range options unless there are none available (in the case of TrackMap) */}
+        {chartSpec.domainType === "TrackMap" ? null : (
+          <Form.Item label="Plot Type" wrapperCol={{ xs: { span: 18 } }}>
+            <Radio.Group
+              value={chartSpec.rangeType}
+              onChange={(e) => {
+                setChartSpec({
+                  ...chartSpec,
+                  ...DEFAULT_RANGE_TYPES[
+                    e.target.value as keyof typeof DEFAULT_RANGE_TYPES
+                  ],
+                });
+              }}
+            >
+              {Object.keys(DEFAULT_RANGE_TYPES).map((rangeType, idx) => (
+                <Radio key={idx} value={rangeType}>
+                  {rangeType}
+                </Radio>
+              ))}
+            </Radio.Group>
+          </Form.Item>
+        )}
 
-              {ChartRangeRT.match(ColorScaledHelper, (multiChannelRange) => (
-                <MultiChannelEditor
-                  data={data}
-                  specState={
-                    (specState as unknown) as StateHook<
-                      typeof multiChannelRange
-                    >
-                  }
-                />
-              ))(spec)}
-            </>
-          )
-        )(chartSpec)}
+        {/* Display the specific range editor */}
+        {{ ColourScaled, MultiChannel }[chartSpec.rangeType]({
+          data,
+          specState: specState as any,
+        })}
       </Form>
     </div>
   );
