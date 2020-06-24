@@ -85,7 +85,7 @@ export const useQmsData = (filename: string): QmsData | null => {
         crossfilter: null,
       });
     });
-  }, []);
+  }, [filename]);
 
   return qmsData;
 };
@@ -312,7 +312,7 @@ export function useCrossfilteredData(
         channelIdxs.map((idx) => data.channels[idx] as Channel)
       );
     }
-  }, [channelIdxs, filters, groupBy]);
+  }, [channelIdxs, filters, groupBy, data]);
 
   return output;
 }

@@ -10,7 +10,7 @@ const ColorScaledRangeEditor = ({
   specState: [spec, setSpec],
 }: EditorProps<ColorScaled>) => (
   <>
-    {"yAxis" in spec ? ( // if not a colorscale-only plot
+    {"yAxis" in spec ? ( // if not a colourscale-only plot
       <Form.Item label="Y Axis" wrapperCol={{ xs: { span: 10 } }}>
         <Select
           optionFilterProp="children"
@@ -49,7 +49,7 @@ const ColorScaledRangeEditor = ({
         onChange={(e) => {
           setSpec({
             ...spec,
-            nColorBins: e.target.value === "continuous" ? null : 8,
+            nColorBins: e.target.value === "continuous" ? undefined : 8,
           });
         }}
       >

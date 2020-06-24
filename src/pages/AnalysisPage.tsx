@@ -64,9 +64,9 @@ function AnalysisSettingsModal() {
         paddingRight: "26px",
       }}
     >
-      <a onClick={() => setVisible(true)}>
+      <div style={{ cursor: "pointer" }} onClick={() => setVisible(true)}>
         <Avatar size="large" icon={<SettingOutlined />} />
-      </a>
+      </div>
       <Modal
         title="Component Settings"
         visible={visible}
@@ -92,7 +92,7 @@ export default function AnalysisPage() {
       <AnalysisMenu data={data} />
       <div className={styles.workbook}>
         <div className={styles.headerBorder}>
-          <a className={styles.h1Alt}>Analysis</a>
+          <span className={styles.h1Alt}>Analysis</span>
           <AnalysisSettingsModal />
         </div>
         <Timeline data={data} domainState={domainState} />

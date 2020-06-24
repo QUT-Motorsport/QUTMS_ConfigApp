@@ -2,7 +2,7 @@ import React from "react";
 import { Form, Radio, Input } from "antd";
 
 import { QmsData } from "../../../ts/qmsData";
-import { AnyChartSpec, ChartSpec } from "../AnyChart";
+import { AnyChartSpec } from "../AnyChart";
 import { StateHook } from "../../../ts/hooks";
 import {
   DEFAULT_RANGE_TYPES,
@@ -18,9 +18,6 @@ import ColourScaled from "./Range/ColorScaledRangeEditor";
 import MultiChannel from "./Range/MultiChannelRangeEditor";
 
 import styles from "./BaseChartEditor.module.scss";
-import { LineChartDomain } from "../LineChart";
-import { HistogramChartDomain } from "../HistogramChart";
-import { HistoryOutlined } from "@ant-design/icons";
 
 export type EditorProps<SpecType> = {
   data: QmsData;

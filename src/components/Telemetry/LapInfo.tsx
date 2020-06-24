@@ -1,6 +1,6 @@
 import React from "react";
 import { Progress } from "antd";
-import { Divider, Statistic } from "antd";
+import { Statistic } from "antd";
 import DividerBar from "./DividerBar";
 import Label from "./Label";
 
@@ -65,7 +65,7 @@ export default () => (
       <Progress
         type="circle"
         percent={70}
-        format={percent => `7/10`}
+        format={(percent) => `7/10`}
         strokeColor="#0F406A"
         strokeWidth={12}
         style={{ fontWeight: 600 }}

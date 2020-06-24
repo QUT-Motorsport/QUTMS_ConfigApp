@@ -12,11 +12,8 @@ export default function LineDomainEditor({
         value={spec.xAxis}
         onChange={(e) => setSpec({ ...spec, xAxis: e.target.value })}
       >
-        {LineDomainXAxisRT.alternatives.map(({ value }, idx) => (
-          <Radio key={idx} value={value}>
-            {value}
-          </Radio>
-        ))}
+        <Radio value={"Time"}>{"Time"}</Radio>
+        <Radio value={"Distance"}>{"Distance"}</Radio>
       </Radio.Group>
     </Form.Item>
   );

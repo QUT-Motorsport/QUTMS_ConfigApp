@@ -1,10 +1,10 @@
 import React from "react";
 import { QmsData, Range } from "../../ts/qmsData";
 
-import HistogramChart, { HistogramChartSpec } from "./HistogramChart";
-import LineChart, { LineChartSpec } from "./LineChart";
-import ScatterChart, { ScatterChartSpec } from "./ScatterChart";
-import TrackMapChart, { TrackMapSpec } from "./TrackMapChart";
+import Histogram, { HistogramChartSpec } from "./HistogramChart";
+import Line, { LineChartSpec } from "./LineChart";
+import Scatter, { ScatterChartSpec } from "./ScatterChart";
+import TrackMap, { TrackMapSpec } from "./TrackMapChart";
 import { StateHook } from "../../ts/hooks";
 
 export type ChartRange = Range | undefined;
@@ -28,14 +28,8 @@ export default function AnyChart({
   domainState: StateHook<ChartRange>;
   showDomainSlider?: boolean;
 }) {
-  switch (spec.domainType) {
-    case "Track-Map":
-      return <TrackMapChart spec={spec} {...rest} />;
-    case "Line":
-      return <LineChart spec={spec} {...rest} />;
-    case "Scatter":
-      return <ScatterChart spec={spec} {...rest} />;
-    case "Histogram":
-      return <HistogramChart spec={spec} {...rest} />;
-  }
+  return { TrackMap, Line, Scatter, Histogram }[spec.domainType]({
+    spec,
+    ...rest,
+  });
 }

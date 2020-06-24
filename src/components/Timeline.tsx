@@ -1,6 +1,6 @@
 import React from "react";
 import { ComponentProps } from "react";
-import { LineChartSpec } from "../ts/chart/types";
+import { LineChartSpec } from "./Charts/LineChart";
 import { GROUND_SPEED_CH_IDX } from "../ts/chart/defaults";
 
 import LineChart from "../components/Charts/LineChart";
@@ -11,7 +11,7 @@ const TIMELINE_SPEC: LineChartSpec = {
   title: "",
   domainType: "Line",
   xAxis: "Time",
-  rangeType: "Multi-Channel",
+  rangeType: "MultiChannel",
   yAxes: [[GROUND_SPEED_CH_IDX]],
 };
 

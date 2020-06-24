@@ -2,27 +2,19 @@ import React from "react";
 import { Avatar, Dropdown, Menu } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
-const UserInfo = () => {
+export default function UserInfo() {
   const menu = (
     <Menu>
-      <Menu.Item key="0">
-        <a href="#">Profile Settings</a>
-      </Menu.Item>
-      <Menu.Item key="1">
-        <a href="/">Logout</a>
-      </Menu.Item>
+      <Menu.Item>Profile Settings</Menu.Item>
+      <Menu.Item>Logout</Menu.Item>
     </Menu>
   );
 
   return (
-    <div>
+    <div style={{ cursor: "pointer" }}>
       <Dropdown overlay={menu} trigger={["click"]}>
-        <a>
-          <Avatar size="large" icon={<UserOutlined />} />
-        </a>
+        <Avatar size="large" icon={<UserOutlined />} />
       </Dropdown>
     </div>
   );
-};
-
-export default UserInfo;
+}

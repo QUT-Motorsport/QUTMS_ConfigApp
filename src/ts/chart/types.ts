@@ -1,20 +1,20 @@
 export type ChannelIdx = number;
 
-export type ColorScaledBase = {
+export type ColourScaledBase = {
   rangeType: "ColourScaled";
-  nColorBins: number;
-  colorAxis: ChannelIdx;
+  nColourBins?: number; // if undefined, use continuous colour-scale
+  colourAxis: ChannelIdx;
 };
 
-export type ColorScaledWithYAxis = ColorScaledBase & {
+export type ColourScaledWithYAxis = ColourScaledBase & {
   yAxis: ChannelIdx;
 };
 
-export type ColorScaled = ColorScaledBase | ColorScaledWithYAxis;
+export type ColourScaled = ColourScaledBase | ColourScaledWithYAxis;
 
 export type MultiChannel = {
   rangeType: "MultiChannel";
   yAxes: ChannelIdx[][];
 };
 
-export type RangeTypesWithYAxis = ColorScaledWithYAxis | MultiChannel;
+export type RangeTypesWithYAxis = ColourScaledWithYAxis | MultiChannel;

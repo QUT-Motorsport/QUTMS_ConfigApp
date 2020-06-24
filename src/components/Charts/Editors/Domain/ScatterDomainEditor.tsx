@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Select } from "antd";
 import { EditorProps } from "../BaseChartEditor";
-import { ScatterChartDomain } from "../../../../ts/chart/types";
+import { ScatterChartDomain } from "../../ScatterChart";
 
 export default ({
   data,

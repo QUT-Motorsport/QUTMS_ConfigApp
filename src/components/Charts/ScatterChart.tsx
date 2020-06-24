@@ -39,8 +39,8 @@ export default function ScatterChart({
 }) {
   // jet colour interpolator with internal cache
   const { discreteJetColors, groupBy } = useGroupByColorBins(data, spec);
-  const [xRange, setXRange] = useState<Range>();
-  const [yRange, setYRange] = useState<Range>();
+  const [xRange, setXRange] = useState<ChartRange>();
+  const [yRange, setYRange] = useState<ChartRange>();
 
   const crossfilterData = useCrossfilteredData(data, {
     channelIdxs: useMemo(() => [spec.xAxis, ...spec2ChannelIdxs(spec)], [spec]),
@@ -70,7 +70,7 @@ export default function ScatterChart({
             ? iterate(crossfilterData.groups)
                 .map(([groupIdx, channelGroup]) => {
                   if (
-                    spec.rangeType === "Colour-Scaled" &&
+                    spec.rangeType === "ColourScaled" &&
                     spec.nColorBins !== null
                   ) {
                     const [yChannel] = getChannels(data, [spec.yAxis]);
@@ -98,7 +98,7 @@ export default function ScatterChart({
                 })
                 .toArray()
                 .reverse()
-            : spec.rangeType === "Colour-Scaled"
+            : spec.rangeType === "ColourScaled"
             ? // continuous color-scale
               ((
                 [yChannel, colorChannel] = getChannels(data, [
@@ -141,7 +141,7 @@ export default function ScatterChart({
           ...yAxesLayout(
             yRange,
             data.channels[
-              spec.rangeType === "Colour-Scaled" ? spec.yAxis : spec.yAxes[0][0]
+              spec.rangeType === "ColourScaled" ? spec.yAxis : spec.yAxes[0][0]
             ] as Channel
           )(spec),
           xaxis: {

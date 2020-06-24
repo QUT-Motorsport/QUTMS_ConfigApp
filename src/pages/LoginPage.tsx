@@ -28,6 +28,7 @@ export default function LoginPage() {
         >
           <img
             src={logoSrc}
+            alt="configapp logo"
             style={{
               width: "80%",
               marginLeft: "10%",
