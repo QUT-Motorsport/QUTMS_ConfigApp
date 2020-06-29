@@ -1,5 +1,5 @@
 import { Polygon } from "geojson";
-import { ColorScaledBase, ColorScaledWithYAxis, MultiChannel } from "./types";
+import { ContinuouslyColourScaled, MultiChannel, WithYAxis } from "./types";
 import { LineChartSpec } from "../../components/Charts/LineChart";
 import { ScatterChartSpec } from "../../components/Charts/ScatterChart";
 import { HistogramChartSpec } from "../../components/Charts/HistogramChart";
@@ -10,12 +10,12 @@ export const THROTTLE_POS_CH_IDX = 42;
 export const WHEEL_SLIP_IDX = 38;
 export const GROUND_SPEED_CH_IDX = 44;
 
-export const DEFAULT_BASE_COLOR_SCALED: ColorScaledBase = {
+export const DEFAULT_BASE_COLOR_SCALED: ContinuouslyColourScaled = {
   rangeType: "ColourScaled",
-  colorAxis: THROTTLE_POS_CH_IDX,
+  colourAxis: THROTTLE_POS_CH_IDX,
 };
 
-export const DEFAULT_COLOR_SCALED: ColorScaledWithYAxis = {
+export const DEFAULT_COLOR_SCALED: ContinuouslyColourScaled & WithYAxis = {
   ...DEFAULT_BASE_COLOR_SCALED,
   yAxis: WHEEL_SLIP_IDX,
 };

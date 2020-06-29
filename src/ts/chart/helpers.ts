@@ -1,7 +1,7 @@
 import { Channel } from "../../ts/qmsData";
-import { StateHook } from "../../ts/hooks";
 import interpolate from "everpolate";
 import { AnyChartSpec, ChartRange } from "../../components/Charts/AnyChart";
+import { Layout } from "plotly.js";
 
 export const spec2ChannelIdxs = (spec: AnyChartSpec) =>
   spec.rangeType === "ColourScaled"
@@ -10,28 +10,32 @@ export const spec2ChannelIdxs = (spec: AnyChartSpec) =>
       : [spec.colourAxis]
     : spec.yAxes.flat();
 
+export function anyChangeInRange(old: ChartRange, new_: ChartRange) {
+  return (
+    !(old === undefined && new_ === undefined) &&
+    ((old === undefined && new_ !== undefined) ||
+      (old !== undefined && new_ === undefined) ||
+      old!.find((r, idx) => r !== new_![idx]) !== undefined)
+  );
+}
+
 export const getUpdateHandler = (
-  [xRange, setXRange]: StateHook<ChartRange>,
-  [yRange, setYRange]: StateHook<ChartRange>
+  xRange: ChartRange,
+  yRange: ChartRange,
+  setRanges: (xRange: ChartRange, yRange: ChartRange) => void
 ) => (
   {
     layout: {
       xaxis: { range: newXRange },
       yaxis: { range: newYRange },
     },
-  }: any // Figure, with 100% defined xaxis and yaxis atts
+  }: any // react-plotly.js/Figure, with 100% defined xaxis and yaxis atts
 ) => {
-  const anyChange = (old: ChartRange, new_: ChartRange) =>
-    !(old === undefined && new_ === undefined) &&
-    ((old === undefined && new_ !== undefined) ||
-      (old !== undefined && new_ === undefined) ||
-      old!.find((r, idx) => r !== new_![idx]) !== undefined);
-
-  if (anyChange(xRange, newXRange)) {
-    setXRange(newXRange);
-  }
-  if (anyChange(yRange, newYRange)) {
-    setYRange(newYRange);
+  if (
+    anyChangeInRange(xRange, newXRange) ||
+    anyChangeInRange(yRange, newYRange)
+  ) {
+    setRanges(newXRange, newYRange);
   }
 };
 
@@ -41,10 +45,10 @@ export function yAxesLayout(
   range: ChartRange,
   channel: Channel | undefined,
   spec: AnyChartSpec
-) {
+): Partial<Layout> {
   if (spec.rangeType === "ColourScaled") {
     return {
-      yaxis1: {
+      yaxis: {
         range,
         title: channel
           ? (({ name, unit } = channel) => `${name} (${unit})`)()

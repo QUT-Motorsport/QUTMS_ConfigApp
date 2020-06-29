@@ -1,6 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { get } from "./ajax";
-import crossfilter from "crossfilter2";
+import crossfilter, { NaturallyOrderedValue } from "crossfilter2";
+import iterate from "iterare";
+
+export function getChannels(data: QmsData, channelIdxs: ChannelIdx[]) {
+  return channelIdxs.map((channelIdx) => data.channels[channelIdx] as Channel);
+}
 
 export type ChannelIdx = number;
 
@@ -15,30 +20,34 @@ export type QmsData = {
   // objects related to crossfiltering
   // null if no data downloaded yet
   crossfilter: null | Source;
+
+  // Max time
+  maxTime: null | Time;
 };
 
 export type Time = number;
 export type Datum = number; // singular of data (a single point)
 export type Data = Datum[];
-export type Range = [number, number];
+export type Range<T = Datum> = [T, T];
 
 export type Record = {
   time: Time;
   data: Map<Channel, Datum>;
 };
 
-export type DataDimension = crossfilter.Dimension<Record, Time>;
-
-export type Filter = number | [number, number];
+export type Dimension<T extends NaturallyOrderedValue> = crossfilter.Dimension<
+  Record,
+  T
+>;
 
 export type Source = {
-  // the crossfilter 'god object'
+  // the crossfilter index that links them all together
   index: crossfilter.Crossfilter<Record>;
 
   // crossfilter dimensions to be accessed by multiple components
   dimensions: {
-    byTime: crossfilter.Dimension<Record, Time>;
-    byChannels: Map<Channel, DataDimension>;
+    byTime: Dimension<Time>;
+    byChannels: Map<Channel, Dimension<Datum>>;
   };
 };
 
@@ -53,6 +62,7 @@ export type ChannelHeader = {
 
 export type Channel = ChannelHeader & {
   data: Data;
+  minMax: Range;
 };
 
 export type ChannelGroup = {
@@ -63,12 +73,11 @@ export type ChannelGroup = {
 // used for grouping by eg, discrete color-scale, or track-map segment
 export type GroupedChannelGroups = {
   timeRange: Range;
-  groupedRange: Range;
 
   groups: Map<GroupIdx, ChannelGroup>;
 };
 
-export const useQmsData = (filename: string): QmsData | null => {
+export function useQmsData(filename: string): QmsData | null {
   const [qmsData, setQmsData] = useState<QmsData | null>(null);
 
   useEffect(() => {
@@ -88,46 +97,88 @@ export const useQmsData = (filename: string): QmsData | null => {
   }, [filename]);
 
   return qmsData;
-};
+}
 
-const hydrateChannels = (
-  { filename, channels }: QmsData,
-  channelIdxs: number[]
-) =>
-  Promise.all(
+function initMinMax(): Range {
+  return [Number.MAX_VALUE, Number.MIN_VALUE];
+}
+
+function updateMinMax(range: Range, val: number) {
+  if (val < range[0]) {
+    range[0] = val;
+  } else if (val > range[1]) {
+    range[1] = val;
+  }
+}
+
+// download and insert the data into the channels
+export async function hydrateChannels(data: QmsData, channelIdxs: number[]) {
+  const { filename, channels } = data;
+
+  return await Promise.all(
     channelIdxs.map(async (idx) => {
       if (!("data" in channels[idx])) {
-        (channels[idx] as Channel).data = await get(`qms/${filename}/${idx}`);
+        const channel = channels[idx] as Channel;
+        channel.data = await get(`qms/${filename}/${idx}`);
+
+        channel.minMax = initMinMax();
+        for (const datum of channel.data) {
+          updateMinMax(channel.minMax, datum);
+        }
+
+        const channelFinishTime = channel.data.length / channel.freq;
+        if (!data.maxTime || channelFinishTime > data.maxTime) {
+          data.maxTime = channelFinishTime;
+        }
       }
       return channels[idx] as Channel;
     })
   );
+}
 
+export type CrossFilter = {
+  byTime?: Range<Time>;
+  byChannels: Map<Channel, Range<Datum>>;
+};
+
+export function useCrossfilterState() {
+  return useState<CrossFilter>({
+    byChannels: new Map(),
+  });
+}
+
+// variant that includes grouping
 export function useCrossfilteredData(
   data: QmsData,
-  args: {
-    channelIdxs: number[];
+  channelIdxs: number[],
+  crossFilter: CrossFilter,
+  groupBy: {
+    channel: Channel;
+    grouper: (val: number) => number; // return group index
+  }
+): GroupedChannelGroups | null;
 
-    filters: {
-      byTime?: Range;
-      byChannels?: Map<Channel, Range>;
-    };
+// variant that doesn't include grouping
+export function useCrossfilteredData(
+  data: QmsData,
+  channelIdxs: number[],
+  crossFilter: CrossFilter
+): ChannelGroup | null;
 
-    // if included, return array of channelgroup
-    groupBy?: {
-      channel: Channel;
-      grouper: (val: number, min: number, max: number) => number; // return group index
-    };
+// the actual implementation
+export function useCrossfilteredData(
+  data: QmsData,
+  channelIdxs: number[],
+
+  crossFilter: CrossFilter,
+  groupBy?: {
+    channel: Channel;
+    grouper: (val: number) => number; // return group index
   }
 ): ChannelGroup | GroupedChannelGroups | null {
-  const { channelIdxs, filters, groupBy } = args;
-
-  const [output, setOutput] = useState<
-    ChannelGroup | GroupedChannelGroups | null
-  >(null);
-
-  useMemo(() => {
+  return useMemo(() => {
     function updateOutputChannels(channels: Channel[]) {
+      // TODO: pre-process all data and store in the qms file format to save (dense time-series data)
       if (data.crossfilter === null) {
         // create the crossfilter for the first time
         const index = crossfilter<Record>([]);
@@ -140,15 +191,13 @@ export function useCrossfilteredData(
         };
       }
 
-      const {
-        index,
-        dimensions: { byTime, byChannels },
-      } = data.crossfilter;
-
+      const { index } = data.crossfilter;
       const firstRecord = index.all()[0] ?? { data: new Map() };
       const channelsMissing = channels.filter(
         (channel) => !firstRecord.data.has(channel)
       );
+
+      // if new channels need to be added / computed
       if (channelsMissing.length > 0) {
         let prevRecord = firstRecord;
         // cache a lookup table time for use in the next bit
@@ -198,18 +247,21 @@ export function useCrossfilteredData(
         }
 
         // reconstruct the crossfilter
-        byTime.filterAll(); // clear the time filter - we're done with it
         index.remove();
         index.add(records);
       }
 
       if (channels.length > 0) {
+        const {
+          dimensions: { byTime, byChannels },
+        } = data.crossfilter;
+
         // apply all filters before preparing the channelgroup
-        if (filters.byTime) {
-          byTime.filter(filters.byTime);
+        if (crossFilter.byTime) {
+          byTime.filter(crossFilter.byTime);
         }
-        if (filters.byChannels) {
-          filters.byChannels.forEach((range, channel) => {
+        if (crossFilter.byChannels) {
+          crossFilter.byChannels.forEach((range, channel) => {
             if (!byChannels.has(channel)) {
               byChannels.set(
                 channel,
@@ -241,7 +293,7 @@ export function useCrossfilteredData(
 
         if (groupBy === undefined) {
           // it's just a single group
-          setOutput(createChannelGroup(index.allFiltered()));
+          return createChannelGroup(index.allFiltered());
         } else {
           if (!byChannels.has(groupBy.channel)) {
             byChannels.set(
@@ -250,25 +302,15 @@ export function useCrossfilteredData(
             );
           }
 
-          const timeRange: Range = [Number.MAX_VALUE, Number.MIN_VALUE];
-          const groupedRange: Range = [Number.MAX_VALUE, Number.MIN_VALUE];
-          const updateRange = (range: Range, val: number) => {
-            if (val < range[0]) {
-              range[0] = val;
-            } else if (val > range[1]) {
-              range[1] = val;
-            }
-          };
+          const timeRange = initMinMax();
+
           for (const record of index.allFiltered()) {
-            updateRange(timeRange, record.time);
-            updateRange(groupedRange, record.data.get(groupBy.channel)!);
+            updateMinMax(timeRange, record.time);
           }
 
           const recordGroups = byChannels
             .get(groupBy.channel)!
-            .group<GroupIdx, Map<Time, Record>>((val) =>
-              groupBy.grouper(val, ...groupedRange)
-            )
+            .group<GroupIdx, Map<Time, Record>>(groupBy.grouper)
             .reduce(
               // incremental reduce
               (group, record) => {
@@ -285,18 +327,19 @@ export function useCrossfilteredData(
             )
             .all();
 
-          setOutput({
+          return {
             timeRange,
-            groupedRange,
             groups: new Map(
               recordGroups.map(({ key, value }) => [
                 key,
                 createChannelGroup(
-                  [...value.values()].sort((a, b) => a.time - b.time)
+                  iterate(value.values())
+                    .toArray()
+                    .sort((a, b) => a.time - b.time)
                 ),
               ])
             ),
-          });
+          };
         }
 
         // we're done. clear all filters.
@@ -308,11 +351,7 @@ export function useCrossfilteredData(
     if (channelIdxs.find((idx) => !("data" in data.channels[idx]))) {
       hydrateChannels(data, channelIdxs).then(updateOutputChannels);
     } else {
-      updateOutputChannels(
-        channelIdxs.map((idx) => data.channels[idx] as Channel)
-      );
+      updateOutputChannels(getChannels(data, channelIdxs));
     }
-  }, [channelIdxs, filters, groupBy, data]);
-
-  return output;
+  }, [channelIdxs, crossFilter, data, groupBy]);
 }

@@ -87,7 +87,7 @@ export default function BaseChartEditor({
                   ...DEFAULT_RANGE_TYPES[
                     e.target.value as keyof typeof DEFAULT_RANGE_TYPES
                   ],
-                });
+                } as AnyChartSpec);
               }}
             >
               {Object.keys(DEFAULT_RANGE_TYPES).map((rangeType, idx) => (

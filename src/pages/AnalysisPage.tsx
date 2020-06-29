@@ -2,8 +2,8 @@ import React from "react";
 import { Button, Modal, Spin, Avatar } from "antd";
 import { useState } from "react";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
-import { AnyChartSpec, ChartRange } from "../components/Charts/AnyChart";
-import { QmsData, useQmsData } from "../ts/qmsData";
+import { AnyChartSpec } from "../components/Charts/AnyChart";
+import { QmsData, useQmsData, useCrossfilterState } from "../ts/qmsData";
 import { DEFAULT_LINE_CHART } from "../ts/chart/defaults";
 import { SettingOutlined } from "@ant-design/icons";
 
@@ -46,7 +46,7 @@ function AddChartModal({
         <BaseChart
           data={data}
           spec={chartSpec}
-          domainState={useState<ChartRange>()}
+          filterState={useCrossfilterState()}
         />
       </Modal>
     </div>
@@ -81,8 +81,8 @@ function AnalysisSettingsModal() {
 }
 
 export default function AnalysisPage() {
+  const filterState = useCrossfilterState();
   const data = useQmsData("Sample");
-  const domainState = useState<ChartRange>();
   const [chartSpecs, setChartSpecs] = useState<AnyChartSpec[]>([]);
 
   useTitle("QUTMS Analysis");
@@ -95,12 +95,12 @@ export default function AnalysisPage() {
           <span className={styles.h1Alt}>Analysis</span>
           <AnalysisSettingsModal />
         </div>
-        <Timeline data={data} domainState={domainState} />
+        <Timeline data={data} filterState={filterState} />
         {chartSpecs.map((chartSpec, idx) => (
           <BaseChart
             key={idx}
             data={data}
-            domainState={domainState}
+            filterState={filterState}
             spec={chartSpec}
           />
         ))}

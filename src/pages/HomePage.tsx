@@ -12,85 +12,85 @@ export default function HomePage() {
         <Col md={{ span: 4 }} />
         <Col md={{ span: 5 }}>
           <h1>Start</h1>
-          <a>
+          <button>
             <p>Open File...</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Import...</p>
-          </a>
+          </button>
         </Col>
         <Col md={{ span: 5, offset: 1 }}>
           <h1>Recent</h1>
-          <a>
+          <button>
             <p>Lakeside_2020_03_02.qms</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Lakeside_2020_01_01.qms</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>More...</p>
-          </a>
+          </button>
         </Col>
         <Col md={{ span: 9 }} />
       </Row>
       <Row>
         <Col md={{ span: 4 }} />
         <Col md={{ span: 5 }}>
-          <a>
+          <button>
             <h1>Customise</h1>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>MATLAB Engine</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Settings {"&"} Keybindings</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Change Theme</p>
-          </a>
+          </button>
         </Col>
         <Col md={{ span: 5, offset: 1 }}>
-          <a>
+          <button>
             <h1>Help</h1>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Get Started</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Data Analysis Information</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Export/Import Guide</p>
-          </a>
+          </button>
         </Col>
         <Col md={{ span: 9 }} />
       </Row>
       <Row>
         <Col md={{ span: 4 }} />
         <Col md={{ span: 5 }}>
-          <a>
+          <button>
             <h1>Simulation</h1>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Import...</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>View...</p>
-          </a>
+          </button>
         </Col>
         <Col md={{ span: 5, offset: 1 }}>
-          <a>
+          <button>
             <h1>Contact</h1>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Website</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Facebook</p>
-          </a>
-          <a>
+          </button>
+          <button>
             <p>Twitter</p>
-          </a>
+          </button>
         </Col>
         <Col md={{ span: 9 }} />
       </Row>

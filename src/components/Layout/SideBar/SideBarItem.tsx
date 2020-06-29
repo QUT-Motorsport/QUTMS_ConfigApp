@@ -16,39 +16,37 @@ const SideBar = ({
   name: string;
 }) => {
   return (
-    <Link to={link}>
-      <a className={styles.sideBarItem}>
-        <Menu.Item
-          key={link}
+    <Link to={link} className={styles.sideBarItem}>
+      <Menu.Item
+        key={link}
+        style={{
+          margin: "0px",
+          padding: "5px 0px",
+          height: "auto",
+          lineHeight: "normal",
+        }}
+        {...sideBarProps}
+      >
+        <Icon
           style={{
-            margin: "0px",
-            padding: "5px 0px",
-            height: "auto",
-            lineHeight: "normal",
+            width: "100%",
+            padding: "0px",
+            fontSize: "24px",
+            margin: "10px 0px",
           }}
-          {...sideBarProps}
+        />
+        <p
+          style={{
+            width: "100%",
+            textAlign: "center",
+            padding: "0px 0px",
+            margin: "0px",
+            fontSize: "14px",
+          }}
         >
-          <Icon
-            style={{
-              width: "100%",
-              padding: "0px",
-              fontSize: "24px",
-              margin: "10px 0px",
-            }}
-          />
-          <p
-            style={{
-              width: "100%",
-              textAlign: "center",
-              padding: "0px 0px",
-              margin: "0px",
-              fontSize: "14px",
-            }}
-          >
-            {name}
-          </p>
-        </Menu.Item>
-      </a>
+          {name}
+        </p>
+      </Menu.Item>
     </Link>
   );
 };

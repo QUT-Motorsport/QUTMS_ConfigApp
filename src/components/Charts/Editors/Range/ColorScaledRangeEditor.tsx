@@ -1,16 +1,19 @@
+import { Form, Select, InputNumber, Radio } from "antd";
 import React from "react";
 import { EditorProps } from "../BaseChartEditor";
 import { Channel } from "../../../../ts/qmsData";
-import { ColorScaled } from "../../../../ts/chart/types";
-import { Form, Select, InputNumber, Radio } from "antd";
+import {
+  ColourScaled,
+  DiscretelyColourScaled,
+} from "../../../../ts/chart/types";
 import { channelOptionAttrs } from "./_helpers";
 
-const ColorScaledRangeEditor = ({
+const ColourScaledRangeEditor = ({
   data,
   specState: [spec, setSpec],
-}: EditorProps<ColorScaled>) => (
+}: EditorProps<ColourScaled>) => (
   <>
-    {"yAxis" in spec ? ( // if not a colourscale-only plot
+    {"yAxis" in spec ? ( // if a y axis can be chosen
       <Form.Item label="Y Axis" wrapperCol={{ xs: { span: 10 } }}>
         <Select
           optionFilterProp="children"
@@ -29,9 +32,9 @@ const ColorScaledRangeEditor = ({
     <Form.Item label="Color Axis" wrapperCol={{ xs: { span: 10 } }}>
       <Select
         optionFilterProp="children"
-        value={spec.colorAxis}
-        onChange={(colorAxis: ColorScaled["colorAxis"]) => {
-          setSpec({ ...spec, colorAxis });
+        value={spec.colourAxis}
+        onChange={(colourAxis: ColourScaled["colourAxis"]) => {
+          setSpec({ ...spec, colourAxis });
         }}
       >
         {data.channels.map((channel, idx) => (
@@ -45,11 +48,16 @@ const ColorScaledRangeEditor = ({
       wrapperCol={{ xs: { span: 18 }, sm: { span: 16 } }}
     >
       <Radio.Group
-        value={spec.nColorBins === null ? "continuous" : "discrete"}
+        value={"nColourBins" in spec ? "discrete" : "continuous"}
         onChange={(e) => {
-          setSpec({
-            ...spec,
-            nColorBins: e.target.value === "continuous" ? undefined : 8,
+          // I don't like this but it's fine for now
+          setSpec((spec) => {
+            if (e.target.value === "continuous" && "nColourBins" in spec) {
+              delete spec.nColourBins;
+            } else {
+              (spec as DiscretelyColourScaled).nColourBins = 8;
+            }
+            return { ...spec };
           });
         }}
       >
@@ -57,16 +65,16 @@ const ColorScaledRangeEditor = ({
         <Radio.Button value="discrete">Discrete</Radio.Button>
       </Radio.Group>
 
-      {spec.nColorBins !== null ? ( // if in discrete mode
+      {"nColourBins" in spec ? ( // if in discrete mode
         <>
           <span style={{ padding: "0px 10px 0px 60px" }}># Color Bins:</span>
           <InputNumber
             min={3}
             max={13}
-            value={spec.nColorBins}
-            onChange={(nColorBins) => {
-              if (typeof nColorBins === "number") {
-                setSpec({ ...spec, nColorBins });
+            value={spec.nColourBins}
+            onChange={(nColourBins) => {
+              if (typeof nColourBins === "number") {
+                setSpec({ ...spec, nColourBins });
               }
             }}
           />
@@ -76,4 +84,4 @@ const ColorScaledRangeEditor = ({
   </>
 );
 
-export default ColorScaledRangeEditor;
+export default ColourScaledRangeEditor;
