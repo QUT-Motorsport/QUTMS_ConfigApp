@@ -3,7 +3,7 @@ import { Spin } from "antd";
 import Plot from "react-plotly.js";
 
 import { GROUND_SPEED_CH_IDX } from "../ts/chart/defaults";
-import { QmsData, hydrateChannels, CrossFilter } from "../ts/qmsData";
+import { QmsData, useHydratedChannels, CrossFilter } from "../ts/qmsData";
 import { StateHook } from "../ts/hooks";
 import { anyChangeInRange, baseChartSettings } from "../ts/chart/helpers";
 import styles from "./Timeline.module.scss";
@@ -15,18 +15,12 @@ export default function Timeline({
   data: QmsData;
   filterState: StateHook<CrossFilter>;
 }) {
-  const [groundSpeedChannel, setGroundSpeedChannel] = useState(
-    data.channels[GROUND_SPEED_CH_IDX]
-  );
+  const hydrated = useHydratedChannels(data, [GROUND_SPEED_CH_IDX]);
 
-  if (!("data" in groundSpeedChannel)) {
-    hydrateChannels(data, [GROUND_SPEED_CH_IDX]).then(
-      ([groundSpeedChannel]) => {
-        setGroundSpeedChannel({ ...groundSpeedChannel });
-      }
-    );
+  if (!hydrated) {
     return <Spin />;
   }
+  const [groundSpeedChannel] = hydrated;
 
   // prepare the data for the linechart
   const time = [];
@@ -35,6 +29,7 @@ export default function Timeline({
     time.push(idx / groundSpeedChannel.freq);
     groundSpeedData.push(groundSpeedChannel.data[idx]);
   }
+  debugger;
   return (
     <div className={styles.timeline}>
       <Plot

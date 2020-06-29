@@ -112,28 +112,33 @@ function updateMinMax(range: Range, val: number) {
 }
 
 // download and insert the data into the channels
-export async function hydrateChannels(data: QmsData, channelIdxs: number[]) {
+export function useHydratedChannels(data: QmsData, channelIdxs: number[]) {
   const { filename, channels } = data;
+  const [hydrated, setHydrated] = useState<Channel[] | null>(null);
 
-  return await Promise.all(
-    channelIdxs.map(async (idx) => {
-      if (!("data" in channels[idx])) {
-        const channel = channels[idx] as Channel;
-        channel.data = await get(`qms/${filename}/${idx}`);
+  useEffect(() => {
+    Promise.all(
+      channelIdxs.map(async (idx) => {
+        if (!("data" in channels[idx])) {
+          const channel = channels[idx] as Channel;
+          channel.data = await get(`qms/${filename}/${idx}`);
 
-        channel.minMax = initMinMax();
-        for (const datum of channel.data) {
-          updateMinMax(channel.minMax, datum);
+          channel.minMax = initMinMax();
+          for (const datum of channel.data) {
+            updateMinMax(channel.minMax, datum);
+          }
+
+          const channelFinishTime = channel.data.length / channel.freq;
+          if (!data.maxTime || channelFinishTime > data.maxTime) {
+            data.maxTime = channelFinishTime;
+          }
         }
+        return channels[idx] as Channel;
+      })
+    ).then(setHydrated);
+  }, [channelIdxs]);
 
-        const channelFinishTime = channel.data.length / channel.freq;
-        if (!data.maxTime || channelFinishTime > data.maxTime) {
-          data.maxTime = channelFinishTime;
-        }
-      }
-      return channels[idx] as Channel;
-    })
-  );
+  return hydrated;
 }
 
 export type CrossFilter = {
@@ -176,8 +181,10 @@ export function useCrossfilteredData(
     grouper: (val: number) => number; // return group index
   }
 ): ChannelGroup | GroupedChannelGroups | null {
+  const channels = useHydratedChannels(data, channelIdxs);
+
   return useMemo(() => {
-    function updateOutputChannels(channels: Channel[]) {
+    if (channels) {
       // TODO: pre-process all data and store in the qms file format to save (dense time-series data)
       if (data.crossfilter === null) {
         // create the crossfilter for the first time
@@ -345,13 +352,14 @@ export function useCrossfilteredData(
         // we're done. clear all filters.
         // byTime.filterAll();
         // Object.values(byChannels).forEach(dimension => dimension.filterAll());
+      } else {
+        return {
+          time: [],
+          channels: new Map(),
+        };
       }
-    }
-
-    if (channelIdxs.find((idx) => !("data" in data.channels[idx]))) {
-      hydrateChannels(data, channelIdxs).then(updateOutputChannels);
     } else {
-      updateOutputChannels(getChannels(data, channelIdxs));
+      return null;
     }
-  }, [channelIdxs, crossFilter, data, groupBy]);
+  }, [channels, crossFilter, data, groupBy]);
 }
