@@ -18,6 +18,7 @@
     "@types/react-plotly.js": "^2.2.4",
     "@types/react-router-dom": "^5.1.5",
     "antd": "^4.3.4",
+    "cross-env": "^7.0.2",
     "crossfilter2": "^1.5.2",
     "everpolate": "0.0.3",
     "foreman": "^3.0.1",
@@ -37,11 +38,10 @@
   },
   "scripts": {
     "start": "nf start",
-    "start:react": "react-scripts start",
-    "build": "react-scripts build",
+    "start:react": "cross-env NODE_OPTIONS=--max_old_space_size=8192 react-scripts start",
+    "build": "cross-env NODE_OPTIONS=--max_old_space_size=8192 react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "dts-gen": "dts-gen -d -m"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
