@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { Spin } from "antd";
 import Plot from "react-plotly.js";
 
@@ -15,7 +15,10 @@ export default function Timeline({
   data: QmsData;
   filterState: StateHook<CrossFilter>;
 }) {
-  const hydrated = useHydratedChannels(data, [GROUND_SPEED_CH_IDX]);
+  const hydrated = useHydratedChannels(
+    data,
+    useMemo(() => [GROUND_SPEED_CH_IDX], [])
+  );
 
   if (!hydrated) {
     return <Spin />;
@@ -29,7 +32,7 @@ export default function Timeline({
     time.push(idx / groundSpeedChannel.freq);
     groundSpeedData.push(groundSpeedChannel.data[idx]);
   }
-  debugger;
+
   return (
     <div className={styles.timeline}>
       <Plot

@@ -136,7 +136,7 @@ export function useHydratedChannels(data: QmsData, channelIdxs: number[]) {
         return channels[idx] as Channel;
       })
     ).then(setHydrated);
-  }, [channelIdxs]);
+  }, [channelIdxs, channels, data.maxTime, filename]);
 
   return hydrated;
 }

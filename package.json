@@ -18,16 +18,19 @@
     "@types/react-plotly.js": "^2.2.4",
     "@types/react-router-dom": "^5.1.5",
     "antd": "^4.3.4",
+    "closure-webpack-plugin": "^2.3.0",
     "cross-env": "^7.0.2",
     "crossfilter2": "^1.5.2",
     "everpolate": "0.0.3",
     "foreman": "^3.0.1",
     "geojson": "^0.5.0",
+    "google-closure-compiler": "^20200614.0.0",
     "ip": "^1.1.5",
     "isomorphic-unfetch": "^3.0.0",
     "iterare": "^1.2.1",
     "plotly.js": "^1.54.3",
     "react": "^16.13.1",
+    "react-app-rewired": "^2.1.6",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.1.0",
     "react-plotly.js": "^2.4.0",
@@ -39,10 +42,10 @@
   },
   "scripts": {
     "start": "nf start",
-    "start:react": "cross-env NODE_OPTIONS=--max_old_space_size=8192 react-scripts start",
-    "build": "cross-env NODE_OPTIONS=--max_old_space_size=8192 react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start:react": "cross-env NODE_OPTIONS=--max_old_space_size=8192 react-app-rewired start",
+    "build": "cross-env NODE_OPTIONS=--max_old_space_size=8192 react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": "react-app"

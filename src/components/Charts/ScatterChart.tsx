@@ -240,8 +240,6 @@ function DiscreteColourScaleScatterChart({
     groupBy
   );
 
-  debugger;
-
   if (crossfilterData) {
     const defaults = (yChannel: Channel) => ({
       type: "scattergl" as any,
