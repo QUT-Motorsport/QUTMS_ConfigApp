@@ -1,31 +1,65 @@
-import React from "react";
-import { ComponentProps } from "react";
-import { LineChartSpec } from "../ts/chart/types";
+import React, { useState } from "react";
+import { Spin } from "antd";
+import Plot from "react-plotly.js";
+
 import { GROUND_SPEED_CH_IDX } from "../ts/chart/defaults";
-
-import LineChart from "../components/Charts/LineChart";
-
+import { QmsData, hydrateChannels, CrossFilter } from "../ts/qmsData";
+import { StateHook } from "../ts/hooks";
+import { anyChangeInRange, baseChartSettings } from "../ts/chart/helpers";
 import styles from "./Timeline.module.scss";
-
-const TIMELINE_SPEC: LineChartSpec = {
-  title: "",
-  domainType: "Line",
-  xAxis: "Time",
-  rangeType: "Multi-Channel",
-  yAxes: [[GROUND_SPEED_CH_IDX]],
-};
 
 export default function Timeline({
   data,
-  domainState,
-}: Pick<ComponentProps<typeof LineChart>, "data" | "domainState">) {
+  filterState: [filter, setFilter],
+}: {
+  data: QmsData;
+  filterState: StateHook<CrossFilter>;
+}) {
+  const [groundSpeedChannel, setGroundSpeedChannel] = useState(
+    data.channels[GROUND_SPEED_CH_IDX]
+  );
+
+  if (!("data" in groundSpeedChannel)) {
+    hydrateChannels(data, [GROUND_SPEED_CH_IDX]).then(
+      ([groundSpeedChannel]) => {
+        setGroundSpeedChannel({ ...groundSpeedChannel });
+      }
+    );
+    return <Spin />;
+  }
+
+  // prepare the data for the linechart
+  const time = [];
+  const groundSpeedData = [];
+  for (let idx = 0; idx < groundSpeedChannel.data.length; idx++) {
+    time.push(idx / groundSpeedChannel.freq);
+    groundSpeedData.push(groundSpeedChannel.data[idx]);
+  }
   return (
     <div className={styles.timeline}>
-      <LineChart
-        data={data}
-        spec={TIMELINE_SPEC}
-        domainState={domainState}
-        showDomainSlider={true}
+      <Plot
+        {...baseChartSettings}
+        data={[{ x: time, y: groundSpeedData }]}
+        layout={{
+          xaxis: {
+            range: filter.byTime,
+            rangeslider: {
+              range: [0, data.maxTime],
+            },
+          },
+        }}
+        onUpdate={(
+          {
+            layout: {
+              xaxis: { range },
+            },
+          }: any // Figure, with 100% defined xaxis and yaxis atts
+        ) => {
+          if (anyChangeInRange(filter.byTime, range)) {
+            filter.byTime = range;
+            setFilter({ ...filter });
+          }
+        }}
       />
     </div>
   );

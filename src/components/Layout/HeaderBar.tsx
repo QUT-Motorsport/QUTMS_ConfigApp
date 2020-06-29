@@ -19,27 +19,26 @@ const HeaderBar = () => {
       }}
     >
       <Link to={"/"}>
-        <a>
-          <div
+        <div
+          style={{
+            height: "60px",
+            position: "relative",
+            float: "left",
+          }}
+        >
+          <img
+            src={logo_src}
+            alt="configapp logo"
             style={{
-              height: "60px",
-              position: "relative",
-              float: "left",
+              top: "0",
+              bottom: "0",
+              left: "10px",
+              margin: "auto",
+              position: "absolute",
+              width: "180px",
             }}
-          >
-            <img
-              src={logo_src}
-              style={{
-                top: "0",
-                bottom: "0",
-                left: "10px",
-                margin: "auto",
-                position: "absolute",
-                width: "180px",
-              }}
-            />
-          </div>
-        </a>
+          />
+        </div>
       </Link>
       <div
         style={{

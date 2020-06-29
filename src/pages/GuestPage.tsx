@@ -1,21 +1,18 @@
 import React from "react";
 
-// import Head from "next/head";
-// import Link from "next/link";
-
 import Sponsors from "../components/Telemetry/Sponsors";
-import PedalPositions from "../components/Telemetry/PedalPosition";
+// import PedalPositions from "../components/Telemetry/PedalPosition";
 import Car from "../components/Telemetry/Car";
 import LapInfo from "../components/Telemetry/LapInfo";
 import SteeringAngle from "../components/Telemetry/SteeringAngle";
-import Weather from "../components/Telemetry/Weather";
+// import Weather from "../components/Telemetry/Weather";
 import { Row, Col } from "antd";
 import TrackInfo from "../components/Telemetry/TrackInfo";
 import RawTelemetry from "../components/Telemetry/RawTelemetry";
-import DataRate from "../components/Telemetry/DataRate";
+// import DataRate from "../components/Telemetry/DataRate";
 import EngineAndPower from "../components/Telemetry/EngineAndPower";
 import DriverInfo from "../components/Telemetry/DriverInfo";
-import Explorer from "../components/Layout/Explorer/Explorer";
+// import Explorer from "../components/Layout/Explorer/Explorer";
 import Header from "../components/Layout/HeaderBar";
 
 import { useTitle } from "./_helpers";

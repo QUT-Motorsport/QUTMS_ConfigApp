@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Table, Divider, Tag } from "antd";
+import { Table } from "antd";
 import DividerBar from "./DividerBar";
 
-class RawTelemetry extends Component {
+export default class RawTelemetry extends Component {
   state = {}; // Will require state of what to include in table
 
   render() {
@@ -10,18 +10,18 @@ class RawTelemetry extends Component {
       {
         title: "Channel",
         dataIndex: "channel",
-        key: "channel"
+        key: "channel",
       },
       {
         title: "Reading",
         dataIndex: "reading",
-        key: "reading"
+        key: "reading",
       },
       {
         title: "Unit",
         key: "unit",
-        dataIndex: "unit"
-      }
+        dataIndex: "unit",
+      },
     ];
 
     const data = [
@@ -29,26 +29,26 @@ class RawTelemetry extends Component {
         key: "1",
         channel: "Longitudal Velocity",
         reading: 1,
-        unit: "g"
+        unit: "g",
       },
       {
         key: "2",
         channel: "Air Pressure",
         reading: 40,
-        unit: "ppi"
+        unit: "ppi",
       },
       {
         key: "3",
         channel: "Brake Temp",
         reading: 50,
-        unit: "C"
+        unit: "C",
       },
       {
         key: "4",
         channel: "vCar",
         reading: 259.3,
-        unit: "kph"
-      }
+        unit: "kph",
+      },
     ];
 
     return (
@@ -69,5 +69,3 @@ class RawTelemetry extends Component {
     );
   }
 }
-
-export default RawTelemetry;

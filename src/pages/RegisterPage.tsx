@@ -11,6 +11,7 @@ import styles from "./loginRegister.module.scss";
 
 export default function RegisterPage() {
   useTitle("QUTMS Register");
+
   return (
     <>
       <div
@@ -28,6 +29,7 @@ export default function RegisterPage() {
         >
           <img
             src={logoSrc}
+            alt="configapp logo"
             style={{
               width: "80%",
               marginLeft: "10%",

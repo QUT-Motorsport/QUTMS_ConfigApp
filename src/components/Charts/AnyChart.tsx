@@ -1,5 +1,5 @@
 import React from "react";
-import { QmsData, Range } from "../../ts/qmsData";
+import { QmsData, Range, CrossFilter } from "../../ts/qmsData";
 
 import HistogramChart, { HistogramChartSpec } from "./HistogramChart";
 import LineChart, { LineChartSpec } from "./LineChart";
@@ -25,17 +25,15 @@ export default function AnyChart({
 }: {
   data: QmsData;
   spec: AnyChartSpec;
-  domainState: StateHook<ChartRange>;
-  showDomainSlider?: boolean;
+  filterState: StateHook<CrossFilter>;
 }) {
-  switch (spec.domainType) {
-    case "Track-Map":
-      return <TrackMapChart spec={spec} {...rest} />;
-    case "Line":
-      return <LineChart spec={spec} {...rest} />;
-    case "Scatter":
-      return <ScatterChart spec={spec} {...rest} />;
-    case "Histogram":
-      return <HistogramChart spec={spec} {...rest} />;
-  }
+  return spec.domainType === "Line" ? (
+    <LineChart spec={spec} {...rest} />
+  ) : spec.domainType === "Scatter" ? (
+    <ScatterChart spec={spec} {...rest} />
+  ) : spec.domainType === "Histogram" ? (
+    <HistogramChart spec={spec} {...rest} />
+  ) : (
+    <TrackMapChart spec={spec} {...rest} />
+  );
 }

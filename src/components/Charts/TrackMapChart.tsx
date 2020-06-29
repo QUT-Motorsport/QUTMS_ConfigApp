@@ -1,6 +1,9 @@
 import Unimplemented from "./Unimplemented";
 import { ChartSpec } from "./AnyChart";
-import { ColorScaledBase } from "../../ts/chart/types";
+import {
+  DiscretelyColourScaled,
+  ContinuouslyColourScaled,
+} from "../../ts/chart/types";
 import { Polygon } from "geojson";
 
 export type TrackMapChartDomain = {
@@ -11,6 +14,8 @@ export type TrackMapChartDomain = {
   };
   segments: Number;
 };
-export type TrackMapSpec = TrackMapChartDomain & ColorScaledBase & ChartSpec;
+export type TrackMapSpec = ChartSpec &
+  TrackMapChartDomain &
+  (DiscretelyColourScaled | ContinuouslyColourScaled);
 
 export default Unimplemented("Chart/TrackMap");

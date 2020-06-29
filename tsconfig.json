@@ -17,5 +17,5 @@
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "downlevelIteration": true
   },
-  "include": ["src", "types/**.d.ts", "src/react-app-env.d.ts"]
+  "include": ["src", "lib/*.d.ts", "src/react-app-env.d.ts"]
 }
