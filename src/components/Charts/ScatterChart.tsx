@@ -297,14 +297,6 @@ function DiscreteColourScaleScatterChart({
           }
           updateShowFilters(xChannel, newXRange);
           updateShowFilters(yRangeChannel, newYRange);
-          if (newXRange) {
-          }
-          filter.byTime = newXRange;
-          if (newYRange) {
-            filter.byChannels.set(yRangeChannel, newYRange);
-          } else {
-            filter.byChannels.delete(yRangeChannel);
-          }
           setFilter({ ...filter });
         })}
       />
