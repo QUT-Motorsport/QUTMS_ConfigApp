@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -14,8 +18,17 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "plugins": [{ "name": "typescript-plugin-css-modules" }],
-    "downlevelIteration": true
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ],
+    "downlevelIteration": true,
+    "baseUrl": "."
   },
-  "include": ["src", "types/**.d.ts", "src/react-app-env.d.ts"]
+  "include": [
+    "src",
+    "types/**.d.ts",
+    "src/react-app-env.d.ts"
+  ]
 }
