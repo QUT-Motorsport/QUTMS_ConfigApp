@@ -1,7 +1,11 @@
 import React from "react";
 import { Form, Radio } from "antd";
 import { EditorProps } from "../BaseChartEditor";
-import { LineChartDomain } from "../../LineChart";
+
+export type LineChartDomain = {
+  domainType: "Line";
+  xAxis: "Time" | "Distance";
+};
 
 export default function LineDomainEditor({
   specState: [spec, setSpec],

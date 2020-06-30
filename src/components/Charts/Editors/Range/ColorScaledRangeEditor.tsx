@@ -1,29 +1,40 @@
 import { Form, Select, InputNumber, Radio } from "antd";
 import React from "react";
 import { EditorProps } from "../BaseChartEditor";
-import { Channel } from "../../../../ts/qmsData";
-import {
-  ColourScaled,
-  DiscretelyColourScaled,
-} from "../../../../ts/chart/types";
+import { ChannelIdx, ChannelHeader } from "../../../../ts/qmsData/types";
 import { channelOptionAttrs } from "./_helpers";
+
+export type ContinuouslyColourScaled = {
+  rangeType: "ColourScaled";
+  colourAxis: ChannelHeader;
+};
+
+export type DiscretelyColourScaled = ContinuouslyColourScaled & {
+  nColourBins: number;
+};
+
+export type WithYAxis = {
+  yAxis: ChannelHeader;
+};
 
 const ColourScaledRangeEditor = ({
   data,
   specState: [spec, setSpec],
-}: EditorProps<ColourScaled>) => (
+}: EditorProps<
+  (DiscretelyColourScaled | ContinuouslyColourScaled) & (WithYAxis | never)
+>) => (
   <>
     {"yAxis" in spec ? ( // if a y axis can be chosen
       <Form.Item label="Y Axis" wrapperCol={{ xs: { span: 10 } }}>
         <Select
           optionFilterProp="children"
-          value={spec.yAxis}
-          onChange={(yAxis: number) => {
-            setSpec({ ...spec, yAxis });
+          value={spec.yAxis.idx}
+          onChange={(idx: ChannelIdx) => {
+            setSpec({ ...spec, yAxis: data.channels[idx] });
           }}
         >
           {data.channels.map((channel, idx) => (
-            <Select.Option {...channelOptionAttrs(channel as Channel, idx)} />
+            <Select.Option {...channelOptionAttrs(channel, idx)} />
           ))}
         </Select>
       </Form.Item>
@@ -32,13 +43,13 @@ const ColourScaledRangeEditor = ({
     <Form.Item label="Color Axis" wrapperCol={{ xs: { span: 10 } }}>
       <Select
         optionFilterProp="children"
-        value={spec.colourAxis}
-        onChange={(colourAxis: ColourScaled["colourAxis"]) => {
-          setSpec({ ...spec, colourAxis });
+        value={spec.colourAxis.idx}
+        onChange={(idx: ChannelIdx) => {
+          setSpec({ ...spec, colourAxis: data.channels[idx] });
         }}
       >
         {data.channels.map((channel, idx) => (
-          <Select.Option {...channelOptionAttrs(channel as Channel, idx)} />
+          <Select.Option {...channelOptionAttrs(channel, idx)} />
         ))}
       </Select>
     </Form.Item>

@@ -1,8 +1,100 @@
 import { useMemo } from "react";
 import interpolate from "everpolate";
 
-import { QmsData, Channel, Datum } from "../../ts/qmsData";
-import { DiscretelyColourScaled } from "../../ts/chart/types";
+import { QmsData, Datum, ChannelHeader } from "../../ts/qmsData/types";
+import {
+  DiscretelyColourScaled,
+  WithYAxis,
+} from "./Editors/Range/ColorScaledRangeEditor";
+
+import { AnyChartSpec, ChartRange } from "../../components/Charts/AnyChart";
+import { Layout } from "plotly.js";
+import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
+import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
+import useCrossfilteredData from "../../ts/qmsData/crossfilter/useCrossfilteredData";
+
+export const spec2ChannelIdxs = (spec: AnyChartSpec) =>
+  spec.rangeType === "ColourScaled"
+    ? "yAxis" in spec
+      ? [spec.yAxis, spec.colourAxis]
+      : [spec.colourAxis]
+    : spec.yAxes.flat();
+
+export function anyChangeInRange(old: ChartRange, new_: ChartRange) {
+  return (
+    !(old === undefined && new_ === undefined) &&
+    ((old === undefined && new_ !== undefined) ||
+      (old !== undefined && new_ === undefined) ||
+      old!.find((r, idx) => r !== new_![idx]) !== undefined)
+  );
+}
+
+export const getUpdateHandler = (
+  xRange: ChartRange,
+  yRange: ChartRange,
+  setRanges: (xRange: ChartRange, yRange: ChartRange) => void
+) => (
+  {
+    layout: {
+      xaxis: { range: newXRange },
+      yaxis: { range: newYRange },
+    },
+  }: any // react-plotly.js/Figure, with 100% defined xaxis and yaxis atts
+) => {
+  if (
+    anyChangeInRange(xRange, newXRange) ||
+    anyChangeInRange(yRange, newYRange)
+  ) {
+    setRanges(newXRange, newYRange);
+  }
+};
+
+export const axisTitle = ({ name, unit }: ChannelHeader) => `${name} (${unit})`;
+
+export function yAxesLayout(
+  range: ChartRange,
+  channel: ChannelHeader | undefined,
+  spec: AnyChartSpec
+): Partial<Layout> {
+  if (spec.rangeType === "ColourScaled") {
+    return {
+      yaxis: {
+        range,
+        title: channel
+          ? (({ name, unit } = channel) => `${name} (${unit})`)()
+          : undefined,
+      },
+    };
+  } else {
+    const yAxesLayout: any = {};
+
+    spec.yAxes.forEach((_, idx) => {
+      yAxesLayout[`yaxis${idx + 1}`] = {
+        overlaying: idx > 0 ? "y" : undefined,
+        side: idx % 2 === 0 ? "left" : "right",
+        range: idx === 0 && range !== undefined ? [...range] : undefined,
+        title: channel !== undefined ? axisTitle(channel) : undefined,
+      };
+    });
+
+    return yAxesLayout;
+  }
+}
+
+export const yAxisName = (channel: ChannelHeader, spec: AnyChartSpec) =>
+  spec.rangeType === "ColourScaled"
+    ? "y1"
+    : `y${
+        spec.yAxes.findIndex((yAxis) => yAxis.find((ch2) => channel === ch2)) +
+        1
+      }`;
+
+export const baseChartSettings = {
+  style: {
+    width: "100%",
+  },
+  useResizeHandler: true,
+};
 
 const range = (start: number, stop: number, step: number = 1) => {
   let result = [];
@@ -12,14 +104,14 @@ const range = (start: number, stop: number, step: number = 1) => {
   return result;
 };
 
-export function discreteJetColorsCalculator(min: number, max: number) {
+export function discreteJetColorsCalculator(min: Datum, max: Datum) {
   // cache the last result
   let prevNColorBins: number | null = null;
   let prevResult: DiscreteColorBins | null = null;
 
   type DiscreteColorBins = {
-    start: number;
-    stop: number;
+    start: Datum;
+    stop: Datum;
     color: string;
   }[];
 
@@ -68,27 +160,47 @@ export function discreteJetColorsCalculator(min: number, max: number) {
   };
 }
 
-export function useGroupByColorBins(
-  { channels }: QmsData,
-  { nColourBins, colourAxis }: DiscretelyColourScaled
+export function useCrossfilteredDataColourBinned(
+  data: QmsData,
+  { nColourBins, colourAxis, yAxis }: DiscretelyColourScaled & WithYAxis,
+  filter: Crossfilter
 ) {
-  const channel = channels[colourAxis] as Channel;
-  const discreteJetColors = useMemo(
-    () => discreteJetColorsCalculator(...channel.minMax),
-    [channel]
+  const hydrated = useHydratedChannels(
+    data,
+    useMemo(() => [colourAxis], [colourAxis])
   );
 
-  return {
-    discreteJetColors,
-    groupBy: useMemo(
-      () => ({
-        channel,
-        grouper: (val: Datum) =>
-          discreteJetColors(nColourBins).findIndex(
-            ({ start, stop }) => val >= start && val <= stop
-          ),
-      }),
-      [nColourBins, discreteJetColors, channel]
-    ),
-  };
+  const discreteJetColors = useMemo(
+    () =>
+      hydrated ? discreteJetColorsCalculator(...hydrated[0].minMax) : null,
+    [hydrated]
+  );
+
+  const groupBy = useMemo(
+    () =>
+      hydrated && discreteJetColors
+        ? {
+            channel: hydrated[0],
+            grouper: (val: Datum) =>
+              discreteJetColors(nColourBins).findIndex(
+                ({ start, stop }) => val >= start && val <= stop
+              ),
+          }
+        : undefined,
+    [nColourBins, discreteJetColors, hydrated]
+  );
+
+  const filtered = useCrossfilteredData(
+    data,
+    useMemo(() => [yAxis], [yAxis]),
+    filter,
+    groupBy!
+  );
+
+  return filtered && discreteJetColors
+    ? {
+        discreteJetColors,
+        filtered,
+      }
+    : null;
 }

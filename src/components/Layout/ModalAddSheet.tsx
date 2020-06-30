@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Modal, Input } from "antd";
 import { useState } from "react";
-import { QmsData } from "../../ts/qmsData";
+import { QmsData } from "../../ts/qmsData/types";
 import { PlusOutlined } from "@ant-design/icons";
 
 // Modal for user input to create sheet

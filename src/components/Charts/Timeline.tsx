@@ -2,27 +2,30 @@ import React, { useMemo } from "react";
 import { Spin } from "antd";
 import Plot from "react-plotly.js";
 
-import { GROUND_SPEED_CH_IDX } from "../ts/chart/defaults";
-import { QmsData, useHydratedChannels, CrossFilter } from "../ts/qmsData";
-import { StateHook } from "../ts/hooks";
-import { anyChangeInRange, baseChartSettings } from "../ts/chart/helpers";
+import { QmsData } from "../../ts/qmsData/types";
+import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
+import { GROUND_SPEED_CH_IDX } from "../../ts/qmsData/constants";
+import { StateHook } from "../../ts/hooks";
+import { anyChangeInRange, baseChartSettings } from "./_helpers";
 import styles from "./Timeline.module.scss";
+import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
 
 export default function Timeline({
   data,
   filterState: [filter, setFilter],
 }: {
   data: QmsData;
-  filterState: StateHook<CrossFilter>;
+  filterState: StateHook<Crossfilter>;
 }) {
   const hydrated = useHydratedChannels(
     data,
-    useMemo(() => [GROUND_SPEED_CH_IDX], [])
+    useMemo(() => [data.channels[GROUND_SPEED_CH_IDX]], [data])
   );
 
   if (!hydrated) {
     return <Spin />;
   }
+
   const [groundSpeedChannel] = hydrated;
 
   // prepare the data for the linechart

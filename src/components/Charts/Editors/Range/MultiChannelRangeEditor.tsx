@@ -1,12 +1,16 @@
 import React from "react";
 import { Form, Select, Button } from "antd";
 import { EditorProps } from "../BaseChartEditor";
-import { Channel } from "../../../../ts/qmsData";
-import { MultiChannel } from "../../../../ts/chart/types";
+import { ChannelHeader, ChannelIdx } from "../../../../ts/qmsData/types";
 import { channelOptionAttrs } from "./_helpers";
 import { DeleteOutlined } from "@ant-design/icons";
 
 import styles from "./MultiChannelRangeEditor.module.scss";
+
+export type MultiChannel = {
+  rangeType: "MultiChannel";
+  yAxes: ChannelHeader[][];
+};
 
 export default function MultiChannelChartEditor({
   data,
@@ -24,16 +28,14 @@ export default function MultiChannelChartEditor({
               mode="multiple"
               className="select-channels"
               optionFilterProp="children"
-              value={yAxis}
-              onChange={(channelIdxs: MultiChannel["yAxes"][0]) => {
-                spec.yAxes[idx] = channelIdxs;
+              value={yAxis.map(({ idx }) => idx)}
+              onChange={(channelIdxs: ChannelIdx[]) => {
+                spec.yAxes[idx] = channelIdxs.map((idx) => data.channels[idx]);
                 setSpec({ ...spec });
               }}
             >
               {data.channels.map((channel, idx) => (
-                <Select.Option
-                  {...channelOptionAttrs(channel as Channel, idx)}
-                />
+                <Select.Option {...channelOptionAttrs(channel, idx)} />
               ))}
             </Select>
             {idx > 0 ? (
