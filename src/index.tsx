@@ -6,16 +6,16 @@ import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { Layout } from "antd";
 
-import AnalysisPage from "./pages/AnalysisPage";
-import LoginPage from "./pages/LoginPage";
-import ConfigPage from "./pages/ConfigPage";
-import GuestPage from "./pages/GuestPage";
-import HomePage from "./pages/HomePage";
-import RegisterPage from "./pages/RegisterPage";
-import SimulationPage from "./pages/SimulationPage";
-import TelemetryPage from "./pages/TelemetryPage";
-import Header from "./components/Layout/HeaderBar";
-import SideBar from "./components/Layout/SideBar/SideBar";
+import AnalysisPage from "pages/AnalysisPage";
+import LoginPage from "pages/LoginPage";
+import ConfigPage from "pages/ConfigPage";
+import GuestPage from "pages/GuestPage";
+import HomePage from "pages/HomePage";
+import RegisterPage from "pages/RegisterPage";
+import SimulationPage from "pages/SimulationPage";
+import TelemetryPage from "pages/TelemetryPage";
+import Header from "components/Layout/HeaderBar";
+import SideBar from "components/Layout/SideBar/SideBar";
 
 function MenuWrapper({ children }: React.Props<null>) {
   return (

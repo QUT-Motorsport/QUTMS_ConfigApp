@@ -1,9 +1,9 @@
 import React from "react";
 import { ComponentProps } from "react";
-import { LineChartSpec } from "../ts/chart/types";
-import { GROUND_SPEED_CH_IDX } from "../ts/chart/defaults";
+import { LineChartSpec } from "ts/chart/types";
+import { GROUND_SPEED_CH_IDX } from "ts/chart/defaults";
 
-import LineChart from "../components/Charts/LineChart";
+import LineChart from "components/Charts/LineChart";
 
 import styles from "./Timeline.module.scss";
 
