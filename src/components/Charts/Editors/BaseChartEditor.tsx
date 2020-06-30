@@ -1,23 +1,33 @@
 import React from "react";
 import { Form, Radio, Input } from "antd";
 
-import { QmsData } from "../../../ts/qmsData";
+import { QmsData } from "../../../ts/qmsData/types";
+import {
+  THROTTLE_POS_CH_IDX,
+  GROUND_SPEED_CH_IDX,
+  WHEEL_SLIP_CH_IDX,
+} from "../../../ts/qmsData/constants";
 import { AnyChartSpec } from "../AnyChart";
 import { StateHook } from "../../../ts/hooks";
-import {
-  DEFAULT_RANGE_TYPES,
-  DEFAULT_CHARTS,
-} from "../../../ts/chart/defaults";
+
+import { TrackMapChartSpec } from "../TrackMapChart";
+import { LineChartSpec } from "../LineChart";
 
 import TrackMap from "./Domain/TrackMapDomainEditor";
 import Line from "./Domain/LineDomainEditor";
 import Scatter from "./Domain/ScatterDomainEditor";
 import Histogram from "./Domain/HistogramDomainEditor";
 
-import ColourScaled from "./Range/ColorScaledRangeEditor";
-import MultiChannel from "./Range/MultiChannelRangeEditor";
+import ColourScaledEditor, {
+  ContinuouslyColourScaled,
+} from "./Range/ColorScaledRangeEditor";
+import MultiChannelEditor, {
+  MultiChannel,
+} from "./Range/MultiChannelRangeEditor";
 
 import styles from "./BaseChartEditor.module.scss";
+import { ScatterChartSpec } from "../ScatterChart";
+import { HistogramChartSpec } from "../HistogramChart";
 
 export type EditorProps<SpecType> = {
   data: QmsData;
@@ -29,6 +39,24 @@ export default function BaseChartEditor({
   specState,
 }: EditorProps<AnyChartSpec>) {
   const [chartSpec, setChartSpec] = specState;
+  const channels = data.channels;
+
+  const defaultRanges: {
+    ColourScaled: ContinuouslyColourScaled;
+    MultiChannel: MultiChannel;
+  } = {
+    ColourScaled: {
+      rangeType: "ColourScaled",
+      colourAxis: channels[THROTTLE_POS_CH_IDX],
+    },
+
+    MultiChannel: {
+      rangeType: "MultiChannel",
+      yAxes: [[channels[GROUND_SPEED_CH_IDX]]],
+    },
+  };
+
+  const defaultCharts = getDefaultCharts(data);
 
   return (
     <div className={styles.baseEditor}>
@@ -56,13 +84,11 @@ export default function BaseChartEditor({
             onChange={(e) => {
               setChartSpec({
                 ...chartSpec,
-                ...DEFAULT_CHARTS[
-                  e.target.value as keyof typeof DEFAULT_CHARTS
-                ],
+                ...defaultCharts[e.target.value as keyof typeof defaultCharts],
               });
             }}
           >
-            {Object.keys(DEFAULT_CHARTS).map((domainType, idx) => (
+            {Object.keys(defaultCharts).map((domainType, idx) => (
               <Radio key={idx} value={domainType}>
                 {domainType}
               </Radio>
@@ -84,13 +110,13 @@ export default function BaseChartEditor({
               onChange={(e) => {
                 setChartSpec({
                   ...chartSpec,
-                  ...DEFAULT_RANGE_TYPES[
-                    e.target.value as keyof typeof DEFAULT_RANGE_TYPES
+                  ...defaultRanges[
+                    e.target.value as keyof typeof defaultRanges
                   ],
                 } as AnyChartSpec);
               }}
             >
-              {Object.keys(DEFAULT_RANGE_TYPES).map((rangeType, idx) => (
+              {Object.keys(defaultRanges).map((rangeType, idx) => (
                 <Radio key={idx} value={rangeType}>
                   {rangeType}
                 </Radio>
@@ -100,11 +126,62 @@ export default function BaseChartEditor({
         )}
 
         {/* Display the specific range editor */}
-        {{ ColourScaled, MultiChannel }[chartSpec.rangeType]({
+        {{ ColourScaled: ColourScaledEditor, MultiChannel: MultiChannelEditor }[
+          chartSpec.rangeType
+        ]({
           data,
           specState: specState as any,
         })}
       </Form>
     </div>
   );
+}
+
+export function getDefaultCharts({
+  channels,
+}: QmsData): {
+  Line: LineChartSpec;
+  Scatter: ScatterChartSpec;
+  Histogram: HistogramChartSpec;
+  TrackMap: TrackMapChartSpec;
+} {
+  return {
+    Line: {
+      title: "Line Chart",
+      domainType: "Line",
+      xAxis: "Time",
+      rangeType: "MultiChannel",
+      yAxes: [[channels[GROUND_SPEED_CH_IDX]], [channels[WHEEL_SLIP_CH_IDX]]],
+    },
+
+    Scatter: {
+      title: "Scatter Chart",
+      domainType: "Scatter",
+      showTrendline: false,
+      xAxis: channels[GROUND_SPEED_CH_IDX],
+      rangeType: "ColourScaled",
+      colourAxis: channels[THROTTLE_POS_CH_IDX],
+      yAxis: channels[WHEEL_SLIP_CH_IDX],
+    },
+
+    Histogram: {
+      title: "Histogram chart",
+      domainType: "Histogram",
+      nBins: 7,
+      rangeType: "MultiChannel",
+      yAxes: [[channels[GROUND_SPEED_CH_IDX]], [channels[WHEEL_SLIP_CH_IDX]]],
+    },
+
+    TrackMap: {
+      title: "Track Map",
+      domainType: "TrackMap",
+      map: {
+        inner: null as any,
+        outer: null as any,
+      }, // TODO: populate with real data
+      segments: 100,
+      rangeType: "ColourScaled",
+      colourAxis: channels[THROTTLE_POS_CH_IDX],
+    },
+  };
 }

@@ -1,10 +1,11 @@
 import React from "react";
-import { QmsData, Range, CrossFilter } from "../../ts/qmsData";
+import { QmsData, Range } from "../../ts/qmsData/types";
+import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
 
 import HistogramChart, { HistogramChartSpec } from "./HistogramChart";
 import LineChart, { LineChartSpec } from "./LineChart";
 import ScatterChart, { ScatterChartSpec } from "./ScatterChart";
-import TrackMapChart, { TrackMapSpec } from "./TrackMapChart";
+import TrackMapChart, { TrackMapChartSpec } from "./TrackMapChart";
 import { StateHook } from "../../ts/hooks";
 
 export type ChartRange = Range | undefined;
@@ -14,10 +15,10 @@ export type ChartSpec = {
 };
 
 export type AnyChartSpec =
-  | TrackMapSpec
   | LineChartSpec
   | ScatterChartSpec
-  | HistogramChartSpec;
+  | HistogramChartSpec
+  | TrackMapChartSpec;
 
 export default function AnyChart({
   spec,
@@ -25,7 +26,7 @@ export default function AnyChart({
 }: {
   data: QmsData;
   spec: AnyChartSpec;
-  filterState: StateHook<CrossFilter>;
+  filterState: StateHook<Crossfilter>;
 }) {
   return spec.domainType === "Line" ? (
     <LineChart spec={spec} {...rest} />

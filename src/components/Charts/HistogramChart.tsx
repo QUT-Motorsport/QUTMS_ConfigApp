@@ -1,14 +1,10 @@
 import Unimplemented from "./Unimplemented";
 import { ChartSpec } from "./AnyChart";
-import { RangeTypesWithYAxis } from "../../ts/chart/types";
+import { HistogramChartDomain } from "./Editors/Domain/HistogramDomainEditor";
+import { MultiChannel } from "./Editors/Range/MultiChannelRangeEditor";
 
-export type HistogramChartDomain = {
-  domainType: "Histogram";
-  nBins: number;
-};
-
-export type HistogramChartSpec = HistogramChartDomain &
-  RangeTypesWithYAxis &
-  ChartSpec;
+export type HistogramChartSpec = ChartSpec &
+  HistogramChartDomain &
+  MultiChannel;
 
 export default Unimplemented("Chart/Histogram");

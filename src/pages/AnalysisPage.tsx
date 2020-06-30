@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Modal, Spin, Avatar } from "antd";
-import { useState } from "react";
+
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import { AnyChartSpec } from "../components/Charts/AnyChart";
-import { QmsData, useQmsData, useCrossfilterState } from "../ts/qmsData";
-import { DEFAULT_LINE_CHART } from "../ts/chart/defaults";
+import { QmsData } from "../ts/qmsData/types";
+import { Crossfilter } from "../ts/qmsData/crossfilter/types";
+import useQmsData from "../ts/qmsData/useQmsData";
 import { SettingOutlined } from "@ant-design/icons";
 
-import Timeline from "../components/Timeline";
-import BaseChartEditor from "../components/Charts/Editors/BaseChartEditor";
+import Timeline from "../components/Charts/Timeline";
+import BaseChartEditor, {
+  getDefaultCharts,
+} from "../components/Charts/Editors/BaseChartEditor";
 
 import BaseChart from "../components/Charts/AnyChart";
 import { useTitle } from "./_helpers";
@@ -23,7 +26,10 @@ function AddChartModal({
   data: QmsData;
 }) {
   const [visible, setVisible] = useState<boolean>(false);
-  const [chartSpec, setChartSpec] = useState<AnyChartSpec>(DEFAULT_LINE_CHART);
+
+  const defaultLineChart = getDefaultCharts(data)["Line"];
+
+  const [chartSpec, setChartSpec] = useState<AnyChartSpec>(defaultLineChart);
 
   return (
     <div className={styles.addChartModal}>
@@ -37,7 +43,7 @@ function AddChartModal({
         width={800}
         onOk={() => {
           onAddChartSpec(chartSpec);
-          setChartSpec(DEFAULT_LINE_CHART);
+          setChartSpec(defaultLineChart);
           setVisible(false);
         }} // use this to handle add component
         onCancel={() => setVisible(false)}
@@ -115,4 +121,10 @@ export default function AnalysisPage() {
   ) : (
     <Spin />
   );
+}
+
+function useCrossfilterState() {
+  return useState<Crossfilter>({
+    byChannels: new Map(),
+  });
 }

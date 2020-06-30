@@ -11,6 +11,7 @@ import styles from "./loginRegister.module.scss";
 
 export default function LoginPage() {
   useTitle("QUTMS");
+
   return (
     <>
       <div

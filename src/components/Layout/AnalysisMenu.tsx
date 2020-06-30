@@ -2,7 +2,7 @@ import React from "react";
 import SubMenu from "antd/lib/menu/SubMenu";
 import { Menu, Popconfirm, message, Layout } from "antd";
 import { useState } from "react";
-import { QmsData } from "../../ts/qmsData";
+import { QmsData } from "../../ts/qmsData/types";
 import ModalCreateGroup from "./ModalCreateGroup";
 import ModalAddSheet from "./ModalAddSheet";
 import {

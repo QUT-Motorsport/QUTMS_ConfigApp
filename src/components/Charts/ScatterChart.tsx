@@ -4,14 +4,13 @@ import { useMemo } from "react";
 import { Spin } from "antd";
 import iterate from "iterare";
 
+import { ScatterChartDomain } from "./Editors/Domain/ScatterDomainEditor";
+import { MultiChannel } from "./Editors/Range/MultiChannelRangeEditor";
 import {
-  ChannelIdx,
-  RangeTypesWithYAxis,
   DiscretelyColourScaled,
   WithYAxis,
-  MultiChannel,
   ContinuouslyColourScaled,
-} from "../../ts/chart/types";
+} from "./Editors/Range/ColorScaledRangeEditor";
 import { StateHook } from "../../ts/hooks";
 import {
   spec2ChannelIdxs,
@@ -20,69 +19,61 @@ import {
   yAxisName,
   axisTitle,
   baseChartSettings,
-} from "../../ts/chart/helpers";
-import {
-  QmsData,
-  useCrossfilteredData,
-  Channel,
-  getChannels,
-  CrossFilter,
-} from "../../ts/qmsData";
-import { useGroupByColorBins } from "./_helpers";
+} from "./_helpers";
+import { QmsData, ChannelHeader } from "../../ts/qmsData/types";
+import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
+import useCrossfilteredData from "../../ts/qmsData/crossfilter/useCrossfilteredData";
+import { useCrossfilteredDataColourBinned } from "./_helpers";
 import { ChartSpec, ChartRange } from "./AnyChart";
-
-export type ScatterChartDomain = {
-  domainType: "Scatter";
-  xAxis: ChannelIdx;
-  showTrendline: Boolean;
-};
 
 export type ScatterChartSpec = ChartSpec &
   ScatterChartDomain &
-  RangeTypesWithYAxis;
+  (
+    | MultiChannel
+    | ((ContinuouslyColourScaled | DiscretelyColourScaled) & WithYAxis)
+  );
 
-// function scatterChartSettings() {
-//   return {
-//     ...baseChartSettings,
-//   };
-// }
+export default function ScatterChart({
+  spec,
+  ...rest
+}: {
+  spec: ScatterChartSpec;
+  data: QmsData;
+  filterState: StateHook<Crossfilter>;
+}) {
+  return "nColourBins" in spec ? (
+    <DiscreteColourScaleScatterChart spec={spec} {...rest} />
+  ) : spec.rangeType === "MultiChannel" ? (
+    <MultiChannelScatterChart spec={spec} {...rest} />
+  ) : (
+    <ContinuousColourScaleScatterChart spec={spec} {...rest} />
+  );
+}
 
 function MultiChannelScatterChart({
   spec,
   data,
-  filterState: [filter, setFilter],
+  filterState,
 }: {
   spec: ChartSpec & ScatterChartDomain & MultiChannel;
   data: QmsData;
-  filterState: StateHook<CrossFilter>;
+  filterState: StateHook<Crossfilter>;
 }) {
+  const [filter] = filterState;
   const crossfilterData = useCrossfilteredData(
     data,
     useMemo(() => spec2ChannelIdxs(spec), [spec]),
     filter
   );
+  const defaults = plotDataDefaults(spec);
 
   if (crossfilterData) {
-    const defaults = (yChannel: Channel) => ({
-      type: "scattergl" as any,
-      mode: "markers" as any,
-      name: yChannel.name,
-      yaxis: yAxisName(yChannel.idx)(spec),
-    });
-
-    const [xChannel, yRangeChannel] = getChannels(data, [
-      spec.xAxis,
-      spec.yAxes[0][0],
-    ]);
-    const xRange = filter.byChannels.get(xChannel);
-    const yRange = filter.byChannels.get(yRangeChannel);
-
     return (
       <Plot
-        {...baseChartSettings}
-        data={getChannels(data, spec.yAxes.flat()).map((yChannel) => ({
-          ...defaults(yChannel),
-          x: crossfilterData.channels.get(xChannel),
+        {...scatterChartSettings(spec, filterState)}
+        data={spec.yAxes.flat().map((yChannel) => ({
+          ...defaults,
+          x: crossfilterData.channels.get(spec.xAxis),
           y: crossfilterData.channels.get(yChannel),
           // TODO: properly support multiple y axes here
           name: yChannel.name,
@@ -90,40 +81,6 @@ function MultiChannelScatterChart({
             symbol: "circle-open",
           },
         }))}
-        layout={{
-          title: spec.title,
-          autosize: true,
-          ...yAxesLayout(
-            yRange,
-            data.channels[spec.yAxes[0][0]] as Channel,
-            spec
-          ),
-          xaxis: {
-            title: axisTitle(getChannels(data, [spec.xAxis])[0]),
-            range: filter.byChannels.get(xChannel),
-          },
-          hovermode: "closest",
-        }}
-        onUpdate={getUpdateHandler(xRange, yRange, (newXRange, newYRange) => {
-          function updateShowFilters(channel: Channel, newRange: ChartRange) {
-            if (newRange) {
-              filter.byChannels.set(channel, newRange);
-            } else {
-              filter.byChannels.delete(channel);
-            }
-          }
-          updateShowFilters(xChannel, newXRange);
-          updateShowFilters(yRangeChannel, newYRange);
-          if (newXRange) {
-          }
-          filter.byTime = newXRange;
-          if (newYRange) {
-            filter.byChannels.set(yRangeChannel, newYRange);
-          } else {
-            filter.byChannels.delete(yRangeChannel);
-          }
-          setFilter({ ...filter });
-        })}
       />
     );
   } else {
@@ -134,12 +91,13 @@ function MultiChannelScatterChart({
 function ContinuousColourScaleScatterChart({
   spec,
   data,
-  filterState: [filter, setFilter],
+  filterState,
 }: {
   spec: ChartSpec & ScatterChartDomain & ContinuouslyColourScaled & WithYAxis;
   data: QmsData;
-  filterState: StateHook<CrossFilter>;
+  filterState: StateHook<Crossfilter>;
 }) {
+  const [filter] = filterState;
   const crossfilterData = useCrossfilteredData(
     data,
     useMemo(() => spec2ChannelIdxs(spec), [spec]),
@@ -147,73 +105,28 @@ function ContinuousColourScaleScatterChart({
   );
 
   if (crossfilterData) {
-    const defaults = (yChannel: Channel) => ({
-      type: "scattergl" as any,
-      mode: "markers" as any,
-      name: yChannel.name,
-      yaxis: yAxisName(yChannel.idx)(spec),
-    });
-
-    const [xChannel, yChannel, colorChannel] = getChannels(data, [
-      spec.xAxis,
-      spec.yAxis,
-      spec.colourAxis,
-    ]);
-    const xRange = filter.byChannels.get(xChannel);
-    const yRange = filter.byChannels.get(yChannel);
-
     return (
       <Plot
-        {...baseChartSettings}
+        {...scatterChartSettings(spec, filterState)}
         data={[
           {
-            ...defaults(yChannel),
-            x: crossfilterData.channels.get(xChannel),
-            y: crossfilterData.channels.get(yChannel),
+            ...plotDataDefaults(spec),
+            x: crossfilterData.channels.get(spec.xAxis),
+            y: crossfilterData.channels.get(spec.yAxis),
 
             marker: {
               symbol: "circle-open",
-              color: crossfilterData.channels.get(colorChannel),
+              color: crossfilterData.channels.get(spec.colourAxis),
               colorscale: "Jet",
               colorbar: {
                 title: {
-                  text: axisTitle(colorChannel),
+                  text: axisTitle(spec.colourAxis),
                   side: "right",
-                } as any,
+                } as any, // the types provided by plotly are incorrect here
               },
             },
           },
         ]}
-        layout={{
-          title: spec.title,
-          autosize: true,
-          ...yAxesLayout(yRange, data.channels[spec.yAxis] as Channel, spec),
-          xaxis: {
-            title: axisTitle(getChannels(data, [spec.xAxis])[0]),
-            range: filter.byChannels.get(xChannel),
-          },
-          hovermode: "closest",
-        }}
-        onUpdate={getUpdateHandler(xRange, yRange, (newXRange, newYRange) => {
-          function updateShowFilter(channel: Channel, newRange: ChartRange) {
-            if (newRange) {
-              filter.byChannels.set(channel, newRange);
-            } else {
-              filter.byChannels.delete(channel);
-            }
-          }
-          updateShowFilter(xChannel, newXRange);
-          updateShowFilter(yChannel, newYRange);
-          if (newXRange) {
-          }
-          filter.byTime = newXRange;
-          if (newYRange) {
-            filter.byChannels.set(yChannel, newYRange);
-          } else {
-            filter.byChannels.delete(yChannel);
-          }
-          setFilter({ ...filter });
-        })}
       />
     );
   } else {
@@ -224,43 +137,26 @@ function ContinuousColourScaleScatterChart({
 function DiscreteColourScaleScatterChart({
   spec,
   data,
-  filterState: [filter, setFilter],
+  filterState,
 }: {
   spec: ChartSpec & ScatterChartDomain & DiscretelyColourScaled & WithYAxis;
   data: QmsData;
-  filterState: StateHook<CrossFilter>;
+  filterState: StateHook<Crossfilter>;
 }) {
   // jet colour interpolator with internal cache
-  const { discreteJetColors, groupBy } = useGroupByColorBins(data, spec);
-
-  const crossfilterData = useCrossfilteredData(
-    data,
-    useMemo(() => spec2ChannelIdxs(spec), [spec]),
-    filter,
-    groupBy
-  );
+  const [filter] = filterState;
+  const crossfilterData = useCrossfilteredDataColourBinned(data, spec, filter);
 
   if (crossfilterData) {
-    const defaults = (yChannel: Channel) => ({
-      type: "scattergl" as any,
-      mode: "markers" as any,
-      name: yChannel.name,
-      yaxis: yAxisName(yChannel.idx)(spec),
-    });
+    const { filtered, discreteJetColors } = crossfilterData;
 
-    const [xChannel, yRangeChannel] = getChannels(data, [
-      spec.xAxis,
-      spec.yAxis,
-    ]);
-    const xRange = filter.byChannels.get(xChannel);
-    const yRange = filter.byChannels.get(yRangeChannel);
+    const defaults = plotDataDefaults(spec);
 
     return (
       <Plot
-        {...baseChartSettings}
-        data={iterate(crossfilterData.groups)
+        {...scatterChartSettings(spec, filterState)}
+        data={iterate(filtered.groups)
           .map(([groupIdx, channelGroup]) => {
-            const [yChannel] = getChannels(data, [spec.yAxis]);
             // repeat calls to this are cached
 
             const { stop, color } = discreteJetColors(spec.nColourBins!)[
@@ -268,45 +164,15 @@ function DiscreteColourScaleScatterChart({
             ];
 
             return {
-              ...defaults(yChannel),
-              x: channelGroup.channels.get(xChannel),
-              y: channelGroup.channels.get(yChannel),
+              ...defaults,
+              x: channelGroup.channels.get(spec.xAxis),
+              y: channelGroup.channels.get(spec.yAxis),
               name: `<= ${stop.toPrecision(3)}`,
               marker: { color, symbol: "circle-open" },
             };
           })
           .toArray()
           .reverse()}
-        layout={{
-          title: spec.title,
-          autosize: true,
-          ...yAxesLayout(yRange, data.channels[spec.yAxis] as Channel, spec),
-          xaxis: {
-            title: axisTitle(getChannels(data, [spec.xAxis])[0]),
-            range: filter.byChannels.get(xChannel),
-          },
-          hovermode: "closest",
-        }}
-        onUpdate={getUpdateHandler(xRange, yRange, (newXRange, newYRange) => {
-          function updateShowFilters(channel: Channel, newRange: ChartRange) {
-            if (newRange) {
-              filter.byChannels.set(channel, newRange);
-            } else {
-              filter.byChannels.delete(channel);
-            }
-          }
-          updateShowFilters(xChannel, newXRange);
-          updateShowFilters(yRangeChannel, newYRange);
-          if (newXRange) {
-          }
-          filter.byTime = newXRange;
-          if (newYRange) {
-            filter.byChannels.set(yRangeChannel, newYRange);
-          } else {
-            filter.byChannels.delete(yRangeChannel);
-          }
-          setFilter({ ...filter });
-        })}
       />
     );
   } else {
@@ -314,19 +180,50 @@ function DiscreteColourScaleScatterChart({
   }
 }
 
-export default function ScatterChart({
-  spec,
-  ...rest
-}: {
-  spec: ScatterChartSpec;
-  data: QmsData;
-  filterState: StateHook<CrossFilter>;
-}) {
-  return "nColourBins" in spec ? (
-    <DiscreteColourScaleScatterChart spec={spec} {...rest} />
-  ) : spec.rangeType === "MultiChannel" ? (
-    <MultiChannelScatterChart spec={spec} {...rest} />
-  ) : (
-    <ContinuousColourScaleScatterChart spec={spec} {...rest} />
-  );
+function scatterChartSettings(
+  spec: ScatterChartSpec,
+  [filter, setFilter]: StateHook<Crossfilter>
+) {
+  const xRange = filter.byChannels.get(spec.xAxis);
+  // TODO: Support yaxes properly here
+  const yChannel = "yAxis" in spec ? spec.yAxis : spec.yAxes[0][0];
+  const yRange = filter.byChannels.get(yChannel);
+
+  return {
+    ...baseChartSettings,
+    layout: {
+      title: spec.title,
+      autosize: true,
+      ...yAxesLayout(yRange, yChannel, spec),
+      xaxis: {
+        title: axisTitle(spec.xAxis),
+        range: xRange,
+      },
+      hovermode: "closest" as "closest",
+    },
+    onUpdate: getUpdateHandler(xRange, yRange, (newXRange, newYRange) => {
+      function updateShowFilters(channel: ChannelHeader, newRange: ChartRange) {
+        if (newRange) {
+          filter.byChannels.set(channel, newRange);
+        } else {
+          filter.byChannels.delete(channel);
+        }
+      }
+      updateShowFilters(spec.xAxis, newXRange);
+      updateShowFilters(yChannel, newYRange);
+
+      setFilter({ ...filter });
+    }),
+  };
+}
+
+function plotDataDefaults(spec: ScatterChartSpec) {
+  const yChannel = "yAxis" in spec ? spec.yAxis : spec.yAxes[0][0];
+
+  return {
+    type: "scattergl" as any,
+    mode: "markers" as any,
+    name: yChannel.name,
+    yaxis: yAxisName(yChannel, spec),
+  };
 }

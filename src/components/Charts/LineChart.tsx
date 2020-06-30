@@ -5,34 +5,25 @@ import { useMemo } from "react";
 import { Spin } from "antd";
 import iterate from "iterare";
 
-import { useGroupByColorBins } from "./_helpers";
-
 import {
   spec2ChannelIdxs,
   getUpdateHandler,
   yAxesLayout,
   baseChartSettings,
+  useCrossfilteredDataColourBinned,
   yAxisName,
-} from "../../ts/chart/helpers";
-import {
-  QmsData,
-  useCrossfilteredData,
-  getChannels,
-  CrossFilter,
-  Channel,
-} from "../../ts/qmsData";
+} from "./_helpers";
+import { QmsData, ChannelHeader } from "../../ts/qmsData/types";
+import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
+import useCrossfilteredData from "../../ts/qmsData/crossfilter/useCrossfilteredData";
 import { StateHook } from "../../ts/hooks";
 import { ChartSpec } from "./AnyChart";
+import { LineChartDomain } from "./Editors/Domain/LineDomainEditor";
+import { MultiChannel } from "./Editors/Range/MultiChannelRangeEditor";
 import {
   DiscretelyColourScaled,
   WithYAxis,
-  MultiChannel,
-} from "../../ts/chart/types";
-
-export type LineChartDomain = {
-  domainType: "Line";
-  xAxis: "Time" | "Distance";
-};
+} from "./Editors/Range/ColorScaledRangeEditor";
 
 export type LineChartSpec = ChartSpec &
   LineChartDomain &
@@ -40,8 +31,8 @@ export type LineChartSpec = ChartSpec &
 
 function lineChartSettings(
   spec: LineChartSpec,
-  yRangeChannel: Channel,
-  [filter, setFilters]: StateHook<CrossFilter>
+  yRangeChannel: ChannelHeader,
+  [filter, setFilters]: StateHook<Crossfilter>
 ): Omit<PlotParams, "data"> {
   const yRange = filter.byChannels.get(yRangeChannel);
   return {
@@ -88,7 +79,7 @@ function lineChartSettings(
     ),
     onSelected: (selected) => {
       // TODO
-      // filters.show.byChannels!.set();
+      // filter.show.byChannels!.set();
       console.log(selected);
       // setSelected(selected?.range!.x as Range);
       // setSelected(selected?.range!.y as Range);
@@ -104,23 +95,18 @@ function DiscreteColourScaleLineChart({
 }: {
   spec: ChartSpec & LineChartDomain & DiscretelyColourScaled & WithYAxis;
   data: QmsData;
-  filterState: StateHook<CrossFilter>;
+  filterState: StateHook<Crossfilter>;
 }) {
-  const { discreteJetColors, groupBy } = useGroupByColorBins(data, spec);
-  const [filters] = filterState;
-  const crossfilterData = useCrossfilteredData(
-    data,
-    useMemo(() => spec2ChannelIdxs(spec), [spec]),
-    filters,
-    groupBy
-  );
+  const [filter] = filterState;
+  const crossfilterData = useCrossfilteredDataColourBinned(data, spec, filter);
 
-  const yRangeChannel = getChannels(data, [spec.yAxis])[0];
-
-  return crossfilterData ? (
-    <Plot
-      data={
-        iterate(crossfilterData.groups)
+  if (!crossfilterData) {
+    return <Spin />;
+  } else {
+    const { filtered, discreteJetColors } = crossfilterData;
+    return (
+      <Plot
+        data={iterate(filtered.groups)
           .map(([groupIdx, channelGroup]) => {
             // repeat calls to this are cached
             const { stop, color } = discreteJetColors(spec.nColourBins!)[
@@ -138,18 +124,18 @@ function DiscreteColourScaleLineChart({
                 return Math.round(coeff * num) / coeff;
               })() * 2; // mult by 2 because it takes 2 points to represent a line
 
-            const yChannelData = channelGroup.channels.get(yRangeChannel)!;
             let prevTime = channelGroup.time[0];
             const x = [];
             const y = [];
-            for (let idx = 0; idx < yChannelData.length; idx++) {
+            const data = channelGroup.channels.get(spec.yAxis)!;
+            for (let idx = 0; idx < data.length; idx++) {
               const time = channelGroup.time[idx];
               if (time - prevTime > maxPeriodBeforGap) {
                 x.push(time + maxPeriodBeforGap);
                 y.push(null); // this tells plotly to put a gap in
               }
               x.push(time);
-              y.push(yChannelData[idx]);
+              y.push(data[idx]);
               prevTime = time;
             }
 
@@ -162,13 +148,11 @@ function DiscreteColourScaleLineChart({
           })
           .filter((trace) => trace !== null)
           .toArray()
-          .reverse() as PlotData[]
-      }
-      {...lineChartSettings(spec, yRangeChannel, filterState)}
-    />
-  ) : (
-    <Spin />
-  );
+          .reverse()}
+        {...lineChartSettings(spec, spec.yAxis, filterState)}
+      />
+    );
+  }
 }
 
 function MultiChannelLineChart({
@@ -178,29 +162,27 @@ function MultiChannelLineChart({
 }: {
   spec: ChartSpec & LineChartDomain & MultiChannel;
   data: QmsData;
-  filterState: StateHook<CrossFilter>;
+  filterState: StateHook<Crossfilter>;
 }) {
-  const [filters] = filterState;
+  const [filter] = filterState;
   const crossfilterData = useCrossfilteredData(
     data,
     useMemo(() => spec2ChannelIdxs(spec), [spec]),
-    filters
+    filter
   );
-
-  const yRangeChannel = getChannels(data, [spec.yAxes[0][0]])[0];
 
   return crossfilterData ? (
     <Plot
       data={iterate(crossfilterData.channels)
-        .map(([{ name, idx }, data]) => ({
-          name,
+        .map(([channel, data]) => ({
+          name: channel.name,
           x: crossfilterData.time,
           y: data,
-          yaxis: yAxisName(idx)(spec),
+          yaxis: yAxisName(channel, spec),
           mode: "lines" as "lines", // smh sometimes typescript
         }))
         .toArray()}
-      {...lineChartSettings(spec, yRangeChannel, filterState)}
+      {...lineChartSettings(spec, spec.yAxes[0][0], filterState)}
     />
   ) : (
     <Spin />
@@ -213,7 +195,7 @@ export default function LineChart({
 }: {
   spec: LineChartSpec;
   data: QmsData;
-  filterState: StateHook<CrossFilter>;
+  filterState: StateHook<Crossfilter>;
 }) {
   return spec.rangeType === "MultiChannel" ? (
     <MultiChannelLineChart spec={spec} {...rest} />

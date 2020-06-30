@@ -3,18 +3,10 @@ import { ChartSpec } from "./AnyChart";
 import {
   DiscretelyColourScaled,
   ContinuouslyColourScaled,
-} from "../../ts/chart/types";
-import { Polygon } from "geojson";
+} from "./Editors/Range/ColorScaledRangeEditor";
+import { TrackMapChartDomain } from "./Editors/Domain/TrackMapDomainEditor";
 
-export type TrackMapChartDomain = {
-  domainType: "TrackMap";
-  map: {
-    inner: Polygon;
-    outer: Polygon;
-  };
-  segments: Number;
-};
-export type TrackMapSpec = ChartSpec &
+export type TrackMapChartSpec = ChartSpec &
   TrackMapChartDomain &
   (DiscretelyColourScaled | ContinuouslyColourScaled);
 
