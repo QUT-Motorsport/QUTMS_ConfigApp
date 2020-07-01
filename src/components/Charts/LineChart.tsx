@@ -1,6 +1,5 @@
 import React from "react";
 import Plot, { PlotParams } from "react-plotly.js";
-import { PlotData, Icons, ModeBarButton } from "plotly.js";
 import { useMemo } from "react";
 import { Spin } from "antd";
 import iterate from "iterare";
@@ -32,10 +31,12 @@ export type LineChartSpec = ChartSpec &
 function lineChartSettings(
   spec: LineChartSpec,
   yRangeChannel: ChannelHeader,
-  [filter, setFilters]: StateHook<Crossfilter>
+  filterState: StateHook<Crossfilter>
 ): Omit<PlotParams, "data"> {
+  const [filter] = filterState;
   const yRange = filter.byChannels.get(yRangeChannel);
   return {
+    ...baseChartSettings,
     layout: {
       title: spec.title,
       autosize: true,
@@ -47,44 +48,7 @@ function lineChartSettings(
         range: filter.byTime?.slice(),
       },
     },
-    config: {
-      modeBarButtons: [
-        ["select2d"],
-        ["zoom2d", "pan2d", "autoScale2d"],
-        [
-          {
-            name: "edit",
-            title: "Edit Chart",
-            icon: Icons["pencil"],
-            click: () => {
-              // TODO
-              throw Error("Chart editing not implemented yet!");
-            },
-          },
-        ],
-      ] as ModeBarButton[][],
-    },
-    onUpdate: getUpdateHandler(
-      filter.byTime,
-      yRange,
-      (newTimeRange, newYRange) => {
-        filter.byTime = newTimeRange;
-        if (newYRange) {
-          filter.byChannels.set(yRangeChannel, newYRange);
-        } else {
-          filter.byChannels.delete(yRangeChannel);
-        }
-        setFilters({ ...filter });
-      }
-    ),
-    onSelected: (selected) => {
-      // TODO
-      // filter.show.byChannels!.set();
-      console.log(selected);
-      // setSelected(selected?.range!.x as Range);
-      // setSelected(selected?.range!.y as Range);
-    },
-    ...baseChartSettings,
+    onUpdate: getUpdateHandler(filterState, "byTime", yRangeChannel),
   };
 }
 

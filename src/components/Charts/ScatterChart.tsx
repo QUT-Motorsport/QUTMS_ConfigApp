@@ -20,11 +20,11 @@ import {
   axisTitle,
   baseChartSettings,
 } from "./_helpers";
-import { QmsData, ChannelHeader } from "../../ts/qmsData/types";
+import { QmsData } from "../../ts/qmsData/types";
 import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
 import useCrossfilteredData from "../../ts/qmsData/crossfilter/useCrossfilteredData";
 import { useCrossfilteredDataColourBinned } from "./_helpers";
-import { ChartSpec, ChartRange } from "./AnyChart";
+import { ChartSpec } from "./AnyChart";
 
 export type ScatterChartSpec = ChartSpec &
   ScatterChartDomain &
@@ -182,8 +182,9 @@ function DiscreteColourScaleScatterChart({
 
 function scatterChartSettings(
   spec: ScatterChartSpec,
-  [filter, setFilter]: StateHook<Crossfilter>
+  filterState: StateHook<Crossfilter>
 ) {
+  const [filter] = filterState;
   const xRange = filter.byChannels.get(spec.xAxis);
   // TODO: Support yaxes properly here
   const yChannel = "yAxis" in spec ? spec.yAxis : spec.yAxes[0][0];
@@ -192,28 +193,16 @@ function scatterChartSettings(
   return {
     ...baseChartSettings,
     layout: {
+      ...yAxesLayout(yRange, yChannel, spec),
       title: spec.title,
       autosize: true,
-      ...yAxesLayout(yRange, yChannel, spec),
       xaxis: {
         title: axisTitle(spec.xAxis),
         range: xRange,
       },
       hovermode: "closest" as "closest",
     },
-    onUpdate: getUpdateHandler(xRange, yRange, (newXRange, newYRange) => {
-      function updateShowFilters(channel: ChannelHeader, newRange: ChartRange) {
-        if (newRange) {
-          filter.byChannels.set(channel, newRange);
-        } else {
-          filter.byChannels.delete(channel);
-        }
-      }
-      updateShowFilters(spec.xAxis, newXRange);
-      updateShowFilters(yChannel, newYRange);
-
-      setFilter({ ...filter });
-    }),
+    onUpdate: getUpdateHandler(filterState, spec.xAxis, yChannel),
   };
 }
 

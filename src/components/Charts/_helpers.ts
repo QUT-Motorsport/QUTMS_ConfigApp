@@ -8,10 +8,12 @@ import {
 } from "./Editors/Range/ColorScaledRangeEditor";
 
 import { AnyChartSpec, ChartRange } from "../../components/Charts/AnyChart";
-import { Layout } from "plotly.js";
+import { Layout, Icons, ModeBarButton } from "plotly.js";
 import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
 import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
 import useCrossfilteredData from "../../ts/qmsData/crossfilter/useCrossfilteredData";
+import { StateHook } from "../../ts/hooks";
+import { PlotParams } from "react-plotly.js";
 
 export const spec2ChannelIdxs = (spec: AnyChartSpec) =>
   spec.rangeType === "ColourScaled"
@@ -30,9 +32,9 @@ export function anyChangeInRange(old: ChartRange, new_: ChartRange) {
 }
 
 export const getUpdateHandler = (
-  xRange: ChartRange,
-  yRange: ChartRange,
-  setRanges: (xRange: ChartRange, yRange: ChartRange) => void
+  [filter, setFilter]: StateHook<Crossfilter>,
+  x: "byTime" | ChannelHeader,
+  y: ChannelHeader
 ) => (
   {
     layout: {
@@ -41,11 +43,31 @@ export const getUpdateHandler = (
     },
   }: any // react-plotly.js/Figure, with 100% defined xaxis and yaxis atts
 ) => {
+  const xRange = x === "byTime" ? filter.byTime : filter.byChannels.get(x);
+  const yRange = filter.byChannels.get(y);
+
   if (
-    anyChangeInRange(xRange, newXRange) ||
-    anyChangeInRange(yRange, newYRange)
+    anyChangeInRange(yRange, newYRange) ||
+    anyChangeInRange(xRange, newXRange)
   ) {
-    setRanges(newXRange, newYRange);
+    const updateChannelRange = (
+      channel: ChannelHeader,
+      newRange: ChartRange
+    ) => {
+      if (newRange) {
+        filter.byChannels.set(channel, newRange);
+      } else {
+        filter.byChannels.delete(channel);
+      }
+    };
+    if (x === "byTime") {
+      filter.byTime = newXRange;
+    } else {
+      updateChannelRange(x, newXRange);
+    }
+    updateChannelRange(y, newYRange);
+
+    setFilter({ ...filter });
   }
 };
 
@@ -89,11 +111,28 @@ export const yAxisName = (channel: ChannelHeader, spec: AnyChartSpec) =>
         1
       }`;
 
-export const baseChartSettings = {
+export const baseChartSettings: Partial<PlotParams> = {
   style: {
     width: "100%",
   },
   useResizeHandler: true,
+  config: {
+    modeBarButtons: [
+      ["select2d"],
+      ["zoom2d", "pan2d", "autoScale2d"],
+      [
+        {
+          name: "edit",
+          title: "Edit Chart",
+          icon: Icons["pencil"],
+          click: () => {
+            // TODO
+            throw Error("Chart editing not implemented yet!");
+          },
+        },
+      ],
+    ] as ModeBarButton[][],
+  },
 };
 
 const range = (start: number, stop: number, step: number = 1) => {
