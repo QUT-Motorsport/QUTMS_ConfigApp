@@ -27,6 +27,7 @@ export default function Timeline({
   }
 
   const [groundSpeedChannel] = hydrated;
+  const { filters } = filter;
 
   // prepare the data for the linechart
   const time = [];
@@ -43,7 +44,7 @@ export default function Timeline({
         data={[{ x: time, y: groundSpeedData }]}
         layout={{
           xaxis: {
-            range: filter.byTime,
+            range: filters.byTime,
             rangeslider: {
               range: [0, data.maxTime],
             },
@@ -56,8 +57,8 @@ export default function Timeline({
             },
           }: any // Figure, with 100% defined xaxis and yaxis atts
         ) => {
-          if (anyChangeInRange(filter.byTime, range)) {
-            filter.byTime = range;
+          if (anyChangeInRange(filters.byTime, range)) {
+            filters.byTime = range;
             setFilter({ ...filter });
           }
         }}

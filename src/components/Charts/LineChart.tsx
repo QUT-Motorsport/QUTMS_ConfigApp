@@ -33,8 +33,8 @@ function lineChartSettings(
   yRangeChannel: ChannelHeader,
   filterState: StateHook<Crossfilter>
 ): Omit<PlotParams, "data"> {
-  const [filter] = filterState;
-  const yRange = filter.byChannels.get(yRangeChannel);
+  const [{ filters }] = filterState;
+  const yRange = filters.byChannels.get(yRangeChannel);
   return {
     ...baseChartSettings,
     layout: {
@@ -45,7 +45,7 @@ function lineChartSettings(
 
       xaxis: {
         title: spec.xAxis === "Time" ? "Time (s)" : "Distance (m)",
-        range: filter.byTime?.slice(),
+        range: filters.byTime?.slice(),
       },
     },
     onUpdate: getUpdateHandler(filterState, "byTime", yRangeChannel),
@@ -61,8 +61,11 @@ function DiscreteColourScaleLineChart({
   data: QmsData;
   filterState: StateHook<Crossfilter>;
 }) {
-  const [filter] = filterState;
-  const crossfilterData = useCrossfilteredDataColourBinned(data, spec, filter);
+  const crossfilterData = useCrossfilteredDataColourBinned(
+    data,
+    spec,
+    filterState
+  );
 
   if (!crossfilterData) {
     return <Spin />;
@@ -128,11 +131,10 @@ function MultiChannelLineChart({
   data: QmsData;
   filterState: StateHook<Crossfilter>;
 }) {
-  const [filter] = filterState;
   const crossfilterData = useCrossfilteredData(
     data,
     useMemo(() => spec2ChannelIdxs(spec), [spec]),
-    filter
+    filterState
   );
 
   return crossfilterData ? (

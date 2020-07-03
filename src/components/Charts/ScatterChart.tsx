@@ -59,11 +59,10 @@ function MultiChannelScatterChart({
   data: QmsData;
   filterState: StateHook<Crossfilter>;
 }) {
-  const [filter] = filterState;
   const crossfilterData = useCrossfilteredData(
     data,
     useMemo(() => spec2ChannelIdxs(spec), [spec]),
-    filter
+    filterState
   );
   const defaults = plotDataDefaults(spec);
 
@@ -97,11 +96,10 @@ function ContinuousColourScaleScatterChart({
   data: QmsData;
   filterState: StateHook<Crossfilter>;
 }) {
-  const [filter] = filterState;
   const crossfilterData = useCrossfilteredData(
     data,
     useMemo(() => spec2ChannelIdxs(spec), [spec]),
-    filter
+    filterState
   );
 
   if (crossfilterData) {
@@ -144,8 +142,12 @@ function DiscreteColourScaleScatterChart({
   filterState: StateHook<Crossfilter>;
 }) {
   // jet colour interpolator with internal cache
-  const [filter] = filterState;
-  const crossfilterData = useCrossfilteredDataColourBinned(data, spec, filter);
+  console.log("scatterChartUpdating");
+  const crossfilterData = useCrossfilteredDataColourBinned(
+    data,
+    spec,
+    filterState
+  );
 
   if (crossfilterData) {
     const { filtered, discreteJetColors } = crossfilterData;
@@ -158,7 +160,6 @@ function DiscreteColourScaleScatterChart({
         data={iterate(filtered.groups)
           .map(([groupIdx, channelGroup]) => {
             // repeat calls to this are cached
-
             const { stop, color } = discreteJetColors(spec.nColourBins!)[
               groupIdx
             ];
@@ -184,11 +185,11 @@ function scatterChartSettings(
   spec: ScatterChartSpec,
   filterState: StateHook<Crossfilter>
 ) {
-  const [filter] = filterState;
-  const xRange = filter.byChannels.get(spec.xAxis);
+  const [{ filters }] = filterState;
+  const xRange = filters.byChannels.get(spec.xAxis);
   // TODO: Support yaxes properly here
   const yChannel = "yAxis" in spec ? spec.yAxis : spec.yAxes[0][0];
-  const yRange = filter.byChannels.get(yChannel);
+  const yRange = filters.byChannels.get(yChannel);
 
   return {
     ...baseChartSettings,

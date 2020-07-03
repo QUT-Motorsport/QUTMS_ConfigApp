@@ -1,5 +1,3 @@
-import { Source } from "./crossfilter/types";
-
 // object acts as both the file interface and a cache for channel data
 export type QmsData = {
   filename: string;
@@ -7,10 +5,6 @@ export type QmsData = {
   // totalTime: number;
   // lapTimes: number[];
   channels: (ChannelHeader | Channel)[]; // just the header if un-hydrated
-
-  // objects related to crossfiltering
-  // TODO: separate crossfilter into it's own state to support multiple indexes
-  crossfilter: null | Source;
 
   // Max time
   maxTime: null | Time;

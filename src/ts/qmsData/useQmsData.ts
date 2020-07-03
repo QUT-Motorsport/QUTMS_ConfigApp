@@ -15,7 +15,6 @@ export default function useQmsData(filename: string): QmsData | null {
         ...data,
         channels: data.channels,
         filename,
-        crossfilter: null,
       });
     });
   }, [filename]);

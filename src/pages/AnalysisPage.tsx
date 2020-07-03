@@ -4,7 +4,7 @@ import { Button, Modal, Spin, Avatar } from "antd";
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import { AnyChartSpec } from "../components/Charts/AnyChart";
 import { QmsData } from "../ts/qmsData/types";
-import { Crossfilter } from "../ts/qmsData/crossfilter/types";
+import useCrossfilterState from "../ts/qmsData/crossfilter/useCrossfilterState";
 import useQmsData from "../ts/qmsData/useQmsData";
 import { SettingOutlined } from "@ant-design/icons";
 
@@ -121,10 +121,4 @@ export default function AnalysisPage() {
   ) : (
     <Spin />
   );
-}
-
-function useCrossfilterState() {
-  return useState<Crossfilter>({
-    byChannels: new Map(),
-  });
 }

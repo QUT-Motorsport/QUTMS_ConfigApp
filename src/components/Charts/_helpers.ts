@@ -10,10 +10,14 @@ import {
 import { AnyChartSpec, ChartRange } from "../../components/Charts/AnyChart";
 import { Layout, Icons, ModeBarButton } from "plotly.js";
 import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
-import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
+import {
+  Crossfilter,
+  GroupedChannelGroups,
+} from "../../ts/qmsData/crossfilter/types";
 import useCrossfilteredData from "../../ts/qmsData/crossfilter/useCrossfilteredData";
 import { StateHook } from "../../ts/hooks";
 import { PlotParams } from "react-plotly.js";
+import { ScatterChartDomain } from "./Editors/Domain/ScatterDomainEditor";
 
 export const spec2ChannelIdxs = (spec: AnyChartSpec) =>
   spec.rangeType === "ColourScaled"
@@ -43,8 +47,9 @@ export const getUpdateHandler = (
     },
   }: any // react-plotly.js/Figure, with 100% defined xaxis and yaxis atts
 ) => {
-  const xRange = x === "byTime" ? filter.byTime : filter.byChannels.get(x);
-  const yRange = filter.byChannels.get(y);
+  const { filters } = filter;
+  const xRange = x === "byTime" ? filters.byTime : filters.byChannels.get(x);
+  const yRange = filters.byChannels.get(y);
 
   if (
     anyChangeInRange(yRange, newYRange) ||
@@ -55,13 +60,13 @@ export const getUpdateHandler = (
       newRange: ChartRange
     ) => {
       if (newRange) {
-        filter.byChannels.set(channel, newRange);
+        filters.byChannels.set(channel, newRange);
       } else {
-        filter.byChannels.delete(channel);
+        filters.byChannels.delete(channel);
       }
     };
     if (x === "byTime") {
-      filter.byTime = newXRange;
+      filters.byTime = newXRange;
     } else {
       updateChannelRange(x, newXRange);
     }
@@ -148,12 +153,6 @@ export function discreteJetColorsCalculator(min: Datum, max: Datum) {
   let prevNColorBins: number | null = null;
   let prevResult: DiscreteColorBins | null = null;
 
-  type DiscreteColorBins = {
-    start: Datum;
-    stop: Datum;
-    color: string;
-  }[];
-
   return (nColorBins: number): DiscreteColorBins => {
     if (prevNColorBins === nColorBins) {
       return prevResult!;
@@ -199,11 +198,33 @@ export function discreteJetColorsCalculator(min: Datum, max: Datum) {
   };
 }
 
+type DiscreteColorBins = {
+  start: Datum;
+  stop: Datum;
+  color: string;
+}[];
+
+// export function useCrossfilteredDataColourBinned(
+//   data: QmsData,s
+//   {
+//     nColourBins,
+//     colourAxis,
+//     yAxis,
+//     xAxis,
+//   }: DiscretelyColourScaled & WithYAxis & ScatterChartDomain,
+//   filterState: StateHook<Crossfilter>
+// ):
+
 export function useCrossfilteredDataColourBinned(
   data: QmsData,
-  { nColourBins, colourAxis, yAxis }: DiscretelyColourScaled & WithYAxis,
-  filter: Crossfilter
-) {
+  spec: DiscretelyColourScaled & WithYAxis & ({} | ScatterChartDomain),
+  filterState: StateHook<Crossfilter>
+): null | {
+  discreteJetColors: (nColorBins: number) => DiscreteColorBins;
+  filtered: GroupedChannelGroups;
+} {
+  const { nColourBins, colourAxis, yAxis } = spec;
+  const xAxis = "xAxis" in spec ? spec.xAxis : null;
   const hydrated = useHydratedChannels(
     data,
     useMemo(() => [colourAxis], [colourAxis])
@@ -231,8 +252,12 @@ export function useCrossfilteredDataColourBinned(
 
   const filtered = useCrossfilteredData(
     data,
-    useMemo(() => [yAxis], [yAxis]),
-    filter,
+    useMemo(() => [yAxis, colourAxis].concat(xAxis ? [xAxis] : []), [
+      yAxis,
+      colourAxis,
+      xAxis,
+    ]),
+    filterState,
     groupBy!
   );
 

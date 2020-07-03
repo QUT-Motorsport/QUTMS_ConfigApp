@@ -7,16 +7,16 @@ import { initMinMax, updateMinMax } from "./_helpers";
 // download and insert the data into the channels
 export default function useHydratedChannels(
   data: QmsData,
-  channels: ChannelHeader[]
+  required: ChannelHeader[]
 ) {
-  const { filename } = data;
   const [hydrated, setHydrated] = useState<Channel[] | null>(null);
 
   useEffect(() => {
+    const { filename, channels, maxTime } = data;
     Promise.all(
-      channels.map(async ({ idx }) => {
-        if (!("data" in data.channels[idx])) {
-          const channel = data.channels[idx] as Channel;
+      required.map(async ({ idx }) => {
+        if (!("data" in channels[idx])) {
+          const channel = channels[idx] as Channel;
           channel.data = await get(`qms/${filename}/${idx}`);
 
           channel.minMax = initMinMax();
@@ -25,14 +25,14 @@ export default function useHydratedChannels(
           }
 
           const channelFinishTime = channel.data.length / channel.freq;
-          if (!data.maxTime || channelFinishTime > data.maxTime) {
+          if (!maxTime || channelFinishTime > maxTime) {
             data.maxTime = channelFinishTime;
           }
         }
-        return data.channels[idx] as Channel;
+        return channels[idx] as Channel;
       })
     ).then(setHydrated);
-  }, [channels, data.maxTime, filename, data.channels]);
+  }, [required, data]);
 
   return hydrated;
 }
