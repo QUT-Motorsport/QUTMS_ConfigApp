@@ -21,7 +21,7 @@ const ColourScaledRangeEditor = ({
   data,
   specState: [spec, setSpec],
 }: EditorProps<
-  (DiscretelyColourScaled | ContinuouslyColourScaled) & (WithYAxis | never)
+  (DiscretelyColourScaled | ContinuouslyColourScaled) & (WithYAxis | {})
 >) => (
   <>
     {"yAxis" in spec ? ( // if a y axis can be chosen

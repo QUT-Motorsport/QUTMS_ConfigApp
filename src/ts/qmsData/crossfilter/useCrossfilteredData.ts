@@ -153,6 +153,7 @@ export default function useCrossfilteredData(
             // it's just a single group
             return createChannelGroup(index.allFiltered());
           } else {
+            // TODO: cache the crossfilter group in the Crossfilter object for performance gains
             if (!byChannels.has(groupBy.channel)) {
               byChannels.set(
                 groupBy.channel,
@@ -200,10 +201,6 @@ export default function useCrossfilteredData(
               ),
             };
           }
-
-          // we're done. clear all filters.
-          // byTime.filterAll();
-          // Object.values(byChannels).forEach(dimension => dimension.filterAll());
         } else {
           return {
             time: [],

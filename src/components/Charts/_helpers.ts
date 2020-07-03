@@ -204,17 +204,6 @@ type DiscreteColorBins = {
   color: string;
 }[];
 
-// export function useCrossfilteredDataColourBinned(
-//   data: QmsData,s
-//   {
-//     nColourBins,
-//     colourAxis,
-//     yAxis,
-//     xAxis,
-//   }: DiscretelyColourScaled & WithYAxis & ScatterChartDomain,
-//   filterState: StateHook<Crossfilter>
-// ):
-
 export function useCrossfilteredDataColourBinned(
   data: QmsData,
   spec: DiscretelyColourScaled & WithYAxis & ({} | ScatterChartDomain),
