@@ -115,7 +115,7 @@ You have to then open up a new terminal for the auto-activation t take effect.
 ### As website
 
 ```bash
-npm run dev
+npm start
 ```
 
 This is recommended over electron-app as it includes hot-module-reloading
@@ -125,7 +125,7 @@ This is recommended over electron-app as it includes hot-module-reloading
 ### As electron app
 
 ```bash
-npm run dev:electron
+npm start:electron
 ```
 
 <a name="editing-frontend"></a>
