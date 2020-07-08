@@ -12,6 +12,7 @@ dependencies:
   - pyserial==3.4
   - pyinstaller==3.6
   - sanic==19.6.3
+  - numpy==1.18.5
 
   - pylint==2.4.4 # for linting when you code
   - black==19.10b0 # for autoformatting (when you save)

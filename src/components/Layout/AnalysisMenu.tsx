@@ -2,8 +2,7 @@ import React from "react";
 import SubMenu from "antd/lib/menu/SubMenu";
 import { Menu, Popconfirm, message, Layout } from "antd";
 import { useState } from "react";
-import { StateHook } from "../../ts/hooks";
-import { QmsData } from "../../ts/qmsData";
+import { QmsData } from "../../ts/qmsData/types";
 import ModalCreateGroup from "./ModalCreateGroup";
 import ModalAddSheet from "./ModalAddSheet";
 import {
@@ -186,7 +185,7 @@ const AnalysisMenu = ({ data }: { data: QmsData }) => {
           </Menu.Item>
           {/* Houses the group add button/modal */}
           <Menu.Item>
-            <ModalCreateGroup data={data} onCreate={onCreate} />
+            <ModalCreateGroup onCreate={onCreate} />
           </Menu.Item>
         </Menu>
       </Layout.Sider>

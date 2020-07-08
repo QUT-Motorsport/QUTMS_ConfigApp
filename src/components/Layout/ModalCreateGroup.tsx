@@ -1,17 +1,13 @@
 import React from "react";
 import { Button, Modal, Input } from "antd";
 import { useState } from "react";
-import { QmsData } from "../../ts/qmsData";
-import { StateHook } from "../../ts/hooks";
 import { PlusOutlined } from "@ant-design/icons";
 
 // Modal for user input to create group
 // Returns input to AnalysisMenu workbooks.name_book state array
 const ModalCreateGroup = ({
-  data,
   onCreate,
 }: {
-  data: QmsData;
   onCreate: (selection: string) => void;
 }) => {
   const [selection, setSelection] = useState<string>("");

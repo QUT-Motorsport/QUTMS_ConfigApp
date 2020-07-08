@@ -15,7 +15,6 @@ JUPYTER_LABEXTENSION_PKGS = {
 VSCODE_EXTENSIONS = [
     "ms-python.python",
     "esbenp.prettier-vscode",
-    "blanu.vscode-styled-jsx",
 ]
 
 
