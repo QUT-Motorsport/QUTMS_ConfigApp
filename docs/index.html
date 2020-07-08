@@ -1,0 +1,420 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>configapp</title>
+	<meta name="description" content="Documentation for configapp">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">configapp</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>configapp</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#qutms_configapp" id="qutms_configapp" style="color: inherit; text-decoration: none;">
+					<h1>QUTMS_ConfigApp</h1>
+				</a>
+				<p><img src="/wiki/banner.png" alt="ConfigApp"></p>
+				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
+					<h2>Table of Contents</h2>
+				</a>
+				<ul>
+					<li><p><a href="#architecture-and-release-plan">Project Architecture and Release Plan</a></p>
+					</li>
+					<li><p><a href="#dev-env-setup">Development Environment Setup</a></p>
+						<ul>
+							<li><a href="#windows-install-bundle">Windows Install Bundle</a></li>
+							<li><a href="#cross-platform-install-script">Cross-Platform Install Script</a></li>
+							<li><a href="#manual-installation">Manual Installation</a></li>
+							<li><a href="#environment-activation">Environment Activation</a></li>
+						</ul>
+					</li>
+					<li><p><a href="#app-development">App Development</a></p>
+						<ul>
+							<li><a href="#development-as-website">As Website</a></li>
+							<li><a href="#development-as-electron-app">As Electron App</a></li>
+							<li><a href="#editing-frontend">Editing the Frontend / UI (Typescript &amp; React)</a></li>
+							<li><a href="#editing-backend">Editing the Backend (Python &amp; Sanic WebServer)</a></li>
+						</ul>
+					</li>
+					<li><p><a href="#building-production">Building Production App</a></p>
+					</li>
+					<li><p><a href="#getting-involved">Want to Get Involved?</a></p>
+					</li>
+				</ul>
+				<p><a name="architecture-and-release-plan"></a></p>
+				<a href="#project-architecture-and-release-plan" id="project-architecture-and-release-plan" style="color: inherit; text-decoration: none;">
+					<h2>Project Architecture and Release Plan</h2>
+				</a>
+				<p><img src="/wiki/the_plan.png" alt="Architecture Diagram"></p>
+				<p><a name="dev-env-setup"></a></p>
+				<a href="#development-environment-setup" id="development-environment-setup" style="color: inherit; text-decoration: none;">
+					<h2>Development Environment Setup</h2>
+				</a>
+				<p>First you will want to have 3 things installed.</p>
+				<ul>
+					<li><a href="https://git-scm.com/download">git</a></li>
+					<li><a href="https://code.visualstudio.com/">vscode</a> (recommended)</li>
+					<li>and <a href="https://docs.conda.io/en/latest/miniconda.html">conda</a> (if installing on windows, selecting <code>ADD TO PATH (not recommended)</code>
+					during the installation is actually recommended by us. Although it can cause issues, it makes everything else easier.)</li>
+				</ul>
+				<p><a name="windows-install-bundle"></a></p>
+				<a href="#windows-install-bundle" id="windows-install-bundle" style="color: inherit; text-decoration: none;">
+					<h3>Windows Install bundle</h3>
+				</a>
+				<p>A bundle of everything you need to get started on windows is downloadable from <a href="https://drive.google.com/open?id=1zfqokZkqXZxnlcENICYbVcJj3-7xquXT">Callum Hays&#39; Google Drive Here</a></p>
+				<p>The extracted bundle contains multiple installers and are prefaced by the order in which you need to run them. You can skip any of these that you already have installed (except the last one).</p>
+				<p><img src="/wiki/WindowsInstallerBundle.png" alt="WindowsInstallerBundle"></p>
+				<p>The final installer runs in a regular command prompt. If you click on it, it will pause the installation. This is a &quot;Windows Feature&quot; called Quick-Edit that you can either avoid by not clicking, typing keypresses in the window to resume the installation, or disable entirely through the command prompt &#39;Properties&#39; menu:</p>
+				<div style="display:flex">
+					<div style="flex:1;padding-right:5px;">
+						<img src="https://github.com/QUT-Motorsport/QUTMS_ConfigApp/raw/master/wiki/disableQuickEdit1.png">
+					</div>
+					<div style="flex:1;padding-left:5px;">
+						<img src="https://github.com/QUT-Motorsport/QUTMS_ConfigApp/raw/master/wiki/disableQuickEdit2.png">
+					</div>
+				</div>
+				<p><a name="cross-platform-install-script"></a></p>
+				<a href="#cross-platform-install-script" id="cross-platform-install-script" style="color: inherit; text-decoration: none;">
+					<h3>Cross-Platform Install Script</h3>
+				</a>
+				<p>This install script is cross-platform, and should work on windows, mac or linux.
+				All the aforementioned requirements are... required =)</p>
+				<pre><code class="language-bash">python install_dev.py</code></pre>
+				<p><a name="manual-installation"></a></p>
+				<a href="#manual-installation" id="manual-installation" style="color: inherit; text-decoration: none;">
+					<h3>Manual Installation</h3>
+				</a>
+				<p>If you don&#39;t trust us to install the dev environment for you, or something goes wrong, you can do it manually.</p>
+				<p>The first step is to install the conda environment from the <code>environment.yml</code>:</p>
+				<pre><code><span class="hljs-selector-tag">conda</span> <span class="hljs-selector-tag">env</span> <span class="hljs-selector-tag">update</span> <span class="hljs-selector-tag">-f</span> <span class="hljs-selector-tag">environment</span><span class="hljs-selector-class">.yml</span></code></pre><p>The second step is to install the npm packages for the app itself:</p>
+				<pre><code><span class="hljs-attr">conda</span> <span class="hljs-string">activate qev3-config-app</span>
+<span class="hljs-attr">npm</span> <span class="hljs-string">i</span></code></pre><p><a name="environment-activation"></a></p>
+				<a href="#environment-activation" id="environment-activation" style="color: inherit; text-decoration: none;">
+					<h3>Environment Activation</h3>
+				</a>
+				<p><em><em>THIS MUST BE DONE BEFORE RUNNING ANY OTHER COMMAND RELATED TO THE CONFIG APP IN THE TERMINAL, EVERY TIME YOU OPEN A NEW TERMINAL</em></em></p>
+				<pre><code class="language-bash">conda activate qev3-config-app</code></pre>
+				<p>Or, if you are using vscode as we recommend, this repository includes vscode settings that do this automatically. But you have to select to &#39;Allow&#39; the option in the bottom-right popup box when you first open a terminal (be quick, it disappears):</p>
+				<p><img src="/wiki/allow_shell_injection.png" alt="allow_shell_injection_vscode"></p>
+				<p>You have to then open up a new terminal for the auto-activation t take effect.</p>
+				<p><a name="app-development"></a></p>
+				<a href="#app-development" id="app-development" style="color: inherit; text-decoration: none;">
+					<h2>App Development</h2>
+				</a>
+				<p><a name="development-as-website"></a></p>
+				<a href="#as-website" id="as-website" style="color: inherit; text-decoration: none;">
+					<h3>As website</h3>
+				</a>
+				<pre><code class="language-bash">npm run dev</code></pre>
+				<p>This is recommended over electron-app as it includes hot-module-reloading</p>
+				<p><a name="development-as-electron-app"></a></p>
+				<a href="#as-electron-app" id="as-electron-app" style="color: inherit; text-decoration: none;">
+					<h3>As electron app</h3>
+				</a>
+				<pre><code class="language-bash">npm run dev:electron</code></pre>
+				<p><a name="editing-frontend"></a></p>
+				<a href="#editing-the-frontend--ui-typescript-amp-react" id="editing-the-frontend--ui-typescript-amp-react" style="color: inherit; text-decoration: none;">
+					<h3>Editing the Frontend / UI (Typescript &amp; React)</h3>
+				</a>
+				<p>All the top-level page components are in <code>react/pages/</code>. These page components may also import re-usable React components that are defined in <code>react/components/</code>.</p>
+				<p>Open them in your favourite editor (VSCode is recommended). If you have run the app in development mode, editing any of these pages and saving the file (ctrl-s) will cause the development app to restart and show your changes. Hot-reloading is currently pretty slow and we&#39;re working to fix that.</p>
+				<p>When writing your React components, please stick to functional components!
+				Using pure functional components with hooks is the new and best way to write react components since 2019. Please check <a href="https://www.valentinog.com/blog/hooks/">this guide</a> to understand how to implement traditional class components as functional components.</p>
+				<p><a name="editing-backend"></a></p>
+				<a href="#editing-the-backend-python-amp-sanic-webserver" id="editing-the-backend-python-amp-sanic-webserver" style="color: inherit; text-decoration: none;">
+					<h3>Editing the Backend (Python &amp; Sanic WebServer)</h3>
+				</a>
+				<p>To make changes to the backend, edit the files in <code>python/</code>. The main python file is <code>python/api.py</code> which contains a Sanic server.</p>
+				<p><a name="building-production"></a></p>
+				<a href="#installing-the-electron-app-permanently" id="installing-the-electron-app-permanently" style="color: inherit; text-decoration: none;">
+					<h2>Installing the Electron app permanently</h2>
+				</a>
+				<p>First you need to build the desktop application for the desired operating system:</p>
+				<ul>
+					<li>Windows 32 Bit: <code>npm run build:win32</code></li>
+					<li>Windows 64 Bit: <code>npm run build:win64</code> (this is probably the one you want)</li>
+					<li>Mac: <code>npm run build:mac</code></li>
+					<li>Linux: <code>npm run build:linux</code></li>
+				</ul>
+				<p>Then check the <code>dist</code> folder for resulting install packages for your desired platform</p>
+				<p><a name="getting-involved"></a></p>
+				<a href="#want-to-get-involved" id="want-to-get-involved" style="color: inherit; text-decoration: none;">
+					<h2>Want to Get Involved?</h2>
+				</a>
+				<p>Studying at QUT? Contact us at <a href="mailto:&#113;&#117;&#x74;&#x6d;&#x6f;&#116;&#111;&#114;&#x73;&#112;&#x6f;&#114;&#116;&#x2e;&#116;&#x65;&#x61;&#109;&#x40;&#x67;&#109;&#x61;&#x69;&#x6c;&#46;&#99;&#111;&#109;">&#113;&#117;&#x74;&#x6d;&#x6f;&#116;&#111;&#114;&#x73;&#112;&#x6f;&#114;&#116;&#x2e;&#116;&#x65;&#x61;&#109;&#x40;&#x67;&#109;&#x61;&#x69;&#x6c;&#46;&#99;&#111;&#109;</a> or <a href="https://www.qutmotorsport.com/">visit our website</a> for details on how you can get involved.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_anychart_.html">&quot;components/<wbr>Charts/<wbr>Any<wbr>Chart&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_editors_basecharteditor_.html">&quot;components/<wbr>Charts/<wbr>Editors/<wbr>Base<wbr>Chart<wbr>Editor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_editors_domain_histogramdomaineditor_.html">&quot;components/<wbr>Charts/<wbr>Editors/<wbr>Domain/<wbr>Histogram<wbr>Domain<wbr>Editor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_editors_domain_linedomaineditor_.html">&quot;components/<wbr>Charts/<wbr>Editors/<wbr>Domain/<wbr>Line<wbr>Domain<wbr>Editor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_editors_domain_scatterdomaineditor_.html">&quot;components/<wbr>Charts/<wbr>Editors/<wbr>Domain/<wbr>Scatter<wbr>Domain<wbr>Editor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_editors_domain_trackmapdomaineditor_.html">&quot;components/<wbr>Charts/<wbr>Editors/<wbr>Domain/<wbr>Track<wbr>Map<wbr>Domain<wbr>Editor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_editors_range_colorscaledrangeeditor_.html">&quot;components/<wbr>Charts/<wbr>Editors/<wbr>Range/<wbr>Color<wbr>Scaled<wbr>Range<wbr>Editor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_editors_range_multichannelrangeeditor_.html">&quot;components/<wbr>Charts/<wbr>Editors/<wbr>Range/<wbr>Multi<wbr>Channel<wbr>Range<wbr>Editor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_editors_range__helpers_.html">&quot;components/<wbr>Charts/<wbr>Editors/<wbr>Range/_<wbr>helpers&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_histogramchart_.html">&quot;components/<wbr>Charts/<wbr>Histogram<wbr>Chart&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_linechart_.html">&quot;components/<wbr>Charts/<wbr>Line<wbr>Chart&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_scatterchart_.html">&quot;components/<wbr>Charts/<wbr>Scatter<wbr>Chart&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_timeline_.html">&quot;components/<wbr>Charts/<wbr>Timeline&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_trackmapchart_.html">&quot;components/<wbr>Charts/<wbr>Track<wbr>Map<wbr>Chart&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts_unimplemented_.html">&quot;components/<wbr>Charts/<wbr>Unimplemented&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_charts__helpers_.html">&quot;components/<wbr>Charts/_<wbr>helpers&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_analysismenu_.html">&quot;components/<wbr>Layout/<wbr>Analysis<wbr>Menu&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_content_.html">&quot;components/<wbr>Layout/<wbr>Content&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_explorer_explorer_.html">&quot;components/<wbr>Layout/<wbr>Explorer/<wbr>Explorer&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_headerbar_.html">&quot;components/<wbr>Layout/<wbr>Header<wbr>Bar&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_modaladdsheet_.html">&quot;components/<wbr>Layout/<wbr>Modal<wbr>Add<wbr>Sheet&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_modalcreategroup_.html">&quot;components/<wbr>Layout/<wbr>Modal<wbr>Create<wbr>Group&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_sidebar_sidebar_.html">&quot;components/<wbr>Layout/<wbr>Side<wbr>Bar/<wbr>Side<wbr>Bar&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_sidebar_sidebaritem_.html">&quot;components/<wbr>Layout/<wbr>Side<wbr>Bar/<wbr>Side<wbr>Bar<wbr>Item&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_layout_userinfo_.html">&quot;components/<wbr>Layout/<wbr>User<wbr>Info&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_car_.html">&quot;components/<wbr>Telemetry/<wbr>Car&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_datarate_.html">&quot;components/<wbr>Telemetry/<wbr>Data<wbr>Rate&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_dividerbar_.html">&quot;components/<wbr>Telemetry/<wbr>Divider<wbr>Bar&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_driverinfo_.html">&quot;components/<wbr>Telemetry/<wbr>Driver<wbr>Info&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_engineandpower_.html">&quot;components/<wbr>Telemetry/<wbr>Engine<wbr>And<wbr>Power&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_label_.html">&quot;components/<wbr>Telemetry/<wbr>Label&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_lapinfo_.html">&quot;components/<wbr>Telemetry/<wbr>Lap<wbr>Info&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_pedalposition_.html">&quot;components/<wbr>Telemetry/<wbr>Pedal<wbr>Position&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_rawtelemetry_.html">&quot;components/<wbr>Telemetry/<wbr>Raw<wbr>Telemetry&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_sponsors_.html">&quot;components/<wbr>Telemetry/<wbr>Sponsors&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_steeringangle_.html">&quot;components/<wbr>Telemetry/<wbr>Steering<wbr>Angle&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_trackinfo_.html">&quot;components/<wbr>Telemetry/<wbr>Track<wbr>Info&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_components_telemetry_weather_.html">&quot;components/<wbr>Telemetry/<wbr>Weather&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages_analysispage_.html">&quot;pages/<wbr>Analysis<wbr>Page&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages_configpage_.html">&quot;pages/<wbr>Config<wbr>Page&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages_guestpage_.html">&quot;pages/<wbr>Guest<wbr>Page&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages_homepage_.html">&quot;pages/<wbr>Home<wbr>Page&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages_loginpage_.html">&quot;pages/<wbr>Login<wbr>Page&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages_registerpage_.html">&quot;pages/<wbr>Register<wbr>Page&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages_simulationpage_.html">&quot;pages/<wbr>Simulation<wbr>Page&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages_telemetrypage_.html">&quot;pages/<wbr>Telemetry<wbr>Page&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_pages__helpers_.html">&quot;pages/_<wbr>helpers&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_serviceworker_.html">&quot;service<wbr>Worker&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_ajax_.html">&quot;ts/ajax&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_debug_.html">&quot;ts/debug&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_hooks_.html">&quot;ts/hooks&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_qmsdata__helpers_.html">&quot;ts/qms<wbr>Data/_<wbr>helpers&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_qmsdata_constants_.html">&quot;ts/qms<wbr>Data/constants&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_qmsdata_crossfilter_types_.html">&quot;ts/qms<wbr>Data/crossfilter/types&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_qmsdata_crossfilter_usecrossfilterstate_.html">&quot;ts/qms<wbr>Data/crossfilter/use<wbr>Crossfilter<wbr>State&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_qmsdata_crossfilter_usecrossfiltereddata_.html">&quot;ts/qms<wbr>Data/crossfilter/use<wbr>Crossfiltered<wbr>Data&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_qmsdata_types_.html">&quot;ts/qms<wbr>Data/types&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_qmsdata_usehydratedchannels_.html">&quot;ts/qms<wbr>Data/use<wbr>Hydrated<wbr>Channels&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_ts_qmsdata_useqmsdata_.html">&quot;ts/qms<wbr>Data/use<wbr>Qms<wbr>Data&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

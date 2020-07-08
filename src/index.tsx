@@ -1,3 +1,7 @@
+/**
+ * Will this show up in typedoc?
+ */
+
 import "antd/dist/antd.css";
 
 import React from "react";
@@ -17,7 +21,7 @@ import TelemetryPage from "./pages/TelemetryPage";
 import Header from "./components/Layout/HeaderBar";
 import SideBar from "./components/Layout/SideBar/SideBar";
 
-function MenuWrapper({ children }: React.Props<null>) {
+function MenuWrapper({ children }: React.Props<{}>) {
   return (
     <Layout
       id="whole"

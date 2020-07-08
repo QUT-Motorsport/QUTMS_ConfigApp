@@ -17,5 +17,8 @@
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "downlevelIteration": true
   },
-  "include": ["src", "lib/*.d.ts", "src/react-app-env.d.ts"]
+  "include": ["src", "lib/*.d.ts", "src/react-app-env.d.ts"],
+  "typedocOptions": {
+    "out": "docs"
+  }
 }
