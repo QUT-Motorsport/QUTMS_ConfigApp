@@ -6,14 +6,14 @@ module.exports = function override(config, _env) {
   config.optimization.minimizer.push(new ClosurePlugin());
 
   // add typedoc plugin to automatically update docs
-  config.plugins.push(
-    new TypedocWebpackPlugin({
-      theme: "typedoc-neo-theme",
-      // unsure why but this causes compiler errors.
-      // It has already successfully compiled by this point (last plugin on the list) so this is safe.
-      ignoreCompilerErrors: true,
-    })
-  );
+  // config.plugins.push(
+  //   new TypedocWebpackPlugin({
+  //     theme: "typedoc-neo-theme",
+  //     // unsure why but this causes compiler errors.
+  //     // It has already successfully compiled by this point (last plugin on the list) so this is safe.
+  //     ignoreCompilerErrors: true,
+  //   })
+  // );
 
   return config;
 };

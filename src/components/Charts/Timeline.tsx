@@ -13,9 +13,11 @@ import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
 export default function Timeline({
   data,
   filterState: [filter, setFilter],
+  figureRef,
 }: {
   data: QmsData;
   filterState: StateHook<Crossfilter>;
+  figureRef: React.MutableRefObject<HTMLElement | undefined>;
 }) {
   const hydrated = useHydratedChannels(
     data,
@@ -41,8 +43,12 @@ export default function Timeline({
     <div className={styles.timeline}>
       <Plot
         {...baseChartSettings}
+        onInitialized={(_, el) => {
+          figureRef.current = el;
+        }}
         data={[{ x: time, y: groundSpeedData }]}
         layout={{
+          autosize: true,
           xaxis: {
             range: filters.byTime,
             rangeslider: {

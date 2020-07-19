@@ -35,16 +35,9 @@ function MenuWrapper({ children }: React.Props<{}>) {
         <Layout
           style={{
             background: "#fff",
-            width: "100%",
           }}
         >
-          <Layout.Content
-            style={{
-              overflow: "hidden",
-            }}
-          >
-            {children}
-          </Layout.Content>
+          {children}
         </Layout>
       </Layout>
     </Layout>

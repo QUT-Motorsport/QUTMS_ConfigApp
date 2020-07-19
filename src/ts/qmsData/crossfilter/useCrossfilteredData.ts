@@ -1,5 +1,4 @@
 import { useMemo, useEffect } from "react";
-import iterate from "iterare";
 
 import { QmsData, Channel, Time, Data, ChannelHeader, Range } from "../types";
 import {
@@ -193,9 +192,7 @@ export default function useCrossfilteredData(
                 recordGroups.map(({ key, value }) => [
                   key,
                   createChannelGroup(
-                    iterate(value.values())
-                      .toArray()
-                      .sort((a, b) => a.time - b.time)
+                    Array.from(value.values()).sort((a, b) => a.time - b.time)
                   ),
                 ])
               ),

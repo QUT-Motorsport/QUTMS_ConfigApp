@@ -1,12 +1,16 @@
-import React, { useState } from "react";
-import { Button, Modal, Spin, Avatar } from "antd";
+import React, { useState, useRef } from "react";
+import { Button, Modal, Spin, Layout } from "antd";
+
+import "@annotationhub/react-golden-layout/dist/css/goldenlayout-base.css";
+import "@annotationhub/react-golden-layout/dist/css/themes/goldenlayout-light-theme.css";
+import { GoldenLayoutComponent } from "@annotationhub/react-golden-layout";
 
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import { AnyChartSpec } from "../components/Charts/AnyChart";
 import { QmsData } from "../ts/qmsData/types";
 import useCrossfilterState from "../ts/qmsData/crossfilter/useCrossfilterState";
 import useQmsData from "../ts/qmsData/useQmsData";
-import { SettingOutlined } from "@ant-design/icons";
+import Plotly from "plotly.js";
 
 import Timeline from "../components/Charts/Timeline";
 import BaseChartEditor, {
@@ -59,65 +63,70 @@ function AddChartModal({
   );
 }
 
-function AnalysisSettingsModal() {
-  const [visible, setVisible] = useState(false);
-
-  return (
-    <div
-      style={{
-        float: "right",
-        paddingTop: "15px",
-        paddingRight: "26px",
-      }}
-    >
-      <div style={{ cursor: "pointer" }} onClick={() => setVisible(true)}>
-        <Avatar size="large" icon={<SettingOutlined />} />
-      </div>
-      <Modal
-        title="Component Settings"
-        visible={visible}
-        onOk={() => setVisible(false)}
-        onCancel={() => setVisible(false)}
-        style={{ marginTop: "120px" }}
-      >
-        <p>Add settings</p>
-      </Modal>
-    </div>
-  );
-}
-
 export default function AnalysisPage() {
   const filterState = useCrossfilterState();
   const data = useQmsData("Sample");
   const [chartSpecs, setChartSpecs] = useState<AnyChartSpec[]>([]);
+  const figureRef = useRef<HTMLElement>();
+  const [collapsed, setCollapsed] = useState<boolean>(false);
 
   useTitle("QUTMS Analysis");
 
   return data ? (
-    <div className={styles.page}>
-      <AnalysisMenu data={data} />
-      <div className={styles.workbook}>
-        <div className={styles.headerBorder}>
-          <span className={styles.h1Alt}>Analysis</span>
-          <AnalysisSettingsModal />
-        </div>
-        <Timeline data={data} filterState={filterState} />
-        {chartSpecs.map((chartSpec, idx) => (
-          <BaseChart
-            key={idx}
+    <>
+      <AnalysisMenu
+        data={data}
+        collapsedState={[
+          collapsed,
+          // TODO: Make this more standard (resizing plots when elements move around)
+          (isCollapsed) => {
+            setTimeout(() => {
+              if (figureRef.current) {
+                Plotly.Plots.resize(figureRef.current);
+              }
+            }, 200);
+            setCollapsed(isCollapsed);
+          },
+        ]}
+      />
+      <Layout>
+        <Layout.Content>
+          <Timeline
             data={data}
             filterState={filterState}
-            spec={chartSpec}
+            figureRef={figureRef}
           />
-        ))}
-        <AddChartModal
-          data={data}
-          onAddChartSpec={(chartSpec) =>
-            setChartSpecs([...chartSpecs, chartSpec])
-          }
-        />
-      </div>
-    </div>
+          <GoldenLayoutComponent
+            htmlAttrs={{
+              style: {
+                width: "100%",
+                height: "400px",
+              },
+            }}
+            config={{
+              content: chartSpecs.map((chartSpec, idx) => ({
+                title: chartSpec.title,
+                component: (
+                  <BaseChart
+                    key={idx}
+                    data={data}
+                    filterState={filterState}
+                    spec={chartSpec}
+                  />
+                ),
+              })),
+            }}
+          />
+          {}
+          <AddChartModal
+            data={data}
+            onAddChartSpec={(chartSpec) =>
+              setChartSpecs([...chartSpecs, chartSpec])
+            }
+          />
+        </Layout.Content>
+      </Layout>
+    </>
   ) : (
     <Spin />
   );

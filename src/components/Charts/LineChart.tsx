@@ -2,7 +2,6 @@ import React from "react";
 import Plot, { PlotParams } from "react-plotly.js";
 import { useMemo } from "react";
 import { Spin } from "antd";
-import iterate from "iterare";
 
 import {
   spec2ChannelIdxs,
@@ -73,7 +72,7 @@ function DiscreteColourScaleLineChart({
     const { filtered, discreteJetColors } = crossfilterData;
     return (
       <Plot
-        data={iterate(filtered.groups)
+        data={Array.from(filtered.groups)
           .map(([groupIdx, channelGroup]) => {
             // repeat calls to this are cached
             const { stop, color } = discreteJetColors(spec.nColourBins!)[
@@ -113,8 +112,6 @@ function DiscreteColourScaleLineChart({
               marker: { color, symbol: "circle-open" },
             };
           })
-          .filter((trace) => trace !== null)
-          .toArray()
           .reverse()}
         {...lineChartSettings(spec, spec.yAxis, filterState)}
       />
@@ -139,15 +136,13 @@ function MultiChannelLineChart({
 
   return crossfilterData ? (
     <Plot
-      data={iterate(crossfilterData.channels)
-        .map(([channel, data]) => ({
-          name: channel.name,
-          x: crossfilterData.time,
-          y: data,
-          yaxis: yAxisName(channel, spec),
-          mode: "lines" as "lines", // smh sometimes typescript
-        }))
-        .toArray()}
+      data={Array.from(crossfilterData.channels).map(([channel, data]) => ({
+        name: channel.name,
+        x: crossfilterData.time,
+        y: data,
+        yaxis: yAxisName(channel, spec),
+        mode: "lines" as "lines", // smh sometimes typescript
+      }))}
       {...lineChartSettings(spec, spec.yAxes[0][0], filterState)}
     />
   ) : (

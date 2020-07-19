@@ -2,7 +2,6 @@ import React from "react";
 import Plot from "react-plotly.js";
 import { useMemo } from "react";
 import { Spin } from "antd";
-import iterate from "iterare";
 
 import { ScatterChartDomain } from "./Editors/Domain/ScatterDomainEditor";
 import { MultiChannel } from "./Editors/Range/MultiChannelRangeEditor";
@@ -157,7 +156,7 @@ function DiscreteColourScaleScatterChart({
     return (
       <Plot
         {...scatterChartSettings(spec, filterState)}
-        data={iterate(filtered.groups)
+        data={Array.from(filtered.groups)
           .map(([groupIdx, channelGroup]) => {
             // repeat calls to this are cached
             const { stop, color } = discreteJetColors(spec.nColourBins!)[
@@ -172,7 +171,6 @@ function DiscreteColourScaleScatterChart({
               marker: { color, symbol: "circle-open" },
             };
           })
-          .toArray()
           .reverse()}
       />
     );
