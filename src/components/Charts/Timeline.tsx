@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Spin } from "antd";
+import React, { useMemo, useState, useEffect, useRef } from "react";
+import { Spin, Button, Dropdown, Menu, Progress, Statistic } from "antd";
 import Plot from "react-plotly.js";
 
 import { QmsData } from "../../ts/qmsData/types";
@@ -10,6 +10,9 @@ import { anyChangeInRange, baseChartSettings } from "./_helpers";
 import styles from "./Timeline.module.scss";
 import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
 
+import Draggable from "react-draggable";
+import useComponentSize from "@rehooks/component-size";
+
 export default function Timeline({
   data,
   filterState: [filter, setFilter],
@@ -17,15 +20,40 @@ export default function Timeline({
   data: QmsData;
   filterState: StateHook<Crossfilter>;
 }) {
+  //retrieves data from channel specified in useMemo (Ground speed)
   const hydrated = useHydratedChannels(
     data,
     useMemo(() => [data.channels[GROUND_SPEED_CH_IDX]], [data])
   );
 
+  const MAX_TIME = data.maxTime;
+  let ref = useRef(null);
+  let { width } = useComponentSize(ref);
+  const xToSeconds = MAX_TIME / width;
+
+  //Initialising timer for playback
+  const [playbackTime, setplaybackTime] = useState<number>(0);
+
+  //increases timer to play through data
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setplaybackTime((playbackTime) => playbackTime + 1);
+    }, 1000);
+  });
+
+  //checks boundaries of playback
+  useEffect(() => {
+    if (playbackTime > MAX_TIME) {
+      setplaybackTime(0);
+    }
+  }, [playbackTime]);
+
+  //
   if (!hydrated) {
     return <Spin />;
   }
 
+  //
   const [groundSpeedChannel] = hydrated;
   const { filters } = filter;
 
@@ -37,32 +65,71 @@ export default function Timeline({
     groundSpeedData.push(groundSpeedChannel.data[idx]);
   }
 
+  //mins and sec calcs
+  let min = Math.floor((playbackTime % 3600) / 60);
+  let sec = Math.floor((playbackTime % 3600) % 60);
+
   return (
-    <div className={styles.timeline}>
-      <Plot
-        {...baseChartSettings}
-        data={[{ x: time, y: groundSpeedData }]}
-        layout={{
-          xaxis: {
-            range: filters.byTime,
-            rangeslider: {
-              range: [0, data.maxTime],
+    <div>
+      <div className={styles.draggablecomp}>
+        <Draggable
+          bounds={{ top: 0, left: 0, right: 400, bottom: 0 }}
+          axis="x"
+          position={{ y: 0, x: playbackTime / xToSeconds }}
+          scale={1}
+          onStart={() => {
+            //setDragPause(true);
+            console.log("StartDragging");
+          }}
+          //where the code needs to be for the timeline
+          onDrag={(e, ui) => {
+            console.log(ui);
+            setplaybackTime(Math.round((ui.x - 9) * xToSeconds));
+            //setTime(Math.round((ui.x - 9) * xToSeconds));
+          }}
+          onStop={() => {
+            //setDragPause(false);
+            console.log("StopDragging");
+          }}
+        >
+          <img
+            src="https://i.imgur.com/UaNQMyr.png"
+            draggable="false"
+            style={{ zIndex: 10 }}
+          />
+        </Draggable>
+      </div>
+      <div className={styles.timeline}>
+        <Plot
+          {...baseChartSettings}
+          data={[{ x: time, y: groundSpeedData }]}
+          layout={{
+            xaxis: {
+              range: filters.byTime,
+              rangeslider: {
+                range: [0, data.maxTime],
+              },
             },
-          },
-        }}
-        onUpdate={(
-          {
-            layout: {
-              xaxis: { range },
-            },
-          }: any // Figure, with 100% defined xaxis and yaxis atts
-        ) => {
-          if (anyChangeInRange(filters.byTime, range)) {
-            filters.byTime = range;
-            setFilter({ ...filter });
-          }
-        }}
-      />
+          }}
+          onUpdate={(
+            {
+              layout: {
+                xaxis: { range },
+              },
+            }: any // Figure, with 100% defined xaxis and yaxis atts
+          ) => {
+            if (anyChangeInRange(filters.byTime, range)) {
+              filters.byTime = range;
+              setFilter({ ...filter });
+            }
+          }}
+        />
+      </div>
+      <span className="playbackControls">
+        <div>
+          Time: {min}:{sec}
+        </div>
+      </span>
     </div>
   );
 }
