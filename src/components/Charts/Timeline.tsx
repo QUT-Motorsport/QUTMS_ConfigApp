@@ -26,10 +26,31 @@ export default function Timeline({
     useMemo(() => [data.channels[GROUND_SPEED_CH_IDX]], [data])
   );
 
-  const MAX_TIME = data.maxTime;
+  //Data initialisations
+  const MAX_TIME = data.maxTime!;
   let ref = useRef(null);
   let { width } = useComponentSize(ref);
   const xToSeconds = MAX_TIME / width;
+
+  //scalar setstate
+  const [scalar, setScalar] = useState<number>(1);
+  const [pause, setPause] = useState<boolean>(false);
+  const [loop, setLoop] = useState<boolean>(false);
+  const [dragPause, setDragPause] = useState<boolean>(false);
+
+  function handleMenuClick(e: any) {
+    let source = e.key;
+    setScalar(source / 2);
+  }
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="1">0.5x</Menu.Item>
+      <Menu.Item key="2">1x</Menu.Item>
+      <Menu.Item key="3">1.5x</Menu.Item>
+      <Menu.Item key="4">2x</Menu.Item>
+    </Menu>
+  );
 
   //Initialising timer for playback
   const [playbackTime, setplaybackTime] = useState<number>(0);
@@ -37,9 +58,10 @@ export default function Timeline({
   //increases timer to play through data
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setplaybackTime((playbackTime) => playbackTime + 1);
+      setplaybackTime((playbackTime) => playbackTime + scalar);
     }, 1000);
-  });
+    return () => clearInterval(intervalId);
+  }, [scalar]);
 
   //checks boundaries of playback
   useEffect(() => {
@@ -66,14 +88,14 @@ export default function Timeline({
   }
 
   //mins and sec calcs
-  let min = Math.floor((playbackTime % 3600) / 60);
-  let sec = Math.floor((playbackTime % 3600) % 60);
+  let min = Math.floor((playbackTime / 60) % 60);
+  let sec = Math.floor(playbackTime % 60);
 
   return (
     <div>
       <div className={styles.draggablecomp}>
         <Draggable
-          bounds={{ top: 0, left: 0, right: 400, bottom: 0 }}
+          bounds={{ top: 0, left: 0, right: width, bottom: 0 }}
           axis="x"
           position={{ y: 0, x: playbackTime / xToSeconds }}
           scale={1}
@@ -84,8 +106,7 @@ export default function Timeline({
           //where the code needs to be for the timeline
           onDrag={(e, ui) => {
             console.log(ui);
-            setplaybackTime(Math.round((ui.x - 9) * xToSeconds));
-            //setTime(Math.round((ui.x - 9) * xToSeconds));
+            //setplaybackTime(Math.round((ui.x - 9) * xToSeconds));
           }}
           onStop={() => {
             //setDragPause(false);
@@ -129,6 +150,17 @@ export default function Timeline({
         <div>
           Time: {min}:{sec}
         </div>
+        <Button type="ghost" size="small">
+          Play
+        </Button>
+        <Button type="ghost" size="small">
+          Loop
+        </Button>
+        <Dropdown overlay={menu}>
+          <Button type="ghost" size="small">
+            Speed
+          </Button>
+        </Dropdown>
       </span>
     </div>
   );
