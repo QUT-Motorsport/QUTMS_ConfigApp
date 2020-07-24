@@ -6,6 +6,7 @@
     margin-top: 10px;
     height: 40px;
     overflow: hidden;
+    position: relative;
 
     > .js-plotly-plot {
       width: calc(100% + 153px) !important;
@@ -24,6 +25,15 @@
     }
   }
   :local(.draggablecomp) {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 10px;
+    height: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+  :local(.playbackControls) {
     width: 90%;
     margin-left: 5%;
     margin-right: 5%;

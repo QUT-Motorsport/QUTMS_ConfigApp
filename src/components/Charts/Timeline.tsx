@@ -12,6 +12,8 @@ import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
 
 import Draggable from "react-draggable";
 import useComponentSize from "@rehooks/component-size";
+import Label from "../Telemetry/Label";
+import SteeringWheel from "../../public/images/steering-wheel.svg";
 
 export default function Timeline({
   data,
@@ -34,9 +36,27 @@ export default function Timeline({
 
   //scalar setstate
   const [scalar, setScalar] = useState<number>(1);
-  const [pause, setPause] = useState<boolean>(false);
+  const [pausePlayback, setPlaybackPause] = useState<boolean>(false);
   const [loop, setLoop] = useState<boolean>(false);
   const [dragPause, setDragPause] = useState<boolean>(false);
+
+  function handlePauseClick(e: any) {
+    if (!pausePlayback) {
+      setPlaybackPause(true);
+    } else {
+      setPlaybackPause(false);
+    }
+    console.log(pausePlayback);
+  }
+
+  function handleLoopClick(e: any) {
+    if (!loop) {
+      setLoop(true);
+    } else {
+      setLoop(false);
+    }
+    console.log(loop);
+  }
 
   function handleMenuClick(e: any) {
     let source = e.key;
@@ -53,22 +73,28 @@ export default function Timeline({
   );
 
   //Initialising timer for playback
-  const [playbackTime, setplaybackTime] = useState<number>(0);
+  const [playbackTime, setPlaybackTime] = useState<number>(0);
 
   //increases timer to play through data
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setplaybackTime((playbackTime) => playbackTime + scalar);
-    }, 1000);
-    return () => clearInterval(intervalId);
-  }, [scalar]);
+    if (!pausePlayback && !dragPause) {
+      const intervalId = setInterval(() => {
+        setPlaybackTime((playbackTime) => playbackTime + scalar);
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [scalar, pausePlayback, dragPause]);
 
   //checks boundaries of playback
   useEffect(() => {
     if (playbackTime > MAX_TIME) {
-      setplaybackTime(0);
+      if (loop) {
+        setPlaybackTime(0);
+      } else if (!loop) {
+        setPlaybackPause(true);
+      }
     }
-  }, [playbackTime]);
+  }, [playbackTime, loop]);
 
   //
   if (!hydrated) {
@@ -95,21 +121,21 @@ export default function Timeline({
     <div>
       <div className={styles.draggablecomp}>
         <Draggable
-          bounds={{ top: 0, left: 0, right: width, bottom: 0 }}
+          bounds={{ top: 0, left: 9, right: width - 9, bottom: 0 }}
           axis="x"
           position={{ y: 0, x: playbackTime / xToSeconds }}
           scale={1}
           onStart={() => {
-            //setDragPause(true);
+            setDragPause(true);
             console.log("StartDragging");
           }}
           //where the code needs to be for the timeline
           onDrag={(e, ui) => {
             console.log(ui);
-            //setplaybackTime(Math.round((ui.x - 9) * xToSeconds));
+            //setPlaybackTime(Math.round((ui.x - 9) * xToSeconds));
           }}
           onStop={() => {
-            //setDragPause(false);
+            setDragPause(false);
             console.log("StopDragging");
           }}
         >
@@ -120,6 +146,7 @@ export default function Timeline({
           />
         </Draggable>
       </div>
+
       <div className={styles.timeline}>
         <Plot
           {...baseChartSettings}
@@ -146,22 +173,83 @@ export default function Timeline({
           }}
         />
       </div>
+
       <span className="playbackControls">
         <div>
           Time: {min}:{sec}
         </div>
-        <Button type="ghost" size="small">
+        <Button
+          type="ghost"
+          size="small"
+          shape="round"
+          onClick={handlePauseClick}
+        >
           Play
         </Button>
-        <Button type="ghost" size="small">
+        <Button
+          type="ghost"
+          size="small"
+          shape="round"
+          onClick={handleLoopClick}
+        >
           Loop
         </Button>
         <Dropdown overlay={menu}>
-          <Button type="ghost" size="small">
+          <Button type="ghost" size="small" shape="round">
             Speed
           </Button>
         </Dropdown>
       </span>
+
+      {/* Telemetry Components */}
+      <div>
+        {/* Speed indicator */}
+        <div style={{ width: "50%" }}>
+          <Label title="Current Speed" />
+          <Progress
+            style={{ height: "90px" }}
+            type="dashboard"
+            percent={15}
+            showInfo={true}
+            strokeColor="#0F406A"
+            strokeWidth={12}
+            gapDegree={140}
+            format={(percent) => `${percent}`}
+          />
+          {/* Total Laps */}
+          <Label title="Total Laps" style={{ fontWeight: 600 }} />
+          <Progress
+            type="circle"
+            percent={(1 / 5) * 100}
+            format={(percent) => `${1}/${5}`}
+            strokeColor="#0F406A"
+            strokeWidth={12}
+            style={{ fontWeight: 600 }}
+          />
+        </div>
+      </div>
+      {/* Pedals */}
+      <div className="pedalposdiv" style={{ marginTop: "10px" }}>
+        <Label title="Pedal Positions" />
+
+        {/* Acceleration Bar */}
+        <Progress
+          percent={50}
+          showInfo={true}
+          strokeColor="#7BE0AD"
+          strokeWidth={15}
+          strokeLinecap="square"
+        />
+
+        {/* Brakes Bar */}
+        <Progress
+          percent={50}
+          showInfo={true}
+          strokeColor="#FF5964"
+          strokeWidth={15}
+          strokeLinecap="square"
+        />
+      </div>
     </div>
   );
 }
