@@ -4,22 +4,19 @@ import Plot from "react-plotly.js";
 
 import { QmsData } from "../../ts/qmsData/types";
 import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
+
 import {
   GROUND_SPEED_CH_IDX,
   THROTTLE_POS_CH_IDX,
-  BRAKE_POS_CH_IDX,
-  LAP_NUMBER_CH_IDX,
-  STEERING_ANGLE_CH_IDX,
 } from "../../ts/qmsData/constants";
 import { StateHook } from "../../ts/hooks";
 import { anyChangeInRange, baseChartSettings } from "./_helpers";
 import styles from "./Timeline.module.scss";
 import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
+import Label from "../Telemetry/Label";
 
 import Draggable from "react-draggable";
 import useComponentSize from "@rehooks/component-size";
-import Label from "../Telemetry/Label";
-import SteeringWheel from "../../public/images/steering-wheel.svg";
 
 export default function Timeline({
   data,
@@ -33,7 +30,7 @@ export default function Timeline({
     data,
     useMemo(() => [data.channels[GROUND_SPEED_CH_IDX]], [data])
   );
-  const hydratedthrottle = useHydratedChannels(
+  const throttlehydrated = useHydratedChannels(
     data,
     useMemo(() => [data.channels[THROTTLE_POS_CH_IDX]], [data])
   );
@@ -115,9 +112,6 @@ export default function Timeline({
   const [groundSpeedChannel] = hydrated;
   const { filters } = filter;
 
-  const [throttleSpeedChannel] = hydratedthrottle;
-  console.log(throttleSpeedChannel);
-
   // prepare the data for the linechart
   const time = [];
   const groundSpeedData = [];
@@ -134,7 +128,7 @@ export default function Timeline({
     <div>
       <div className={styles.draggablecomp}>
         <Draggable
-          bounds={{ top: 0, left: 9, right: width - 9, bottom: 0 }}
+          bounds={{ top: 0, left: -9, right: width - 9, bottom: 0 }}
           axis="x"
           position={{ y: 0, x: playbackTime / xToSeconds }}
           scale={1}
@@ -145,7 +139,7 @@ export default function Timeline({
           //where the code needs to be for the timeline
           onDrag={(e, ui) => {
             console.log(ui);
-            //setPlaybackTime(Math.round((ui.x - 9) * xToSeconds));
+            setPlaybackTime(Math.round((ui.x - 9) * xToSeconds));
           }}
           onStop={() => {
             setDragPause(false);
@@ -160,7 +154,7 @@ export default function Timeline({
         </Draggable>
       </div>
 
-      <div className={styles.timeline}>
+      <div className={styles.timeline} ref={ref}>
         <Plot
           {...baseChartSettings}
           data={[{ x: time, y: groundSpeedData }]}
@@ -213,56 +207,6 @@ export default function Timeline({
           </Button>
         </Dropdown>
       </span>
-
-      {/* Telemetry Components */}
-      <div>
-        {/* Speed indicator */}
-        <div style={{ width: "50%" }}>
-          <Label title="Current Speed" />
-          <Progress
-            style={{ height: "90px" }}
-            type="dashboard"
-            percent={15}
-            showInfo={true}
-            strokeColor="#0F406A"
-            strokeWidth={12}
-            gapDegree={140}
-            format={(percent) => `${percent}`}
-          />
-          {/* Total Laps */}
-          <Label title="Total Laps" style={{ fontWeight: 600 }} />
-          <Progress
-            type="circle"
-            percent={(1 / 5) * 100}
-            format={(percent) => `${1}/${5}`}
-            strokeColor="#0F406A"
-            strokeWidth={12}
-            style={{ fontWeight: 600 }}
-          />
-        </div>
-      </div>
-      {/* Pedals */}
-      <div className="pedalposdiv" style={{ marginTop: "10px" }}>
-        <Label title="Pedal Positions" />
-
-        {/* Acceleration Bar */}
-        <Progress
-          percent={50}
-          showInfo={true}
-          strokeColor="#7BE0AD"
-          strokeWidth={15}
-          strokeLinecap="square"
-        />
-
-        {/* Brakes Bar */}
-        <Progress
-          percent={50}
-          showInfo={true}
-          strokeColor="#FF5964"
-          strokeWidth={15}
-          strokeLinecap="square"
-        />
-      </div>
     </div>
   );
 }

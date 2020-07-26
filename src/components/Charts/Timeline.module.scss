@@ -30,8 +30,8 @@
     margin-right: 5%;
     margin-top: 10px;
     height: 40px;
-    overflow: hidden;
-    position: relative;
+    overflow: visible;
+    position: absolute;
   }
   :local(.playbackControls) {
     width: 90%;
@@ -39,7 +39,7 @@
     margin-right: 5%;
     margin-top: 10px;
     height: 40px;
-    overflow: hidden;
-    position: relative;
+    position: absolute;
+    overflow: visible;
   }
 }
