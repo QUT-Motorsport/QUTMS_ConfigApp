@@ -4,7 +4,13 @@ import Plot from "react-plotly.js";
 
 import { QmsData } from "../../ts/qmsData/types";
 import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
-import { GROUND_SPEED_CH_IDX } from "../../ts/qmsData/constants";
+import {
+  GROUND_SPEED_CH_IDX,
+  THROTTLE_POS_CH_IDX,
+  BRAKE_POS_CH_IDX,
+  LAP_NUMBER_CH_IDX,
+  STEERING_ANGLE_CH_IDX,
+} from "../../ts/qmsData/constants";
 import { StateHook } from "../../ts/hooks";
 import { anyChangeInRange, baseChartSettings } from "./_helpers";
 import styles from "./Timeline.module.scss";
@@ -26,6 +32,10 @@ export default function Timeline({
   const hydrated = useHydratedChannels(
     data,
     useMemo(() => [data.channels[GROUND_SPEED_CH_IDX]], [data])
+  );
+  const hydratedthrottle = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[THROTTLE_POS_CH_IDX]], [data])
   );
 
   //Data initialisations
@@ -94,7 +104,7 @@ export default function Timeline({
         setPlaybackPause(true);
       }
     }
-  }, [playbackTime, loop]);
+  }, [playbackTime, loop, MAX_TIME]);
 
   //
   if (!hydrated) {
@@ -104,6 +114,9 @@ export default function Timeline({
   //
   const [groundSpeedChannel] = hydrated;
   const { filters } = filter;
+
+  const [throttleSpeedChannel] = hydratedthrottle;
+  console.log(throttleSpeedChannel);
 
   // prepare the data for the linechart
   const time = [];
