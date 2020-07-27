@@ -34,6 +34,7 @@ export default function Timeline({
     data,
     useMemo(() => [data.channels[THROTTLE_POS_CH_IDX]], [data])
   );
+  console.log(throttlehydrated);
 
   //Data initialisations
   const MAX_TIME = data.maxTime!;
@@ -111,6 +112,9 @@ export default function Timeline({
   //
   const [groundSpeedChannel] = hydrated;
   const { filters } = filter;
+
+  // const [throttleSpeedChannel] = throttlehydrated;
+  // console.log(throttleSpeedChannel);
 
   // prepare the data for the linechart
   const time = [];
