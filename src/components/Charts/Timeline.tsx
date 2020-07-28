@@ -9,6 +9,7 @@ import {
   GROUND_SPEED_CH_IDX,
   THROTTLE_POS_CH_IDX,
   LAP_NUMBER_CH_IDX,
+  BRAKE_POS_CH_IDX,
 } from "../../ts/qmsData/constants";
 import { StateHook } from "../../ts/hooks";
 import { anyChangeInRange, baseChartSettings } from "./_helpers";
@@ -38,6 +39,10 @@ export default function Timeline({
   const LapNumhydrated = useHydratedChannels(
     data,
     useMemo(() => [data.channels[LAP_NUMBER_CH_IDX]], [data])
+  );
+  const brakehydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[BRAKE_POS_CH_IDX]], [data])
   );
 
   //Data initialisations
@@ -125,8 +130,13 @@ export default function Timeline({
   //LapNumber
   const [lapNumberChannel] = LapNumhydrated;
   const lapData = lapNumberChannel.data;
-  const finalLap = 4;
-  const currentLap = lapData[Math.round(playbackTime * lapNumberChannel.freq)];
+  const finalLap = 4; //hardcoded for now as using MAX_TIME causes undefined value
+  const currentLap = lapData[Math.round(playbackTime * lapNumberChannel.freq)]; //calculates current lap
+
+  //Brake Pos
+  const [brakeChannel] = brakehydrated;
+  const brakeData = brakeChannel.data;
+  const brakePosition = brakeData[Math.round(playbackTime * brakeChannel.freq)];
 
   const { filters } = filter;
 
@@ -237,7 +247,7 @@ export default function Timeline({
 
           {/* Brakes Bar */}
           <Progress
-            percent={50}
+            percent={brakePosition}
             showInfo={true}
             strokeColor="#FF5964"
             strokeWidth={15}
