@@ -8,6 +8,7 @@ import { Crossfilter } from "../../ts/qmsData/crossfilter/types";
 import {
   GROUND_SPEED_CH_IDX,
   THROTTLE_POS_CH_IDX,
+  LAP_NUMBER_CH_IDX,
 } from "../../ts/qmsData/constants";
 import { StateHook } from "../../ts/hooks";
 import { anyChangeInRange, baseChartSettings } from "./_helpers";
@@ -33,6 +34,10 @@ export default function Timeline({
   const hydrated = useHydratedChannels(
     data,
     useMemo(() => [data.channels[GROUND_SPEED_CH_IDX]], [data])
+  );
+  const LapNumhydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[LAP_NUMBER_CH_IDX]], [data])
   );
 
   //Data initialisations
@@ -108,12 +113,21 @@ export default function Timeline({
     return <Spin />;
   }
 
-  //
+  //throttle
   const [throttleSpeedChannel] = throttlehydrated;
   const throttleData = throttleSpeedChannel.data;
   const throttlePosition =
     throttleData[Math.round(playbackTime * throttleSpeedChannel.freq)];
+
+  //Ground Speed
   const [groundSpeedChannel] = hydrated;
+
+  //LapNumber
+  const [lapNumberChannel] = LapNumhydrated;
+  const lapData = lapNumberChannel.data;
+  const finalLap = 4;
+  const currentLap = lapData[Math.round(playbackTime * lapNumberChannel.freq)];
+
   const { filters } = filter;
 
   // prepare the data for the linechart
@@ -202,14 +216,14 @@ export default function Timeline({
         <Label title="Total Laps" style={{ fontWeight: 600 }} />
         <Progress
           type="circle"
-          percent={(1 / 4) * 100}
-          format={(percent) => `${1}/${4}`}
+          percent={(currentLap / finalLap) * 100}
+          format={(percent) => `${currentLap}/${finalLap}`}
           strokeColor="#0F406A"
           strokeWidth={12}
           style={{ fontWeight: 600 }}
         />
         {/* Pedals */}
-        <div className="pedalposdiv" style={{ marginTop: "10px" }}>
+        <div className="pedalposdiv">
           <Label title="Pedal Positions" />
 
           {/* Acceleration Bar */}
