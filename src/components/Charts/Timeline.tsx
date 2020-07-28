@@ -25,16 +25,15 @@ export default function Timeline({
   data: QmsData;
   filterState: StateHook<Crossfilter>;
 }) {
+  const throttlehydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[THROTTLE_POS_CH_IDX]], [data])
+  );
   //retrieves data from channel specified in useMemo (Ground speed)
   const hydrated = useHydratedChannels(
     data,
     useMemo(() => [data.channels[GROUND_SPEED_CH_IDX]], [data])
   );
-  const throttlehydrated = useHydratedChannels(
-    data,
-    useMemo(() => [data.channels[THROTTLE_POS_CH_IDX]], [data])
-  );
-  console.log(throttlehydrated);
 
   //Data initialisations
   const MAX_TIME = data.maxTime!;
@@ -110,11 +109,12 @@ export default function Timeline({
   }
 
   //
+  const [throttleSpeedChannel] = throttlehydrated;
+  const throttleData = throttleSpeedChannel.data;
+  const throttlePosition =
+    throttleData[Math.round(playbackTime * throttleSpeedChannel.freq)];
   const [groundSpeedChannel] = hydrated;
   const { filters } = filter;
-
-  // const [throttleSpeedChannel] = throttlehydrated;
-  // console.log(throttleSpeedChannel);
 
   // prepare the data for the linechart
   const time = [];
@@ -184,7 +184,53 @@ export default function Timeline({
           }}
         />
       </div>
+      {/* Telemetry Components */}
+      <span>
+        {/* Speed indicator */}
+        <Label title="Current Speed" />
+        <Progress
+          style={{ height: "90px" }}
+          type="dashboard"
+          percent={150}
+          showInfo={true}
+          strokeColor="#0F406A"
+          strokeWidth={12}
+          gapDegree={140}
+          format={(percent) => `${percent}`}
+        />
+        {/* Total Laps */}
+        <Label title="Total Laps" style={{ fontWeight: 600 }} />
+        <Progress
+          type="circle"
+          percent={(1 / 4) * 100}
+          format={(percent) => `${1}/${4}`}
+          strokeColor="#0F406A"
+          strokeWidth={12}
+          style={{ fontWeight: 600 }}
+        />
+        {/* Pedals */}
+        <div className="pedalposdiv" style={{ marginTop: "10px" }}>
+          <Label title="Pedal Positions" />
 
+          {/* Acceleration Bar */}
+          <Progress
+            percent={throttlePosition}
+            showInfo={true}
+            strokeColor="#7BE0AD"
+            strokeWidth={15}
+            strokeLinecap="square"
+          />
+
+          {/* Brakes Bar */}
+          <Progress
+            percent={50}
+            showInfo={true}
+            strokeColor="#FF5964"
+            strokeWidth={15}
+            strokeLinecap="square"
+          />
+        </div>
+      </span>
       <span className="playbackControls">
         <div>
           Time: {min}:{sec}
