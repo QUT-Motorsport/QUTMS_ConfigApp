@@ -21,7 +21,16 @@ import Label from "../Telemetry/Label";
 import Draggable from "react-draggable";
 import useComponentSize from "@rehooks/component-size";
 
+//telemetry imports
 import DividerBar from "../Telemetry/DividerBar";
+import Car from "../Telemetry/Car";
+import LapInfo from "../Telemetry/LapInfo";
+import { ReactComponent as SteeringWheel } from "../../public/images/steering-wheel.svg";
+import { Row, Col } from "antd";
+import TrackInfo from "../Telemetry/TrackInfo";
+import RawTelemetry from "../Telemetry/RawTelemetry";
+import EngineAndPower from "../Telemetry/EngineAndPower";
+import DriverInfo from "../Telemetry/DriverInfo";
 
 export default function Timeline({
   data,
@@ -150,16 +159,20 @@ export default function Timeline({
   //LapNumber
   const [lapNumberChannel] = LapNumhydrated;
   const lapData = lapNumberChannel.data;
-  const lapFreq = lapNumberChannel.freq;
-  const finalLap = 4; //hardcoded for now as using MAX_TIME causes undefined value
-  const currentLap = lapData[playbackTime * lapFreq]; //calculates current lap
-
+  const finalLap = lapData[Math.round(MAX_TIME * lapNumberChannel.freq)]; //hardcoded for now as using MAX_TIME causes undefined value
+  const finalLaph = 4;
+  const currentLap = lapData[Math.round(playbackTime * lapNumberChannel.freq)]; //calculates current lap
+  console.log(finalLap);
   //Brake Pos
   const [brakeChannel] = brakehydrated;
   const brakeData = brakeChannel.data;
   const brakePosition = brakeData[Math.round(playbackTime * brakeChannel.freq)];
 
   //Steering Angle
+  const [steeringChannel] = steeringhydrated;
+  const steeringData = steeringChannel.data;
+  const steeringAngle =
+    steeringData[Math.round(playbackTime * steeringChannel.freq)];
 
   const { filters } = filter;
 
@@ -177,6 +190,7 @@ export default function Timeline({
 
   return (
     <div>
+      {/* DRAGGABLE COMPONENT */}
       <div className={styles.draggablecomp}>
         <Draggable
           bounds={{ top: 0, left: -9, right: width - 9, bottom: 0 }}
@@ -206,6 +220,7 @@ export default function Timeline({
         </Draggable>
       </div>
 
+      {/* TIMELINE */}
       <div className={styles.timeline} ref={ref}>
         <Plot
           {...baseChartSettings}
@@ -233,6 +248,7 @@ export default function Timeline({
         />
       </div>
 
+      {/* PLAYBACK CONTROLS */}
       <span className="playbackControls">
         <div>
           Time: {min}:{sec}
@@ -261,75 +277,211 @@ export default function Timeline({
       </span>
 
       {/* Telemetry Components */}
-      <span>
-        {/* Steering Wheel */}
-        <div className={styles.SteeringWheel}>
-          <h3 style={{ color: "#0F406A" }}>Steering Angle</h3>
-          <DividerBar />
+      <div>
+        <Row>
+          <Col
+            lg={{ span: 5 }}
+            md={{ span: 12 }}
+            xs={{ span: 24 }}
+            style={{ padding: "10px 20px" }}
+          >
+            <div style={{ marginTop: "5px" }}>
+              <h3 style={{ color: "#0F406A" }}>Lap Info</h3>
+              <DividerBar />
 
-          <div className={styles.WheelSVG}>
-            {/* The Wheel SVG */}
-            {/* <div style={{ marginTop: "5px", width: "40%" }}>
-              <SteeringWheel />
-            </div> */}
+              {/* Current Lap */}
+              <div
+                style={{
+                  marginTop: "10px",
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <div style={{ float: "left", width: "50%" }}>
+                  <Statistic
+                    valueStyle={{ color: "#0F406A" }}
+                    title="Current Lap"
+                    value={"1:00:00"}
+                    precision={2}
+                    style={{ fontWeight: 600 }}
+                  />
+                </div>
 
-            {/* Angle Reading of Steering Wheel */}
-            <div>
-              <Statistic
-                valueStyle={{ color: "#0F406A" }}
-                title="Current"
-                value={0.5}
-                precision={0}
-                style={{ marginLeft: "20px", fontWeight: 600 }}
-              />
+                {/* Best Lap */}
+                <div style={{ float: "left", width: "50%" }}>
+                  <Statistic
+                    valueStyle={{ color: "#0F406A" }}
+                    title="Best Lap"
+                    value={"1:03:00"}
+                    precision={2}
+                    style={{ fontWeight: 600 }}
+                  />
+                </div>
+              </div>
+
+              <div
+                style={{
+                  marginTop: "10px",
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {/* Top Lap Speed */}
+                <div style={{ float: "left", width: "50%" }}>
+                  <Statistic
+                    valueStyle={{ color: "#0F406A" }}
+                    title="Top Lap Speed"
+                    value={"100"}
+                    suffix={"km/h"}
+                    precision={0}
+                    style={{ fontWeight: 600 }}
+                  />
+                </div>
+
+                {/* Top Race Speed */}
+                <div style={{ float: "left", width: "50%" }}>
+                  <Statistic
+                    valueStyle={{ color: "#0F406A" }}
+                    title="Top Race Speed"
+                    value={"200"}
+                    suffix={"km/h"}
+                    precision={0}
+                    style={{ fontWeight: 600 }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginTop: "10px" }}>
+                {/* Total Laps */}
+                <Label title="Total Laps" style={{ fontWeight: 600 }} />
+                <Progress
+                  type="circle"
+                  percent={(currentLap / finalLaph) * 100}
+                  format={(percent) => `${currentLap}/${finalLaph}`}
+                  strokeColor="#0F406A"
+                  strokeWidth={12}
+                  style={{ fontWeight: 600 }}
+                />
+              </div>
             </div>
-          </div>
-        </div>
-        {/* Speed indicator */}
-        <Label title="Current Speed" />
-        <Progress
-          style={{ height: "90px" }}
-          type="dashboard"
-          percent={Math.round(groundSpeedComponent)}
-          showInfo={true}
-          strokeColor="#0F406A"
-          strokeWidth={12}
-          gapDegree={140}
-          format={(percent) => `${percent}`}
-        />
-        {/* Total Laps */}
-        <Label title="Total Laps" style={{ fontWeight: 600 }} />
-        <Progress
-          type="circle"
-          percent={(currentLap / finalLap) * 100}
-          format={(percent) => `${currentLap}/${finalLap}`}
-          strokeColor="#0F406A"
-          strokeWidth={12}
-          style={{ fontWeight: 600 }}
-        />
-        {/* Pedals */}
-        <div className="pedalposdiv">
-          <Label title="Pedal Positions" />
+          </Col>
+          <Col
+            lg={{ span: 5 }}
+            md={{ span: 12 }}
+            xs={{ span: 24 }}
+            style={{ padding: "10px 20px" }}
+          >
+            {/* STEERING WHEEL */}
+            <div className={styles.steeringWheel}>
+              <h3 style={{ color: "#0F406A" }}>Steering Angle</h3>
+              <DividerBar />
 
-          {/* Acceleration Bar */}
-          <Progress
-            percent={throttlePosition}
-            showInfo={true}
-            strokeColor="#7BE0AD"
-            strokeWidth={15}
-            strokeLinecap="square"
-          />
+              <div className={styles.wheelSVG}>
+                {/* The Wheel SVG */}
+                <div style={{ marginTop: "5px", width: "40%" }}>
+                  <SteeringWheel
+                    style={{
+                      width: "100px",
+                      height: "100%",
+                      margin: "0",
+                      padding: "0",
+                    }}
+                  />
+                </div>
 
-          {/* Brakes Bar */}
-          <Progress
-            percent={10}
-            showInfo={true}
-            strokeColor="#FF5964"
-            strokeWidth={15}
-            strokeLinecap="square"
-          />
-        </div>
-      </span>
+                {/* Angle Reading of Steering Wheel */}
+                <div>
+                  <Statistic
+                    valueStyle={{ color: "#0F406A" }}
+                    title="Current"
+                    value={0.5}
+                    precision={0}
+                    style={{ marginLeft: "20px", fontWeight: 600 }}
+                  />
+                </div>
+              </div>
+            </div>
+            {/****/}
+          </Col>
+          <Col
+            lg={{ span: 7 }}
+            md={{ span: 12 }}
+            xs={{ span: 24 }}
+            style={{ padding: "10px 20px" }}
+          >
+            <div style={{ marginTop: "5px" }}>
+              <h3 style={{ color: "#0F406A" }}>Engine and Power</h3>
+              <DividerBar />
+
+              <div style={{ marginTop: "10px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    height: "100%",
+                  }}
+                >
+                  {/* Speed indicator */}
+                  <div style={{ width: "50%" }}>
+                    <Label title="Current Speed" />
+                    <Progress
+                      style={{ height: "90px" }}
+                      type="dashboard"
+                      percent={groundSpeedComponent}
+                      showInfo={true}
+                      strokeColor="#0F406A"
+                      strokeWidth={12}
+                      gapDegree={140}
+                      format={(percent) => `${percent}`}
+                    />
+                  </div>
+
+                  {/* Charge indicator */}
+                  <div style={{ width: "50%" }}>
+                    <Statistic
+                      title={"Charge"}
+                      valueStyle={{ color: "#0F406A" }}
+                      value={100}
+                      suffix="%"
+                      style={{ fontWeight: 600 }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: "10px" }}>
+                <Label title="Pedal Positions" />
+
+                {/* Acceleration Bar */}
+                <Progress
+                  percent={throttlePosition}
+                  showInfo={true}
+                  strokeColor="#7BE0AD"
+                  strokeWidth={15}
+                  strokeLinecap="square"
+                />
+
+                {/* Brakes Bar */}
+                <Progress
+                  percent={brakePosition}
+                  showInfo={true}
+                  strokeColor="#FF5964"
+                  strokeWidth={15}
+                  strokeLinecap="square"
+                />
+              </div>
+            </div>
+          </Col>
+          <Col
+            lg={{ span: 7 }}
+            md={{ span: 12 }}
+            xs={{ span: 24 }}
+            style={{ padding: "10px 20px" }}
+          >
+            <RawTelemetry />
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 }
