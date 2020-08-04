@@ -10,6 +10,7 @@ import {
   THROTTLE_POS_CH_IDX,
   LAP_NUMBER_CH_IDX,
   BRAKE_POS_CH_IDX,
+  STEERING_ANGLE_CH_IDX,
 } from "../../ts/qmsData/constants";
 import { StateHook } from "../../ts/hooks";
 import { anyChangeInRange, baseChartSettings } from "./_helpers";
@@ -19,6 +20,8 @@ import Label from "../Telemetry/Label";
 
 import Draggable from "react-draggable";
 import useComponentSize from "@rehooks/component-size";
+
+import DividerBar from "../Telemetry/DividerBar";
 
 export default function Timeline({
   data,
@@ -45,6 +48,11 @@ export default function Timeline({
     useMemo(() => [data.channels[BRAKE_POS_CH_IDX]], [data])
   );
 
+  const steeringhydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[STEERING_ANGLE_CH_IDX]], [data])
+  );
+
   //Data initialisations
   const MAX_TIME = data.maxTime!;
   let ref = useRef(null);
@@ -57,6 +65,7 @@ export default function Timeline({
   const [loop, setLoop] = useState<boolean>(false);
   const [dragPause, setDragPause] = useState<boolean>(false);
 
+  //Action Handling for Pause Button
   function handlePauseClick(e: any) {
     if (!pausePlayback) {
       setPlaybackPause(true);
@@ -66,6 +75,7 @@ export default function Timeline({
     console.log(pausePlayback);
   }
 
+  //Action Handling for Loop Button
   function handleLoopClick(e: any) {
     if (!loop) {
       setLoop(true);
@@ -75,6 +85,7 @@ export default function Timeline({
     console.log(loop);
   }
 
+  //Action Handling for Dropdown
   function handleMenuClick(e: any) {
     let source = e.key;
     setScalar(source / 2);
@@ -114,7 +125,13 @@ export default function Timeline({
   }, [playbackTime, loop, MAX_TIME]);
 
   //
-  if (!hydrated) {
+  if (
+    !hydrated ||
+    !throttlehydrated ||
+    !brakehydrated ||
+    !steeringhydrated ||
+    !LapNumhydrated
+  ) {
     return <Spin />;
   }
 
@@ -126,17 +143,23 @@ export default function Timeline({
 
   //Ground Speed
   const [groundSpeedChannel] = hydrated;
+  const groundSpeedData1 = groundSpeedChannel.data;
+  const groundSpeedComponent =
+    groundSpeedData1[Math.round(playbackTime * groundSpeedChannel.freq)];
 
   //LapNumber
   const [lapNumberChannel] = LapNumhydrated;
   const lapData = lapNumberChannel.data;
+  const lapFreq = lapNumberChannel.freq;
   const finalLap = 4; //hardcoded for now as using MAX_TIME causes undefined value
-  const currentLap = lapData[Math.round(playbackTime * lapNumberChannel.freq)]; //calculates current lap
+  const currentLap = lapData[playbackTime * lapFreq]; //calculates current lap
 
   //Brake Pos
   const [brakeChannel] = brakehydrated;
   const brakeData = brakeChannel.data;
   const brakePosition = brakeData[Math.round(playbackTime * brakeChannel.freq)];
+
+  //Steering Angle
 
   const { filters } = filter;
 
@@ -178,6 +201,7 @@ export default function Timeline({
             src="https://i.imgur.com/UaNQMyr.png"
             draggable="false"
             style={{ zIndex: 10 }}
+            alt="Drag Bar"
           />
         </Draggable>
       </div>
@@ -208,14 +232,65 @@ export default function Timeline({
           }}
         />
       </div>
+
+      <span className="playbackControls">
+        <div>
+          Time: {min}:{sec}
+        </div>
+        <Button
+          type="ghost"
+          size="small"
+          shape="round"
+          onClick={handlePauseClick}
+        >
+          Play
+        </Button>
+        <Button
+          type="ghost"
+          size="small"
+          shape="round"
+          onClick={handleLoopClick}
+        >
+          Loop
+        </Button>
+        <Dropdown overlay={menu}>
+          <Button type="ghost" size="small" shape="round">
+            Speed
+          </Button>
+        </Dropdown>
+      </span>
+
       {/* Telemetry Components */}
       <span>
+        {/* Steering Wheel */}
+        <div className={styles.SteeringWheel}>
+          <h3 style={{ color: "#0F406A" }}>Steering Angle</h3>
+          <DividerBar />
+
+          <div className={styles.WheelSVG}>
+            {/* The Wheel SVG */}
+            {/* <div style={{ marginTop: "5px", width: "40%" }}>
+              <SteeringWheel />
+            </div> */}
+
+            {/* Angle Reading of Steering Wheel */}
+            <div>
+              <Statistic
+                valueStyle={{ color: "#0F406A" }}
+                title="Current"
+                value={0.5}
+                precision={0}
+                style={{ marginLeft: "20px", fontWeight: 600 }}
+              />
+            </div>
+          </div>
+        </div>
         {/* Speed indicator */}
         <Label title="Current Speed" />
         <Progress
           style={{ height: "90px" }}
           type="dashboard"
-          percent={150}
+          percent={Math.round(groundSpeedComponent)}
           showInfo={true}
           strokeColor="#0F406A"
           strokeWidth={12}
@@ -247,39 +322,13 @@ export default function Timeline({
 
           {/* Brakes Bar */}
           <Progress
-            percent={brakePosition}
+            percent={10}
             showInfo={true}
             strokeColor="#FF5964"
             strokeWidth={15}
             strokeLinecap="square"
           />
         </div>
-      </span>
-      <span className="playbackControls">
-        <div>
-          Time: {min}:{sec}
-        </div>
-        <Button
-          type="ghost"
-          size="small"
-          shape="round"
-          onClick={handlePauseClick}
-        >
-          Play
-        </Button>
-        <Button
-          type="ghost"
-          size="small"
-          shape="round"
-          onClick={handleLoopClick}
-        >
-          Loop
-        </Button>
-        <Dropdown overlay={menu}>
-          <Button type="ghost" size="small" shape="round">
-            Speed
-          </Button>
-        </Dropdown>
       </span>
     </div>
   );

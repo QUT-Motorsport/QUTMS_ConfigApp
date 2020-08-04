@@ -42,4 +42,15 @@
     position: absolute;
     overflow: visible;
   }
+  :local(.steeringwheel) {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  :local(.wheelSVG) {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
 }
