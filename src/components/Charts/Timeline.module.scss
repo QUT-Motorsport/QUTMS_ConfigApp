@@ -53,4 +53,10 @@
     flex-direction: row;
     align-items: center;
   }
+  :local(.wheelRotate) {
+    position: relative;
+    transform: rotate(1.6rad);
+    margin-top: 5px;
+    width: 40%;
+  }
 }

@@ -1,5 +1,14 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Spin, Button, Dropdown, Menu, Progress, Statistic } from "antd";
+import {
+  Spin,
+  Button,
+  Dropdown,
+  Menu,
+  Progress,
+  Statistic,
+  Row,
+  Col,
+} from "antd";
 import Plot from "react-plotly.js";
 
 import { QmsData } from "../../ts/qmsData/types";
@@ -16,21 +25,15 @@ import { StateHook } from "../../ts/hooks";
 import { anyChangeInRange, baseChartSettings } from "./_helpers";
 import styles from "./Timeline.module.scss";
 import useHydratedChannels from "../../ts/qmsData/useHydratedChannels";
-import Label from "../Telemetry/Label";
 
 import Draggable from "react-draggable";
 import useComponentSize from "@rehooks/component-size";
 
 //telemetry imports
 import DividerBar from "../Telemetry/DividerBar";
-import Car from "../Telemetry/Car";
-import LapInfo from "../Telemetry/LapInfo";
+import Label from "../Telemetry/Label";
 import { ReactComponent as SteeringWheel } from "../../public/images/steering-wheel.svg";
-import { Row, Col } from "antd";
-import TrackInfo from "../Telemetry/TrackInfo";
 import RawTelemetry from "../Telemetry/RawTelemetry";
-import EngineAndPower from "../Telemetry/EngineAndPower";
-import DriverInfo from "../Telemetry/DriverInfo";
 
 export default function Timeline({
   data,
@@ -163,6 +166,7 @@ export default function Timeline({
   const finalLaph = 4;
   const currentLap = lapData[Math.round(playbackTime * lapNumberChannel.freq)]; //calculates current lap
   console.log(finalLap);
+
   //Brake Pos
   const [brakeChannel] = brakehydrated;
   const brakeData = brakeChannel.data;
@@ -171,8 +175,7 @@ export default function Timeline({
   //Steering Angle
   const [steeringChannel] = steeringhydrated;
   const steeringData = steeringChannel.data;
-  const steeringAngle =
-    steeringData[Math.round(playbackTime * steeringChannel.freq)];
+  const steeringAngle = steeringData[playbackTime * steeringChannel.freq];
 
   const { filters } = filter;
 
@@ -378,7 +381,7 @@ export default function Timeline({
 
               <div className={styles.wheelSVG}>
                 {/* The Wheel SVG */}
-                <div style={{ marginTop: "5px", width: "40%" }}>
+                <div className={styles.wheelRotate}>
                   <SteeringWheel
                     style={{
                       width: "100px",
@@ -394,7 +397,7 @@ export default function Timeline({
                   <Statistic
                     valueStyle={{ color: "#0F406A" }}
                     title="Current"
-                    value={0.5}
+                    value={steeringAngle}
                     precision={0}
                     style={{ marginLeft: "20px", fontWeight: 600 }}
                   />
@@ -427,7 +430,7 @@ export default function Timeline({
                     <Progress
                       style={{ height: "90px" }}
                       type="dashboard"
-                      percent={groundSpeedComponent}
+                      percent={Math.round(groundSpeedComponent)}
                       showInfo={true}
                       strokeColor="#0F406A"
                       strokeWidth={12}
@@ -454,7 +457,7 @@ export default function Timeline({
 
                 {/* Acceleration Bar */}
                 <Progress
-                  percent={throttlePosition}
+                  percent={Math.round(throttlePosition)}
                   showInfo={true}
                   strokeColor="#7BE0AD"
                   strokeWidth={15}
@@ -463,7 +466,7 @@ export default function Timeline({
 
                 {/* Brakes Bar */}
                 <Progress
-                  percent={brakePosition}
+                  percent={Math.round(brakePosition)}
                   showInfo={true}
                   strokeColor="#FF5964"
                   strokeWidth={15}
