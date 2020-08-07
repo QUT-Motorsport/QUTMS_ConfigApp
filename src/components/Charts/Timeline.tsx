@@ -18,8 +18,15 @@ import {
   GROUND_SPEED_CH_IDX,
   THROTTLE_POS_CH_IDX,
   LAP_NUMBER_CH_IDX,
-  BRAKE_POS_CH_IDX,
+  BRAKE_POSR_CH_IDX,
   STEERING_ANGLE_CH_IDX,
+  BRAKE_TEMPR_CH_IDX,
+  RUNNING_LAP_TIME_CH_IDX,
+  // BATTERY_VOLTS_CH_IDX,
+  GEAR_CH_IDX,
+  ENGINE_RPM_CH_IDX,
+  G_FORCE_LAT_CH_IDX,
+  G_FORCE_LONG_CH_IDX,
 } from "../../ts/qmsData/constants";
 import { StateHook } from "../../ts/hooks";
 import { anyChangeInRange, baseChartSettings } from "./_helpers";
@@ -57,12 +64,44 @@ export default function Timeline({
   );
   const brakehydrated = useHydratedChannels(
     data,
-    useMemo(() => [data.channels[BRAKE_POS_CH_IDX]], [data])
+    useMemo(() => [data.channels[BRAKE_POSR_CH_IDX]], [data])
   );
 
   const steeringhydrated = useHydratedChannels(
     data,
     useMemo(() => [data.channels[STEERING_ANGLE_CH_IDX]], [data])
+  );
+
+  const runningLapTimehydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[RUNNING_LAP_TIME_CH_IDX]], [data])
+  );
+
+  //RAW TELEMETRY CHANNELS
+  const brakeTemphydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[BRAKE_TEMPR_CH_IDX]], [data])
+  );
+
+  // const batteryVoltshydrated = useHydratedChannels(
+  //   data,
+  //   useMemo(() => [data.channels[BATTERY_VOLTS_CH_IDX]], [data])
+  // );
+  const gearhydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[GEAR_CH_IDX]], [data])
+  );
+  const engineRPMhydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[ENGINE_RPM_CH_IDX]], [data])
+  );
+  const gforceLathydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[G_FORCE_LAT_CH_IDX]], [data])
+  );
+  const gforceLonghydrated = useHydratedChannels(
+    data,
+    useMemo(() => [data.channels[G_FORCE_LONG_CH_IDX]], [data])
   );
 
   //Data initialisations
@@ -85,6 +124,7 @@ export default function Timeline({
       setPlaybackPause(false);
     }
     console.log(pausePlayback);
+    console.log(data);
   }
 
   //Action Handling for Loop Button
@@ -142,7 +182,14 @@ export default function Timeline({
     !throttlehydrated ||
     !brakehydrated ||
     !steeringhydrated ||
-    !LapNumhydrated
+    !LapNumhydrated ||
+    !brakeTemphydrated ||
+    !runningLapTimehydrated ||
+    // !batteryVoltshydrated ||
+    !gearhydrated ||
+    !engineRPMhydrated ||
+    !gforceLathydrated ||
+    !gforceLonghydrated
   ) {
     return <Spin />;
   }
@@ -176,6 +223,24 @@ export default function Timeline({
   const [steeringChannel] = steeringhydrated;
   const steeringData = steeringChannel.data;
   const steeringAngle = steeringData[playbackTime * steeringChannel.freq];
+
+  //Brake temp
+
+  //Running lap time
+  const [runningLapChannel] = runningLapTimehydrated;
+  const runningLapData = runningLapChannel.data;
+  const runningLap = runningLapData[playbackTime * runningLapChannel.freq];
+
+  //Battery volts
+  // const [batteryVoltsChannel] = batteryVoltshydrated;
+  // const batteryVoltsData = batteryVoltsChannel.data;
+  // console.log(batteryVoltsData);
+
+  //Gear
+
+  //ENGINE RPM
+
+  //GFORCE LAT & LONG
 
   const { filters } = filter;
 
@@ -304,7 +369,7 @@ export default function Timeline({
                   <Statistic
                     valueStyle={{ color: "#0F406A" }}
                     title="Current Lap"
-                    value={"1:00:00"}
+                    value={runningLap}
                     precision={2}
                     style={{ fontWeight: 600 }}
                   />
