@@ -8,6 +8,7 @@ import {
   Statistic,
   Row,
   Col,
+  Table,
 } from "antd";
 import Plot from "react-plotly.js";
 
@@ -40,7 +41,6 @@ import useComponentSize from "@rehooks/component-size";
 import DividerBar from "../Telemetry/DividerBar";
 import Label from "../Telemetry/Label";
 import { ReactComponent as SteeringWheel } from "../../public/images/steering-wheel.svg";
-import RawTelemetry from "../Telemetry/RawTelemetry";
 
 export default function Timeline({
   data,
@@ -87,6 +87,7 @@ export default function Timeline({
   //   data,
   //   useMemo(() => [data.channels[BATTERY_VOLTS_CH_IDX]], [data])
   // );
+
   const gearhydrated = useHydratedChannels(
     data,
     useMemo(() => [data.channels[GEAR_CH_IDX]], [data])
@@ -124,7 +125,6 @@ export default function Timeline({
       setPlaybackPause(false);
     }
     console.log(pausePlayback);
-    console.log(data);
   }
 
   //Action Handling for Loop Button
@@ -225,11 +225,16 @@ export default function Timeline({
   const steeringAngle = steeringData[playbackTime * steeringChannel.freq];
 
   //Brake temp
+  const [brakeTempChannel] = brakeTemphydrated;
+  const brakeTempData = brakeTempChannel.data;
+  const brakeTemp =
+    brakeTempData[Math.round(playbackTime * brakeTempChannel.freq)];
 
   //Running lap time
   const [runningLapChannel] = runningLapTimehydrated;
   const runningLapData = runningLapChannel.data;
-  const runningLap = runningLapData[playbackTime * runningLapChannel.freq];
+  const runningLap =
+    runningLapData[Math.round(playbackTime * runningLapChannel.freq)];
 
   //Battery volts
   // const [batteryVoltsChannel] = batteryVoltshydrated;
@@ -237,10 +242,26 @@ export default function Timeline({
   // console.log(batteryVoltsData);
 
   //Gear
+  const [gearChannel] = gearhydrated;
+  const gearData = gearChannel.data;
+  const currentGear = gearData[Math.round(playbackTime * gearChannel.freq)];
 
   //ENGINE RPM
+  const [engineRPMChannel] = engineRPMhydrated;
+  const engineRPMData = engineRPMChannel.data;
+  const engineRPM =
+    engineRPMData[Math.round(playbackTime * engineRPMChannel.freq)];
 
   //GFORCE LAT & LONG
+  const [gforceLongChannel] = gforceLonghydrated;
+  const gforceLongData = gforceLongChannel.data;
+  const gforceLong =
+    gforceLongData[Math.round(playbackTime * gforceLongChannel.freq)];
+
+  const [gforceLatChannel] = gforceLathydrated;
+  const gforceLatData = gforceLatChannel.data;
+  const gforceLat =
+    gforceLatData[Math.round(playbackTime * gforceLatChannel.freq)];
 
   const { filters } = filter;
 
@@ -255,6 +276,51 @@ export default function Timeline({
   //mins and sec calcs
   let min = Math.floor((playbackTime / 60) % 60);
   let sec = Math.floor(playbackTime % 60);
+
+  const rawTelemColumns = [
+    {
+      title: "Channel",
+      dataIndex: "channel",
+      key: "channel",
+    },
+    {
+      title: "Reading",
+      dataIndex: "reading",
+      key: "reading",
+    },
+    {
+      title: "Unit",
+      key: "unit",
+      dataIndex: "unit",
+    },
+  ];
+
+  const rawTelemData = [
+    {
+      key: "1",
+      channel: "Engine RPM",
+      reading: engineRPM,
+      unit: "RPM",
+    },
+    {
+      key: "2",
+      channel: "Brake Temp",
+      reading: brakeTemp,
+      unit: "C",
+    },
+    {
+      key: "3",
+      channel: "G-Force Long",
+      reading: gforceLong,
+      unit: "G",
+    },
+    {
+      key: "4",
+      channel: "G-Force Lat",
+      reading: gforceLat,
+      unit: "G",
+    },
+  ];
 
   return (
     <div>
@@ -546,7 +612,20 @@ export default function Timeline({
             xs={{ span: 24 }}
             style={{ padding: "10px 20px" }}
           >
-            <RawTelemetry />
+            <div className="telemetry">
+              <h3 style={{ marginTop: "10px", padding: "0", color: "#0F406A" }}>
+                Raw Telemetry
+              </h3>
+              <DividerBar />
+
+              <Table
+                columns={rawTelemColumns}
+                dataSource={rawTelemData}
+                size="small"
+                pagination={false}
+                style={{ marginTop: "10px" }}
+              />
+            </div>
           </Col>
         </Row>
       </div>
