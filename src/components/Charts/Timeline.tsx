@@ -209,10 +209,8 @@ export default function Timeline({
   //LapNumber
   const [lapNumberChannel] = LapNumhydrated;
   const lapData = lapNumberChannel.data;
-  const finalLap = lapData[Math.round(MAX_TIME * lapNumberChannel.freq)]; //hardcoded for now as using MAX_TIME causes undefined value
-  const finalLaph = 4;
+  const finalLap = lapData[Math.round((MAX_TIME - 1) * lapNumberChannel.freq)]; //hardcoded for now as using MAX_TIME causes undefined value
   const currentLap = lapData[Math.round(playbackTime * lapNumberChannel.freq)]; //calculates current lap
-  console.log(finalLap);
 
   //Brake Pos
   const [brakeChannel] = brakehydrated;
@@ -490,8 +488,8 @@ export default function Timeline({
                 <Label title="Total Laps" style={{ fontWeight: 600 }} />
                 <Progress
                   type="circle"
-                  percent={(currentLap / finalLaph) * 100}
-                  format={(percent) => `${currentLap}/${finalLaph}`}
+                  percent={(currentLap / finalLap) * 100}
+                  format={(percent) => `${currentLap}/${finalLap}`}
                   strokeColor="#0F406A"
                   strokeWidth={12}
                   style={{ fontWeight: 600 }}
