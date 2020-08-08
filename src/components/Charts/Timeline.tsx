@@ -176,7 +176,7 @@ export default function Timeline({
     }
   }, [playbackTime, loop, MAX_TIME]);
 
-  //
+  //Prevents null issue by waiting until all channels are hydrated
   if (
     !hydrated ||
     !throttlehydrated ||
@@ -195,10 +195,10 @@ export default function Timeline({
   }
 
   //throttle
-  const [throttleSpeedChannel] = throttlehydrated;
-  const throttleData = throttleSpeedChannel.data;
+  const [throttleSpeedChannel] = throttlehydrated; //Gets the information needed out of channel
+  const throttleData = throttleSpeedChannel.data; //Gets the data array out
   const throttlePosition =
-    throttleData[Math.round(playbackTime * throttleSpeedChannel.freq)];
+    throttleData[Math.round(playbackTime * throttleSpeedChannel.freq)]; //Gets the data at the current time using the data frequency
 
   //Ground Speed
   const [groundSpeedChannel] = hydrated;
@@ -209,18 +209,19 @@ export default function Timeline({
   //LapNumber
   const [lapNumberChannel] = LapNumhydrated;
   const lapData = lapNumberChannel.data;
-  const finalLap = lapData[Math.round((MAX_TIME - 1) * lapNumberChannel.freq)]; //hardcoded for now as using MAX_TIME causes undefined value
+  const finalLap = lapData[Math.round((MAX_TIME - 1) * lapNumberChannel.freq)]; //MAX_TIME - 1 as MAX_TIME is undefined
   const currentLap = lapData[Math.round(playbackTime * lapNumberChannel.freq)]; //calculates current lap
 
   //Brake Pos
   const [brakeChannel] = brakehydrated;
   const brakeData = brakeChannel.data;
-  const brakePosition = brakeData[Math.round(playbackTime * brakeChannel.freq)];
+  const brakePosition = brakeData[Math.round(playbackTime * brakeChannel.freq)]; //
 
   //Steering Angle
   const [steeringChannel] = steeringhydrated;
   const steeringData = steeringChannel.data;
-  const steeringAngle = steeringData[playbackTime * steeringChannel.freq];
+  const steeringAngle =
+    steeringData[Math.round(playbackTime * steeringChannel.freq)];
 
   //Brake temp
   const [brakeTempChannel] = brakeTemphydrated;
@@ -275,6 +276,7 @@ export default function Timeline({
   let min = Math.floor((playbackTime / 60) % 60);
   let sec = Math.floor(playbackTime % 60);
 
+  //Sets up colums for raw telemetry table
   const rawTelemColumns = [
     {
       title: "Channel",
@@ -293,6 +295,7 @@ export default function Timeline({
     },
   ];
 
+  //fills out raw telemetry table with data
   const rawTelemData = [
     {
       key: "1",
@@ -317,6 +320,12 @@ export default function Timeline({
       channel: "G-Force Lat",
       reading: gforceLat,
       unit: "G",
+    },
+    {
+      key: "5",
+      channel: "Gear",
+      reading: currentGear,
+      unit: "Gear",
     },
   ];
 
@@ -511,13 +520,20 @@ export default function Timeline({
               <div className={styles.wheelSVG}>
                 {/* The Wheel SVG */}
                 <div className={styles.wheelRotate}>
+                  <style>
+                    {`
+            .steeringwheelplayback {
+              transform: rotate(${steeringAngle}rad);
+            }
+          `}
+                  </style>
+                  {/*SteeringWheel svg with inpage styling for rotate*/}
                   <SteeringWheel
-                    style={{
-                      width: "100px",
-                      height: "100%",
-                      margin: "0",
-                      padding: "0",
-                    }}
+                    className="steeringwheelplayback"
+                    width="100px"
+                    height="100%"
+                    //margin="0"
+                    //padding="0"
                   />
                 </div>
 
