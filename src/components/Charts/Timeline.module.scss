@@ -55,7 +55,9 @@
   }
   :local(.wheelRotate) {
     position: relative;
-    transform: rotate(1.6rad);
+    //transform: rotate(1.6rad);
+    //transform: rotate(steeringAngle rad);
+    //transform: rotate(${steeringAngle});
     margin-top: 5px;
     width: 40%;
   }
