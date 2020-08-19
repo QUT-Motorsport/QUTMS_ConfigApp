@@ -6,6 +6,7 @@
     margin-top: 10px;
     height: 40px;
     overflow: hidden;
+    position: relative;
 
     > .js-plotly-plot {
       width: calc(100% + 153px) !important;
@@ -22,5 +23,42 @@
         transform: translate(3px, 0);
       }
     }
+  }
+  :local(.draggablecomp) {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 10px;
+    height: 40px;
+    overflow: visible;
+    position: absolute;
+  }
+  :local(.playbackControls) {
+    width: 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 10px;
+    height: 40px;
+    position: absolute;
+    overflow: visible;
+  }
+  :local(.steeringwheel) {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  :local(.wheelSVG) {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  :local(.wheelRotate) {
+    position: relative;
+    //transform: rotate(1.6rad);
+    //transform: rotate(steeringAngle rad);
+    //transform: rotate(${steeringAngle});
+    margin-top: 5px;
+    width: 40%;
   }
 }
