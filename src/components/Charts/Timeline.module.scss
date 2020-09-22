@@ -32,6 +32,7 @@
     height: 40px;
     overflow: visible;
     position: absolute;
+    z-index: 10;
   }
   :local(.playbackControls) {
     width: 90%;

@@ -255,12 +255,12 @@ export default function Timeline({
   const [gforceLongChannel] = gforceLonghydrated;
   const gforceLongData = gforceLongChannel.data;
   const gforceLong =
-    gforceLongData[Math.round(playbackTime * gforceLongChannel.freq)];
+    Math.round((gforceLongData[Math.round(playbackTime * gforceLongChannel.freq)] + Number.EPSILON) * 1000) / 1000;
 
   const [gforceLatChannel] = gforceLathydrated;
   const gforceLatData = gforceLatChannel.data;
   const gforceLat =
-    gforceLatData[Math.round(playbackTime * gforceLatChannel.freq)];
+    Math.round((gforceLatData[Math.round(playbackTime * gforceLatChannel.freq)] + Number.EPSILON) * 1000) / 1000;
 
   const { filters } = filter;
 
@@ -355,7 +355,7 @@ export default function Timeline({
           <img
             src="https://i.imgur.com/UaNQMyr.png"
             draggable="false"
-            style={{ zIndex: 10 }}
+            style={{ zIndex: 15 }}
             alt="Drag Bar"
           />
         </Draggable>
@@ -532,8 +532,8 @@ export default function Timeline({
                     className="steeringwheelplayback"
                     width="100px"
                     height="100%"
-                    //margin="0"
-                    //padding="0"
+                  //margin="0"
+                  //padding="0"
                   />
                 </div>
 

@@ -1,224 +1,450 @@
 """ Parser for MoTec ld files
-
 Code created through reverse engineering the data format.
-So far, the decoding looks as follows:
-
-### header
-description       length    offset
------------------------------------
-unknown           0x8       0x000
-channel meta ptr  0x4       0x008
-channel data ptr  0x4       0x00c
-unknown           0x14      0x010
-descr ptr         0x4       0x024
-unknown           0x1a      0x028
-unknown           0x4       0x042
-device serial     0x4       0x046
-device type       0x8       0x04a
-device version    0x4       0x052
-unknown           0x4       0x056
-unknown           0x4       0x05a
-date              0x10      0x05e
-unknown           0x10      0x06e
-time              0x10      0x07e
-unknown           0x10      0x08e
-name              0x40      0x09e
-vehicle1          0x40      0x0ce
-unknown           0x40      0x11e
-venue             0x40      0x15e
-vehicle2          0x40      0x6e2
-
-### channel meta data
-description       length    offset
----------------------------------
-prev_addr         0x4       0x00
-next_addr         0x4       0x04
-data ptr          0x4       0x08
-n_data            0x4       0x0c
-somecnt           0x2       0x10
-datatype          0x2       0x12
-datatype          0x2       0x14
-rec freq          0x2       0x16
-shift             0x2       0x18
-unknown           0x2       0x1a
-scale             0x2       0x1c
-dec_places        0x2       0x1e
-name              0x28      0x20
-unit              0x0c      0x48
-scale             0x2       0x54
-unknown           0x2       0x56
-unknown           0x1a      0x58
 """
 
 import datetime
+import struct
+
 import numpy as np
 
-dt32 = np.dtype(np.uint32).newbyteorder('<')
-dt16 = np.dtype(np.uint16).newbyteorder('<')
+
+class ldData(object):
+    """Container for parsed data of an ld file.
+    Allows reading and writing.
+    """
+
+    def __init__(self, head, channs):
+        self.head = head
+        self.channs = channs
+
+    def __getitem__(self, item):
+        if not isinstance(item, int):
+            col = [n for n, x in enumerate(self.channs) if x.name == item]
+            if len(col) != 1:
+                raise Exception("Could get column", item, col)
+            item = col[0]
+        return self.channs[item]
+
+    def __iter__(self):
+        return iter([x.name for x in self.channs])
+
+    @classmethod
+    def frompd(cls, df):
+        # type: (pd.DataFrame) -> ldData
+        """Create and ldData object from a pandas DataFrame.
+        Example:
+        import pandas as pd
+        import numpy as np
+        from ldparser import ldData
+        # create test dataframe
+        df = pd.DataFrame(np.random.randn(6,4),columns=list('ABCD'))
+        print(df)
+        # create an lddata object from the dataframe
+        l = ldData.frompd(df)
+        # write an .ld file
+        l.write('/tmp/test.ld')
+        # just to check, read back the file
+        l = ldData.fromfile('/tmp/test.ld')
+        # create pandas dataframe
+        df = pd.DataFrame(data={c: l[c].data for c in l})
+        print(df)
+        """
+
+        # for now, fix datatype and frequency
+        freq, dtype = 10, np.float32
+
+        # pointer to meta data of first channel
+        meta_ptr = struct.calcsize(ldHead.fmt)
+
+        # list of columns to read - only accept numeric data
+        cols = [c for c in df.columns if np.issubdtype(df[c].dtype, np.number)]
+
+        # pointer to data of first channel
+        chanheadsize = struct.calcsize(ldChan.fmt)
+        data_ptr = meta_ptr + len(cols) * chanheadsize
+
+        # create a mocked header
+        head = ldHead(meta_ptr, data_ptr, 0, None,
+                      "testdriver", "testvehicleid", "testvenue",
+                      datetime.datetime.now(),
+                      "just a test", "testevent", "practice")
+
+        # create the channels, meta data and associated data
+        channs, prev, next = [], 0, meta_ptr + chanheadsize
+        for n, col in enumerate(cols):
+            # create mocked channel header
+            chan = ldChan(None,
+                          meta_ptr, prev, next if n < len(cols) - 1 else 0,
+                          data_ptr, len(df[col]),
+                          dtype, freq, 0, 1, 0,
+                          col, col, "m")
+
+            # link data to the channel
+            chan._data = df[col].to_numpy(dtype)
+
+            # calculate pointers to the previous/next channel meta data
+            prev = meta_ptr
+            meta_ptr = next
+            next += chanheadsize
+
+            # increment data pointer for next channel
+            data_ptr += chan._data.nbytes
+
+            channs.append(chan)
+
+        return cls(head, channs)
+
+    @classmethod
+    def fromfile(cls, f):
+        # type: (str) -> ldData
+        """Parse data of an ld file
+        """
+        return cls(*read_ldfile(f))
+
+    def write(self, f):
+        # type: (str) -> ()
+        """Write an ld file containing the current header information and channel data
+        """
+
+        # convert the data using scale/shift etc before writing the data
+        conv_data = lambda c: (c.data - c.shift) * c.scale / pow(10., -c.dec)
+
+        with open(f, 'wb') as f_:
+            self.head.write(f_, len(self.channs))
+            f_.seek(self.channs[0].meta_ptr)
+            list(map(lambda c: c[1].write(f_, c[0]), enumerate(self.channs)))
+            list(map(lambda c: f_.write(conv_data(c)), self.channs))
 
 
-class ldhead(object):
-    """Parses and stores the header information of an ld file"""
-    def __init__(self, f_):
-        # type: (str) -> None
-        with open(f_, 'rb') as f:
-            f.seek(0x8)
+class ldEvent(object):
+    fmt = '<64s64s1024sH'
 
-            # meta_ptr: pointer to begin of channel meta info
-            # data_ptr: pointer to begin of channel data
-            self.meta_ptr, self.data_ptr = np.fromfile(f, dtype=dt32, count=2)
+    def __init__(self, name, session, comment, venue_ptr, venue):
+        self.name, self.session, self.comment, self.venue_ptr, self.venue = \
+            name, session, comment, venue_ptr, venue
 
-            f.seek(0x14, 1) # jump over unknown
-            # pointer to some text
-            descr_ = np.fromfile(f, dtype=dt32, count=1)[0]
+    @classmethod
+    def fromfile(cls, f):
+        # type: (file) -> ldEvent
+        """Parses and stores the event information in an ld file
+        """
+        name, session, comment, venue_ptr = struct.unpack(
+            ldEvent.fmt, f.read(struct.calcsize(ldEvent.fmt)))
+        name, session, comment = map(decode_string, [name, session, comment])
 
-            f.seek(0x36, 1)
-            date = decode_string(f.read(0x10))
+        venue = None
+        if venue_ptr > 0:
+            f.seek(venue_ptr)
+            venue = ldVenue.fromfile(f)
 
-            f.seek(0x10,1)
-            time = decode_string(f.read(0x10))
+        return cls(name, session, comment, venue_ptr, venue)
 
-            f.seek(0x10,1)
-            self.name = decode_string(f.read(0x40))
-            self.vehicle = decode_string(f.read(0x40))
+    def write(self, f):
+        f.write(struct.pack(ldEvent.fmt,
+                            self.name.encode(),
+                            self.session.encode(),
+                            self.comment.encode(),
+                            self.venue_ptr))
 
-            f.seek(0x40,1)
-            self.venue = decode_string(f.read(0x40))
+        if self.venue_ptr > 0:
+            f.seek(self.venue_ptr)
+            self.venue.write(f)
 
-            f.seek(descr_)
-            self.event = decode_string(f.read(0x10))
+    def __str__(self):
+        return "%s; venue: %s" % (self.name, self.venue)
 
-            f.seek(0x470, 1)
-            descr_ = np.fromfile(f, dtype=dt32, count=1)[0]
 
-            self.descr = None
-            if descr_>0:
-                f.seek(descr_)
-                self.descr = decode_string(f.read(0x10))
+class ldVenue(object):
+    fmt = '<64s1034xH'
 
-            if len(self.vehicle)==0:
-                f.seek(0x6e2)
-                self.vehicle = decode_string(f.read(0x40))
+    def __init__(self, name, vehicle_ptr, vehicle):
+        self.name, self.vehicle_ptr, self.vehicle = name, vehicle_ptr, vehicle
+
+    @classmethod
+    def fromfile(cls, f):
+        # type: (file) -> ldVenue
+        """Parses and stores the venue information in an ld file
+        """
+        name, vehicle_ptr = struct.unpack(ldVenue.fmt, f.read(struct.calcsize(ldVenue.fmt)))
+
+        vehicle = None
+        if vehicle_ptr > 0:
+            f.seek(vehicle_ptr)
+            vehicle = ldVehicle.fromfile(f)
+        return cls(decode_string(name), vehicle_ptr, vehicle)
+
+    def write(self, f):
+        f.write(struct.pack(ldVenue.fmt, self.name.encode(), self.vehicle_ptr))
+
+        if self.vehicle_ptr > 0:
+            f.seek(self.vehicle_ptr)
+            self.vehicle.write(f)
+
+    def __str__(self):
+        return "%s; vehicle: %s" % (self.name, self.vehicle)
+
+
+class ldVehicle(object):
+    fmt = '<64s128xI32s32s'
+
+    def __init__(self, id, weight, type, comment):
+        self.id, self.weight, self.type, self.comment = id, weight, type, comment
+
+    @classmethod
+    def fromfile(cls, f):
+        # type: (file) -> ldVehicle
+        """Parses and stores the vehicle information in an ld file
+        """
+        id, weight, type, comment = struct.unpack(ldVehicle.fmt, f.read(struct.calcsize(ldVehicle.fmt)))
+        id, type, comment = map(decode_string, [id, type, comment])
+        return cls(id, weight, type, comment)
+
+    def write(self, f):
+        f.write(struct.pack(ldVehicle.fmt, self.id.encode(), self.weight))
+
+    def __str__(self):
+        return "%s (type: %s, weight: %i, %s)" % (self.id, self.type, self.weight, self.comment)
+
+
+class ldHead(object):
+    fmt = '<' + (
+        "I4x"  # ldmarker                       0x000   0x8
+        "II"  # chann_meta_ptr chann_data_ptr   0x004   0x8     
+        "20x"  # ??                             0x010   0x14    
+        "I"  # event_ptr                        0x024   0x04    
+        "24x"  # ??                             0x028   0x18    
+        "HHH"  # unknown static (?) numbers     0x040   0x06    
+        "I"  # device serial                    0x046   0x04
+        "8s"  # device type                     0x04A   0x08
+        "H"  # device version                   0x052   0x02
+        "H"  # unknown static (?) number        0x054   0x02
+        "I"  # num_channs                       0x056   0x04
+        "4x"  # ??                              0x05A   0x04
+        "32s"  # date                           0x05E   0x20
+        "32s"  # time                           0x07E   0x20
+        "64s"  # driver                         0x09E   0x40
+        "64s"  # vehicleid                      0x0DE   0x40
+        "64s"  # engineid                       0x11E   0x40
+        "64s"  # venue                          0x15E   0x40
+        "64x"  # vehicle2                       0x19E   0x40
+        "64x"  # miscDesc1                      0x1DE   0x40
+        "960x"  # ??                            0x21E   0x3C0
+        "I2x"  # enable "pro logging" (some magic number?) 0x5DE  0x06
+        "64s"  # session                        0x5E4   0x40
+        "64s"  # short comment                  0x624   0x40
+        "48x"  # ??                             0x664   0x30
+        "64s"  # team                           0x694   0x40
+  #      "64s"  # session
+    )
+
+    def __init__(self, meta_ptr, data_ptr, aux_ptr, aux, driver, vehicleid, venue, datetime, short_comment, event,
+                 session):
+        self.meta_ptr, self.data_ptr, self.aux_ptr, self.aux, \
+        self.driver, self.vehicleid, self.venue, self.datetime, \
+        self.short_comment, self.event, self.session = meta_ptr, data_ptr, aux_ptr, aux, \
+                                                       driver, vehicleid, venue, datetime, \
+                                                       short_comment, event, session
+
+    @classmethod
+    def fromfile(cls, f):
+        # type: (file) -> ldHead
+        """Parses and stores the header information of an ld file
+        """
+        (_, meta_ptr, data_ptr, aux_ptr,
+         _, _, _,
+         device_serial, device_type, device_version, _, n,
+         date, time,
+         driver, vehicleid, engineid, venue,
+         _, session, short_comment, event) = struct.unpack(ldHead.fmt, f.read(struct.calcsize(ldHead.fmt)))
+
+        date, time, driver, vehicleid, venue, short_comment, event, session = \
+            map(decode_string, [date, time, driver, vehicleid, venue, short_comment, event, session])
 
         try:
-            self.datetime = datetime.datetime.strptime(
-                    '%s %s'%(date, time), '%d/%m/%Y %H:%M:%S')
+            # first, try to decode datatime with seconds
+            _datetime = datetime.datetime.strptime(
+                '%s %s' % (date, time), '%d/%m/%Y %H:%M:%S')
         except ValueError:
-            self.datetime = datetime.datetime.strptime(
-                '%s %s'%(date, time), '%d/%m/%Y %H:%M')
+            _datetime = datetime.datetime.strptime(
+                '%s %s' % (date, time), '%d/%m/%Y %H:%M')
+
+        aux = None
+        if aux_ptr > 0:
+            f.seek(aux_ptr)
+            aux = ldEvent.fromfile(f)
+        return cls(meta_ptr, data_ptr, aux_ptr, aux, driver, vehicleid, venue, _datetime, short_comment, event, session)
+
+    def write(self, f, n):
+        f.write(struct.pack(ldHead.fmt,
+                            0x40,
+                            self.meta_ptr, self.data_ptr, self.aux_ptr,
+                            1, 0x4240, 0xf,
+                            0x1f44, "ADL".encode(), 420, 0xadb0, n,
+                            self.datetime.date().strftime("%d/%m/%Y").encode(),
+                            self.datetime.time().strftime("%H:%M:%S").encode(),
+                            self.driver.encode(), self.vehicleid.encode(), self.venue.encode(),
+                            0xc81a4, self.short_comment.encode(), self.event.encode(), self.session.encode(),
+                            ))
+        if self.aux_ptr > 0:
+            f.seek(self.aux_ptr)
+            self.aux.write(f)
 
     def __str__(self):
-        return 'name:    %s\n' \
-               'vehicle: %s\n' \
-               'venue: %s\n' \
-               'event:   %s descr: %s\n'%(
-            self.name, self.vehicle, self.venue, self.event, self.descr)
+        return 'driver:    %s\n' \
+               'vehicleid: %s\n' \
+               'venue:     %s\n' \
+               'event:     %s\n' \
+               'session:   %s\n' \
+               'short_comment: %s\n' \
+               'event_long:    %s' % (
+                   self.driver, self.vehicleid, self.venue, self.event, self.session, self.short_comment, self.aux)
 
 
-class ldchan(object):
+class ldChan(object):
     """Channel (meta) data
-
-    Parses and stores the channel meta as well as the
-    actual data of a channel in a ld file.
+    Parses and stores the channel meta data of a channel in a ld file.
     Needs the pointer to the channel meta block in the ld file.
+    The actual data is read on demand using the 'data' property.
     """
-    def __init__(self, f_, meta_ptr, num):
-        # type: (str, int, int) -> None
-        self.meta_ptr = meta_ptr
-        self.num = num
 
-        with open(f_,'rb') as f:
+    fmt = '<' + (
+        "IIII"  # prev_addr next_addr data_ptr n_data
+        "H"  # some counter?
+        "HHH"  # datatype datatype rec_freq
+        "HHHH"  # shift ?? scale dec_places 
+        "32s"  # name
+        "8s"  # short name
+        "12s"  # unit
+        "40x"  # ? (40 bytes for ACC, 32 bytes for acti)
+    )
+
+    def __init__(self, _f, meta_ptr, prev_meta_ptr, next_meta_ptr, data_ptr, data_len,
+                 dtype, freq, shift, scale, dec,
+                 name, short_name, unit):
+
+        self._f = _f
+        self.meta_ptr = meta_ptr
+        self._data = None
+
+        (self.prev_meta_ptr, self.next_meta_ptr, self.data_ptr, self.data_len,
+         self.dtype, self.freq,
+         self.shift, self.scale, self.dec,
+         self.name, self.short_name, self.unit) = prev_meta_ptr, next_meta_ptr, data_ptr, data_len, \
+                                                  dtype, freq, \
+                                                  shift, scale, dec, \
+                                                  name, short_name, unit
+
+    @classmethod
+    def fromfile(cls, _f, meta_ptr):
+        # type: (str, int) -> ldChan
+        """Parses and stores the header information of an ld channel in a ld file
+        """
+        with open(_f, 'rb') as f:
             f.seek(meta_ptr)
 
-            (self.prev_meta_ptr, self.next_meta_ptr, self.data_ptr, self.data_len) =  \
-                np.fromfile(f, dtype=dt32, count=4)
+            (prev_meta_ptr, next_meta_ptr, data_ptr, data_len, _,
+             dtype_a, dtype, freq, shift, _, scale, dec,
+             name, short_name, unit) = struct.unpack(ldChan.fmt, f.read(struct.calcsize(ldChan.fmt)))
 
-            f.seek(2, 1) # some count, not needed?
+        name, short_name, unit = map(decode_string, [name, short_name, unit])
 
-            dtype_a, dtype, self.freq = np.fromfile(f, dtype=dt16, count=3)
-            if dtype_a == 0x07:
-                self.dtype = [None, np.float16, None, np.float32][dtype-1]
-            else:
-                self.dtype = [None, np.int16, None, np.int32][dtype-1]
+        if dtype_a == 0x05:
+            dtype_a = 0x07
 
-            self.shift, self.u1, self.scale, self.dec = \
-                np.fromfile(f, dtype=np.int16, count=4)#.astype(np.int32)
+        if dtype_a in [0x07]:
+            dtype = [None, np.float16, None, np.float32][dtype - 1]
+        elif dtype_a in [0, 0x03]:
+            dtype = [None, np.int16, None, np.int32][dtype - 1]
+        else:
+            raise Exception('Datatype %i not recognized' % dtype_a)
 
-            self.name = decode_string(f.read(0x20))
-            self.short_name = (decode_string(f.read(0x8)))
-            self.unit = decode_string(f.read(0xc))
+        return cls(_f, meta_ptr, prev_meta_ptr, next_meta_ptr, data_ptr, data_len,
+                   dtype, freq, shift, scale, dec, name, short_name, unit)
 
-            self.u2, self.u3, self.u4, self.u5 = \
-                np.fromfile(f, dtype=np.int16, count=4)#.astype(np.int32)
+    def write(self, f, n):
+        if self.dtype == np.float16 or self.dtype == np.float32:
+            dtype_a = 0x07
+            dtype = {np.float16: 2, np.float32: 4}[self.dtype]
+        else:
+            dtype_a = 0x03
+            dtype = {np.int16: 2, np.int32: 4}[self.dtype]
 
-            # print_hex(f.read(28))
+        f.write(struct.pack(ldChan.fmt,
+                            self.prev_meta_ptr, self.next_meta_ptr, self.data_ptr, self.data_len,
+                            0x2ee1 + n, dtype_a, dtype, self.freq, self.shift, 1, self.scale, self.dec,
+                            self.name.encode(), self.short_name.encode(), self.unit.encode()))
 
+    @property
+    def data(self):
+        # type: () -> np.array
+        """ Read the data words of the channel
+        """
+        if self._data is None:
             # jump to data and read
-            f.seek(self.data_ptr)
-            try:
-                self.data = np.fromfile(f,
-                    count=self.data_len, dtype=self.dtype)
+            with open(self._f, 'rb') as f:
+                f.seek(self.data_ptr)
+                try:
+                    self._data = np.fromfile(f,
+                                             count=self.data_len, dtype=self.dtype)
 
-                self.data = self.data/self.scale * pow(10.,-self.dec) + self.shift
+                    self._data = self._data / self.scale * pow(10., -self.dec) + self.shift
 
-                if len(self.data)!=self.data_len:
-                    raise ValueError("Not all data read!")
+                    if len(self._data) != self.data_len:
+                        raise ValueError("Not all data read!")
 
-            except ValueError as v:
-                print(v, self.num, self.name, self.freq,
-                      hex(self.data_ptr), hex(self.data_len),
-                      hex(len(self.data)),hex(f.tell()))
-                # raise v
+                except ValueError as v:
+                    print(v, self.name, self.freq,
+                          hex(self.data_ptr), hex(self.data_len),
+                          hex(len(self._data)), hex(f.tell()))
+                    # raise v
+        return self._data
 
     def __str__(self):
-        return 'chan %i: %s (%s) [%s], %i Hz'%(
-            self.num, self.name,
+        return 'chan %s (%s) [%s], %i Hz' % (
+            self.name,
             self.short_name, self.unit,
             self.freq)
-
-
-def print_hex(bytes_, dtype=dt32):
-    # type: (bytes, np.dtype) -> None
-    """print the bytes as list of hex values
-    """
-    print(list(map(hex, np.frombuffer(bytes_, dtype=dtype))))
 
 
 def decode_string(bytes):
     # type: (bytes) -> str
     """decode the bytes and remove trailing zeros
     """
-    return bytes.decode('ascii').rstrip('\0').strip()
+    try:
+        return bytes.decode('ascii').strip().rstrip('\0').strip()
+    except Exception as e:
+        print("Could not decode string: %s - %s" % (e, bytes))
+        return ""
+        # raise e
 
 
 def read_channels(f_, meta_ptr):
     # type: (str, int) -> list
     """ Read channel data inside ld file
-
     Cycles through the channels inside an ld file,
      starting with the one where meta_ptr points to.
      Returns a list of ldchan objects.
     """
     chans = []
     while meta_ptr:
-        chan_ = ldchan(f_, meta_ptr, len(chans))
+        chan_ = ldChan.fromfile(f_, meta_ptr)
         chans.append(chan_)
         meta_ptr = chan_.next_meta_ptr
     return chans
 
 
 def read_ldfile(f_):
-    # type: (str) -> (ldhead, list)
+    # type: (str) -> (ldHead, list)
     """ Read an ld file, return header and list of channels
     """
-    head_ = ldhead(f_)
+    head_ = ldHead.fromfile(open(f_, 'rb'))
     chans = read_channels(f_, head_.meta_ptr)
     return head_, chans
 
 
 if __name__ == '__main__':
     """ Small test of the parser.
-    
+
     Decodes all ld files in the directory. For each file, creates 
     a plot for data with the same sample frequency.  
     """
@@ -228,20 +454,21 @@ if __name__ == '__main__':
     import pandas as pd
     import matplotlib.pyplot as plt
 
-    if len(sys.argv)!=2:
-        print("Usage: ldparser.py /some/path/")
-        exit(1)
+    # if len(sys.argv) != 2:
+    #     print("Usage: ldparser.py /some/path/")
+    #     exit(1)
 
-    for f in glob.glob('%s/*.ld'%sys.argv[1]):
-        print(os.path.basename(f))
-        head_, chans = read_ldfile(f)
+    # for f in glob.glob('%s/*.ld' % sys.argv[1]):
+    f = "NCS-motecL180.ld"
+    print(os.path.basename(f))
 
-        print(head_)
-        print(list(map(str,chans)))
-        print()
+    l = ldData.fromfile(f)
+    print(l.head)
+    print(list(map(str, l)))
+    print()
 
-        # create plots for all channels with the same frequency
-        for f, g in groupby(chans, lambda x:x.freq):
-            df = pd.DataFrame({i.name.lower(): i.data for i in g})
-            df.plot()
-            plt.show()
+    # create plots for all channels with the same frequency
+    for f, g in groupby(l.channs, lambda x: x.freq):
+        df = pd.DataFrame({i.name.lower(): i.data for i in g})
+        df.plot()
+        plt.show()
