@@ -8,6 +8,7 @@
   "python.formatting.provider": "black",
   "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "python.linting.enabled": true,
-  "python.pythonPath": "C:\\Users\\n9464263\\AppData\\Local\\Continuum\\miniconda3\\envs\\qev3-config-app\\python",
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  "python.pythonPath": "/home/cal/.conda/envs/qev3-config-app/bin/python",
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "python.linting.pylintEnabled": true
 }

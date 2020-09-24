@@ -5,9 +5,12 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from motec.ldparser import read_ldfile
+import asyncio as aio
 
+# load environment variables such as "REACT_APP_SANIC_PORT" from the .env
 load_dotenv()
 
+# import demo data LD file
 head, channels = read_ldfile(Path(__file__).parent / "Sample.ld")
 
 

@@ -5,57 +5,38 @@ import GoldenLayout, {
   GoldenLayoutComponent,
 } from "@annotationhub/react-golden-layout";
 
-function ComponentA() {
-  return <h2>A</h2>;
-}
+function Counter({ init = 0, increment = 1 }) {
+  const [count, setCount] = useState(init);
 
-function ComponentB() {
-  return <h2>B</h2>;
-}
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount((count) => count + 1);
+    }, 1000);
+    return () => clearInterval(id);
+  });
 
-function ComponentC(props: any) {
-  return <h2>{props.myText}</h2>;
+  return <h2>COUNTER {count}</h2>;
 }
 
 export default function GoldenTest() {
-  const [content, setContent] = useState<GoldenLayout.ItemConfigType[]>([]);
-
-  useEffect(() => {
-    const id = setTimeout(() => {
-      setContent([
-        {
-          type: "row",
-          content: [
-            {
-              component: ComponentA,
-              title: "A Component",
-            },
-            {
-              type: "column",
-              content: [
-                {
-                  component: ComponentB,
-                  title: "B Component",
-                },
-                {
-                  component: () => <ComponentC myText="Component with Props" />,
-                  title: "C Component",
-                },
-              ],
-            },
-          ],
-        },
-      ]);
-    }, 2000);
-    return () => clearTimeout(id);
-  }, []);
+  // const [layoutManager, setLayoutManager] = useState<GoldenLayout>();s
 
   return (
     <div>
       <GoldenLayoutComponent
         htmlAttrs={{ style: { width: "100vw", height: "100vh" } }}
         config={{
-          content,
+          content: [
+            {
+              type: "row",
+              content: [{ component: Counter, title: "counter 1" }],
+            },
+          ],
+        }}
+        autoresize
+        debounceResize={300}
+        onLayoutReady={(layoutManager) => {
+          console.log("manager", layoutManager);
         }}
       />
     </div>

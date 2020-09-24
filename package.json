@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@annotationhub/react-golden-layout": "^2.1.0",
+    "@annotationhub/react-golden-layout": "file:../react-golden-layout",
     "@ant-design/icons": "^4.2.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
