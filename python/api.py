@@ -1,22 +1,61 @@
 from sanic import Sanic
 from sanic.response import json
+from sanic import response as res
 from sanic_cors import CORS
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 from pathlib import Path
 from motec.ldparser import read_ldfile
+<<<<<<< HEAD
 import asyncio as aio
+=======
+import glob
+>>>>>>> tmp_can-debug
 
 # load environment variables such as "REACT_APP_SANIC_PORT" from the .env
 load_dotenv()
 
-# import demo data LD file
-head, channels = read_ldfile(Path(__file__).parent / "Sample.ld")
-
+head, channels = read_ldfile(Path(__file__).parent / "Sample")
 
 app = Sanic(__name__)
 # Allow react app being served off another port (react app) to access sanic
 CORS(app, automatic_options=True)
+
+config = {}
+config["upload"] = "./uploads"
+
+
+# run ldparser
+@app.route("/fileSelect", methods=["GET"])
+async def fileSelect_handler(request):
+    filename = request.headers["filename"]
+    return res.text("asd")
+
+
+# get file list
+@app.route("/fileList", methods=["GET"])
+async def fileList_handler(request):
+    filelist = glob.glob(config["upload"] + "/*.ld")
+    return res.json(filelist)
+
+
+# upload files
+@app.route("/uploadFile", methods=["POST"])
+async def upload_handler(request):
+    if not os.path.exists(config["upload"]):
+        os.makedirs(config["upload"])
+    up_file = request.files.get("uploadFile")
+
+    file_path = f"{config['upload']}/{up_file.name}"
+    with open(file_path, "wb") as f:
+        f.write(up_file.body)
+    f.close()
+    filelist = glob.glob(config["upload"] + "/*.ld")
+    print("file wrote to disk")
+    print(request)
+
+    return json({"received": True, "success": True, "filelist": filelist})
 
 
 # TODO: actually use the filename to select the data

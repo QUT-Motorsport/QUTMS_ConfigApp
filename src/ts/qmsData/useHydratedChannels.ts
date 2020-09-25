@@ -23,7 +23,7 @@ export default function useHydratedChannels(
           for (const datum of channel.data) {
             updateMinMax(channel.minMax, datum);
           }
-
+          //adjust max time to match the channel data length
           const channelFinishTime = channel.data.length / channel.freq;
           if (!maxTime || channelFinishTime > maxTime) {
             data.maxTime = channelFinishTime;

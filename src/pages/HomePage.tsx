@@ -6,6 +6,11 @@ import styles from "./HomePage.module.scss";
 
 export default function HomePage() {
   useTitle("QUTMS Home");
+
+  function handleImportClick(e: any) {
+    console.log("oof");
+  }
+
   return (
     <div className={styles.homePage}>
       <Row>
@@ -71,7 +76,7 @@ export default function HomePage() {
           <button>
             <h1>Simulation</h1>
           </button>
-          <button>
+          <button onClick={handleImportClick}>
             <p>Import...</p>
           </button>
           <button>

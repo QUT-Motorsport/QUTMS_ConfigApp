@@ -8,6 +8,7 @@ import {
   HeatMapOutlined,
   SlidersOutlined,
   LineChartOutlined,
+  BugOutlined
 } from "@ant-design/icons";
 
 const { Sider } = Layout;
@@ -44,6 +45,7 @@ const SideBar = () => {
           Icon={LineChartOutlined}
         />
         <SideBarItem link="/config" name="Config" Icon={SlidersOutlined} />
+        <SideBarItem link="/debug" name="CAN Debug" Icon={BugOutlined} />
       </Menu>
     </Sider>
   );
