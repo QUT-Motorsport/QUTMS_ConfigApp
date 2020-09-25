@@ -7,16 +7,13 @@ from datetime import datetime
 from dotenv import load_dotenv
 from pathlib import Path
 from motec.ldparser import read_ldfile
-<<<<<<< HEAD
 import asyncio as aio
-=======
 import glob
->>>>>>> tmp_can-debug
 
 # load environment variables such as "REACT_APP_SANIC_PORT" from the .env
 load_dotenv()
 
-head, channels = read_ldfile(Path(__file__).parent / "Sample")
+head, channels = read_ldfile(Path(__file__).parent / "Sample.ld")
 
 app = Sanic(__name__)
 # Allow react app being served off another port (react app) to access sanic

@@ -42,10 +42,11 @@ class CanMsg(ABC):
 
     def __bytes__(self):
         return struct.pack(
-            "BBBbp",  # B = uint8, b = int8, p = string with single-byte length header
+            "BBBBbp",  # B = uint8, b = int8, p = bytestring with single-byte length header
             self.priority,
             self.source,
             self.type,
+            self.is_autonomous,
             0 if self.external_id is None else self.external_id,
             b"" if self.data is None else self.data,
         )

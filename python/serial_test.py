@@ -11,6 +11,11 @@ uart = Serial(BOARD_PORT, baudrate=115200,)
 
 while uart.isOpen():
     uart.write(HEARTBEAT)
-    message = uart.read(20)
+
+    # 4 bytes ID blob (29 bits w/ 3 left-pad)
+    # + 1 byte data length
+    # + 8 bytes data
+    message = uart.read(13)
+    
     print(message)
     sleep()

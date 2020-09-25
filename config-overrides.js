@@ -1,5 +1,4 @@
 const ClosurePlugin = require("closure-webpack-plugin");
-const TypedocWebpackPlugin = require("typedoc-webpack-plugin");
 
 module.exports = function override(config, _env) {
   // add closure compiler to apply generic code optimizations

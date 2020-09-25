@@ -1,3 +1,53 @@
 .debug-page {
-    
+  margin: 50px 50px;
+
+  h1 {
+    color: #0f406a;
+    font-size: 2em;
+    padding: 20px 0px 0px 50px;
+  }
+
+  .error-type {
+    background-color: rgb(206, 84, 62);
+  }
+
+  .hex-editor {
+    :global {
+      .hexEditorBody {
+        overflow: hidden !important;
+      }
+
+      // try to get rid of those annoying yellow squares. Doesn't currently work
+      // TODO: this
+      .hwGSO.editAscii,
+      .hwGSO.notFocused {
+        .byteValue.cursor {
+          > .nybbleLowValue,
+          > .nybbleHighValue {
+            background-color: transparent;
+            color: black;
+          }
+        }
+      }
+
+      .hwGSO.editHex .asciiValue.cursor,
+      .hwGSO.notFocused .asciiValue.cursor {
+        background-color: transparent;
+        color: black;
+      }
+    }
+  }
+
+  .virtual-table {
+    :global(.ant-table-container:before, .ant-table-container:after) {
+      display: none;
+    }
+
+    .virtual-table-cell {
+      box-sizing: border-box;
+      padding: 16px;
+      border-bottom: 1px solid #e8e8e8;
+      background: #fff;
+    }
+  }
 }

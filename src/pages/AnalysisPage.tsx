@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
 import { Button, Modal, Spin, Layout } from "antd";
 
-import "@annotationhub/react-golden-layout/dist/css/goldenlayout-base.css";
-import "@annotationhub/react-golden-layout/dist/css/themes/goldenlayout-light-theme.css";
-import { GoldenLayoutComponent } from "@annotationhub/react-golden-layout";
+// import "@annotationhub/react-golden-layout/dist/css/goldenlayout-base.css";
+// import "@annotationhub/react-golden-layout/dist/css/themes/goldenlayout-light-theme.css";
+// import { GoldenLayoutComponent } from "@annotationhub/react-golden-layout";
 
 import AnalysisMenu from "../components/Layout/AnalysisMenu";
 import { AnyChartSpec } from "../components/Charts/AnyChart";
@@ -96,7 +96,7 @@ export default function AnalysisPage() {
             filterState={filterState}
             figureRef={figureRef}
           />
-          <GoldenLayoutComponent
+          {/* <GoldenLayoutComponent
             htmlAttrs={{
               style: {
                 width: "100%",
@@ -116,8 +116,18 @@ export default function AnalysisPage() {
                 ),
               })),
             }}
-          />
-          {}
+          /> */}
+          {chartSpecs.map((chartSpec, idx) => ({
+            title: chartSpec.title,
+            component: (
+              <BaseChart
+                key={idx}
+                data={data}
+                filterState={filterState}
+                spec={chartSpec}
+              />
+            ),
+          }))}
           <AddChartModal
             data={data}
             onAddChartSpec={(chartSpec) =>
@@ -128,6 +138,6 @@ export default function AnalysisPage() {
       </Layout>
     </>
   ) : (
-    <Spin />
-  );
+      <Spin />
+    );
 }

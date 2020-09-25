@@ -13,29 +13,37 @@ export type QmsData = {
  * The source of the CAN message. Mirrors the spec:
  * https://www.overleaf.com/project/5efbfadab78c5f00018eabff
  */
-enum CanSource {
-  ExternalMaster = 0x00, // - 0x03
-  ChassisController = 0x04, // - 0x05
-  Amu = 0x06, // - 0x07
-  Shutdown = 0x08, // - 0xB
-  Pdm = 0x0c, // - 0x0F
-  SteeringWheel = 0x10, // - 0x11
-  Dashboard = 0x12, // - 0x13
-  // Sensors = ???
-  // Bms = ???
+export enum CanSource {
+  External = 0,
+  ChassisController = 4,
+  Shutdown = 6,
+  ShutdownBPSD = 10,
+  ShutdownCurrent = 12,
+  ShutdownIMD = 14,
+  AMS = 16,
+  BMS = 18,
+  PDM = 20,
+  SteeringWheel = 22,
+  Charger = 24,
+  Sensors = 32
 }
 
-enum CanMessageType {
-  Heartbeat = 0x01,
-  DataRequest = 0x02,
-  DataResponse = 0x03,
-  DataStream = 0x04,
+export enum CanMessageType {
+  ErrorDetected = 0,
+  HeartBeat = 1,
+  DataReceive = 2,
+  DataTransmit = 3
 }
 
 export type CanMessage = {
-  time: Time;
-  type: CanMessageType;
-  source: CanSource;
+  time: Date;
+  canId: Uint8Array; // 4 bytes
+  // TODO: use this instead of canId once it becomes standard
+  // source: CanSource;
+  // type: CanMessageType;
+  // is_autonomous: boolean;
+  // external_id: number;
+  data: Uint8Array;
 };
 
 export type ChannelHeader = {

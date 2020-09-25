@@ -3,7 +3,7 @@ import fetch from "isomorphic-unfetch";
 
 // TODO: (once streaming) if using electron, set up ipc channels instead of going through network stack - it's more efficient.
 // efficiency shouldn't be an issue though and simplicity is king right now. So just go through local loopback
-const apiUrl = `http://${
+export const apiUrl = `http://${
   process.env.WEBPACK_TARGET === "electron-renderer"
     ? "localhost"
     : process.env.NODE_ENV === "development"
