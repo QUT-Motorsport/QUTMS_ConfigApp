@@ -14,6 +14,7 @@ import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
 import SimulationPage from "./pages/SimulationPage";
 import TelemetryPage from "./pages/TelemetryPage";
+import DebugPage from "./pages/DebugPage";
 import Header from "./components/Layout/HeaderBar";
 import SideBar from "./components/Layout/SideBar/SideBar";
 
@@ -77,6 +78,9 @@ ReactDOM.render(
           </Route>
           <Route path="/telemetry">
             <TelemetryPage />
+          </Route>
+          <Route path="/debug">
+            <DebugPage />
           </Route>
         </MenuWrapper>
         <Route path="/" exact>
