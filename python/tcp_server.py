@@ -1,8 +1,11 @@
 import asyncio
-from asyncio import StreamReader, StreamWriter, ensure_future
+from asyncio import StreamReader, StreamWriter
 import os
 from dotenv import load_dotenv
 import websockets
+import pdb
+
+from qev3_can import read_can_message, send_can_message
 
 # load environment variables such as "REACT_APP_SANIC_PORT" from the .env
 load_dotenv()
@@ -14,21 +17,19 @@ TCP_SERVER_PORT = 54353
 
 can_messages = []
 subscribers = set()
+downlink = None
 
-
-async def read_can_message(stream: StreamReader) -> bytes:
-    size_bytes = await stream.readexactly(4)
-    size = int.from_bytes(size_bytes, byteorder="big")
-    data = await stream.readexactly(size)
-    return data
 
 
 async def handle_connection(reader: StreamReader, writer: StreamWriter):
+    global downlink
     print('got TCP connection')
+    downlink = writer
     peername = writer.get_extra_info("peername")
 
     try:
         while True:
+
             can_message = await read_can_message(reader)
             print('got message: ', can_message, 'subs', subscribers)
 
@@ -49,6 +50,7 @@ async def handle_connection(reader: StreamReader, writer: StreamWriter):
         print(f"Remote {peername} closing connection.")
         writer.close()
         await writer.wait_closed()
+        downlink = null
     except asyncio.IncompleteReadError:
         print(f"Remote {peername} disconnected")
     finally:
@@ -62,18 +64,23 @@ async def tcp_server(*args, **kwargs):
 
 async def websocket_server(websocket, path):
     subscribers.add(websocket)
-    print('new websocket subscriber')
-    while True: # keep the connection alive
-        await asyncio.sleep(60)
+    
+    while True:
+        newMsg = await websocket.recv()
+        print('got message', newMsg)
+        if downlink:
+            print('writing')
+            await send_can_message(downlink, newMsg)
+            print('written')
 
 
 async def main():
     print('running TCP & WS servers')
     print('ws server:', HOSTNAME, WS_PORT)
-    await asyncio.gather(
+    await asyncio.wait([
         tcp_server(handle_connection, host=HOSTNAME, port=TCP_SERVER_PORT),
         websockets.serve(websocket_server, HOSTNAME, WS_PORT)
-    )
+    ])
 
 try:
     asyncio.run(main())

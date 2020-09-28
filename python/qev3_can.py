@@ -2,7 +2,20 @@ from enum import IntEnum
 from abc import ABC
 from typing import Optional
 import struct
+from asyncio import StreamReader, StreamWriter
 
+
+async def send_can_message(stream: StreamWriter, data: bytes):
+    size_bytes = len(data).to_bytes(4, byteorder="big")
+    stream.writelines([size_bytes, data])
+    await stream.drain()
+
+
+async def read_can_message(stream: StreamReader) -> bytes:
+    size_bytes = await stream.readexactly(4)
+    size = int.from_bytes(size_bytes, byteorder="big")
+    data = await stream.readexactly(size)
+    return data
 
 class Priority(IntEnum):
     Error = 0

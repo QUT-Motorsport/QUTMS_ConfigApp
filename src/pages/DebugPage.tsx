@@ -5,71 +5,27 @@ import classNames from "classnames";
 import { Button, Col, Row, Table, Typography, Form } from "antd";
 import { TableProps } from "antd/lib/table";
 import HexEditor from "react-hex-editor";
+// @ts-ignore
+import arrayBufferConcat from "arraybuffer-concat";
 
 import { useTitle } from "./_helpers";
 import styles from "./DebugPage.module.scss";
 import { CanMessage } from "../ts/qmsData/types";
+import { serverIp } from '../ts/ajax';
 
 const { Title } = Typography;
 
-// function usePingPong(): CanMessage[] {
-//   const [canMsgs, setCanMsgs] = useState<CanMessage[]>([]);
-
-//   useEffect(() => {
-//     const id = setInterval(() => {
-//       setCanMsgs([
-//         {
-//           // ping
-//           time: new Date(),
-//           canId: new Uint8Array(4),
-//           // source: CanSource.External,
-//           // type: CanMessageType.DataTransmit,
-//           // is_autonomous: false,
-//           // external_id: 0,
-//           data: new TextEncoder().encode("Hey Sexy"),
-//         },
-//         ...canMsgs,
-//       ]);
-
-//       setTimeout(() => {
-//         setCanMsgs((canMsgs) => [
-//           {
-//             // pong
-//             time: new Date(),
-//             canId: new Uint8Array(4),
-//             // source: CanSource.ChassisController,
-//             // type: CanMessageType.DataReceive,
-//             // is_autonomous: false,
-//             // external_id: 0,
-//             data: new TextEncoder().encode("Hey you"),
-//           },
-//           ...canMsgs,
-//         ]);
-//       }, 100);
-//     }, 2000);
-
-//     return () => clearInterval(id);
-//   });
-
-//   return canMsgs;
-// }
-
 function useLiveCanMsgs() {
   const [canMsgs, setCanMsgs] = useState<CanMessage[]>([]);
-  const [connected, setConnected] = useState<boolean>(false);
+  const [ws, setWs] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const address = `ws://localhost:${process.env.REACT_APP_WS_PORT}`;
-    console.log(address);
+    const address = `ws://${serverIp}:${process.env.REACT_APP_WS_PORT}`;
     const ws = new WebSocket(address);
-    console.log(ws);
     ws.onopen = () => {
-      setConnected(true);
-      console.log("connected");
+      setWs(ws);
       ws.onmessage = async ({ data: rawCanMsg }) => {
-        console.log("onmessage");
         const buffer = await new Response(rawCanMsg).arrayBuffer();
-        console.log("got new msg", rawCanMsg);
         setCanMsgs((canMsgs) => [
           {
             time: new Date(),
@@ -86,36 +42,42 @@ function useLiveCanMsgs() {
     };
 
     ws.onclose = () => {
-      console.log("ws closed");
-      setConnected(false);
+      setWs(null)
+      console.log('ws closed')
     };
   }, []);
 
-  return { canMsgs, connected };
+  return { canMsgs, setCanMsgs, ws };
 }
 
 export default function DebugPage() {
   useTitle("CAN Debugger");
 
-  console.log("render");
-
-  const { canMsgs, connected } = useLiveCanMsgs();
-  const [newMsg, setNewMsg] = useState<Partial<CanMessage>>({
+  const { canMsgs, ws, setCanMsgs } = useLiveCanMsgs();
+  const [newMsg, setNewMsg] = useState<Omit<CanMessage, 'time'>>({
     canId: new Uint8Array(4),
     data: new Uint8Array(8),
   });
+
+  function getHexEditorSetHandle(target: Uint8Array) {
+    return (offset: number, value: number) => {
+      // update the underlying data and trigger a re-render.
+      target[offset] = value;
+      setNewMsg({ ...newMsg })
+    }
+  }
 
   return (
     <div className={styles["debug-page"]}>
       <Row>
         <Title className={"title"}>
-          CAN Debugger {`connected?: ${connected}`}
+          CAN Debugger {`connected?: ${!!ws}`}
         </Title>
       </Row>
       <Row>
         <Col span={14}>
           <VirtualTable
-            scroll={{ y: 500, x: 0 }}
+            scroll={{ y: 700, x: 0 }}
             columns={[
               {
                 title: "Time",
@@ -155,7 +117,7 @@ export default function DebugPage() {
               //     dataIndex: 'type',
               //     key: 'type',
               //     render: type => CanMessageType[type]
-              // }, {
+              // }, {newMsg
               //     title: 'Autonomous?',
               //     dataIndex: 'is_autonomous',
               //     key: 'is_autonomous'
@@ -185,9 +147,9 @@ export default function DebugPage() {
               ...msg,
             }))}
 
-            // colour the row red if it's an error
-            // rowClassName={(msg: CanMessage) =>
-            //     msg.type === CanMessageType.ErrorDetected ? "error-type" : ""}
+          // colour the row red if it's an error
+          // rowClassName={(msg: CanMessage) =>
+          //     msg.type === CanMessageType.ErrorDetected ? "error-type" : ""}
           />
         </Col>
 
@@ -205,6 +167,7 @@ export default function DebugPage() {
                 data={newMsg.canId}
                 height={30}
                 width={110}
+                onSetValue={getHexEditorSetHandle(newMsg.canId)}
               />
             </Form.Item>
 
@@ -218,12 +181,17 @@ export default function DebugPage() {
                 height={30}
                 width={300}
                 data={newMsg.data}
+                onSetValue={getHexEditorSetHandle(newMsg.data)}
                 showAscii={true}
               />
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 7 }}>
-              <Button>Send</Button>
+              <Button disabled={!ws} onClick={() => {
+
+                ws!.send(arrayBufferConcat(newMsg.canId, newMsg.data))
+                setCanMsgs([{ time: new Date(), ...newMsg }, ...canMsgs])
+              }}>Send</Button>
             </Form.Item>
           </Form>
         </Col>
