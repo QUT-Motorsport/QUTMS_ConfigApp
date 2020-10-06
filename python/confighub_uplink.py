@@ -21,7 +21,6 @@ DEMO_MODE = False
 
 
 async def demo_uplink(writer):
-    HEARTBEAT = bytes(RemoteHeartBeat())
     while True:
         await send_tcp_msg(writer, DEMO_MSG)
         await asyncio.sleep(5)
@@ -52,7 +51,7 @@ async def uplink(writer, uart):
 
 async def demo_downlink(reader):
     while True:
-        message = await read_can_message(reader)
+        message = await read_tcp_msg(reader)
         print("Got CAN message from server:", message)
 
 
@@ -61,7 +60,7 @@ async def downlink(reader, uart):
     while True:
         try:
             while uart.isOpen():
-                can_message = await read_can_message(reader)
+                can_message = await read_tcp_msg(reader)
                 print("got can message from server", can_message)
 
                 await loop.run_in_executor(
