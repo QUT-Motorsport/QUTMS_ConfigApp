@@ -5,13 +5,13 @@ import struct
 from asyncio import StreamReader, StreamWriter
 
 
-async def send_can_message(stream: StreamWriter, data: bytes):
+async def send_tcp_msg(stream: StreamWriter, data: bytes):
     size_bytes = len(data).to_bytes(4, byteorder="big")
     stream.writelines([size_bytes, data])
     await stream.drain()
 
 
-async def read_can_message(stream: StreamReader) -> bytes:
+async def read_tcp_msg(stream: StreamReader) -> bytes:
     size_bytes = await stream.readexactly(4)
     size = int.from_bytes(size_bytes, byteorder="big")
     data = await stream.readexactly(size)
@@ -53,16 +53,17 @@ class CanMsg(ABC):
     external_id: Optional[int] = None
     data: Optional[bytes] = None
 
-    def __bytes__(self):
-        return struct.pack(
-            "BBBBbp",  # B = uint8, b = int8, p = bytestring with single-byte length header
-            self.priority,
-            self.source,
-            self.type,
-            self.is_autonomous,
-            0 if self.external_id is None else self.external_id,
-            b"" if self.data is None else self.data,
-        )
+    # WRONG
+    # def __bytes__(self):
+    #     return struct.pack(
+    #         "BBBBbp",  # B = uint8, b = int8, p = bytestring with single-byte length header
+    #         self.priority,
+    #         self.source,
+    #         self.type,
+    #         self.is_autonomous,
+    #         0 if self.external_id is None else self.external_id,
+    #         b"" if self.data is None else self.data,
+    #     )
 
 
 class RemoteHeartBeat(CanMsg):

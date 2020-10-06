@@ -25,25 +25,35 @@ export enum CanSource {
   PDM = 20,
   SteeringWheel = 22,
   Charger = 24,
-  Sensors = 32
+  Sensors = 32,
 }
 
 export enum CanMessageType {
   ErrorDetected = 0,
   HeartBeat = 1,
   DataReceive = 2,
-  DataTransmit = 3
+  DataTransmit = 3,
+}
+
+export enum CanPriority {
+  Error = 0,
+  Heartbeat = 1,
+  Normal = 2,
+  Debug = 3,
 }
 
 export type CanMessage = {
-  time: Date;
-  canId: Uint8Array; // 4 bytes
-  // TODO: use this instead of canId once it becomes standard
-  // source: CanSource;
-  // type: CanMessageType;
-  // is_autonomous: boolean;
-  // external_id: number;
+  priority: CanPriority;
+  source: CanSource;
+  isAutonomous: boolean;
+  type: CanMessageType;
+  extraId: number;
   data: Uint8Array;
+  sentByConfigHub: boolean;
+};
+
+export type TimedCanMessage = CanMessage & {
+  time: Date;
 };
 
 export type ChannelHeader = {

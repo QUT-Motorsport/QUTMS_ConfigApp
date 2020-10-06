@@ -10,10 +10,12 @@ from motec.ldparser import read_ldfile
 import asyncio as aio
 import glob
 
+from tcp_server import main as tcp_server
+
 # load environment variables such as "REACT_APP_SANIC_PORT" from the .env
 load_dotenv()
-
-head, channels = read_ldfile(Path(__file__).parent / "Sample.ld")
+FILE_DIR = Path(__file__).parent
+head, channels = read_ldfile(FILE_DIR / "Sample.ld")
 
 app = Sanic(__name__)
 # Allow react app being served off another port (react app) to access sanic
@@ -35,6 +37,11 @@ async def fileSelect_handler(request):
 async def fileList_handler(request):
     filelist = glob.glob(config["upload"] + "/*.ld")
     return res.json(filelist)
+
+
+@app.route("/confighub_uplink.py")
+async def confighub_uplink(request):
+    return await res.file(str(FILE_DIR / "confighub_uplink.py"))
 
 
 # upload files
@@ -76,5 +83,9 @@ async def get_qms_headers(req, filename):
     )
 
 
+app.add_task(tcp_server())
+
 if __name__ == "__main__":
-    app.run(port=os.getenv("REACT_APP_SANIC_PORT"))
+    app.run(
+        host=os.getenv("REACT_APP_HOSTNAME"), port=os.getenv("REACT_APP_SANIC_PORT")
+    )
