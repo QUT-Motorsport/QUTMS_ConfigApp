@@ -17,10 +17,11 @@ HOSTNAME = "172.19.14.205"
 DEMO_MSG = bytes((0x0, 0x0, 0x0, 0x45, 0x68, 0x65, 0x79, 0x20, 0x73, 0x65, 0x78, 0x79))
 BOARD_PORT = "/dev/ttyACM0"
 
-DEMO_MODE = True
+DEMO_MODE = False
 
 
 async def demo_uplink(writer):
+    HEARTBEAT = bytes(RemoteHeartBeat())
     while True:
         await send_tcp_msg(writer, DEMO_MSG)
         await asyncio.sleep(5)
@@ -51,35 +52,27 @@ async def uplink(writer, uart):
 
 async def demo_downlink(reader):
     while True:
-        message = await read_tcp_msg(reader)
+        message = await read_can_message(reader)
         print("Got CAN message from server:", message)
 
 
 async def downlink(reader, uart):
     loop = asyncio.get_running_loop()
-    if DEMO_MODE:
-        while True:
-            can_message = await read_tcp_msg(reader)
-            print("got can message can_message", can_message)
-    else:
-        while True:
-            try:
+    while True:
+        try:
+            while uart.isOpen():
+                can_message = await read_can_message(reader)
+                print("got can message from server", can_message)
 
-                while uart.isOpen():
-                    # 4 bytes ID blob (29 bits w/ 3 left-pad)
-                    # + 1 byte data length
-                    # + up to 8 bytes data
-                    can_message = await loop.run_in_executor(
-                        None, uart.read, 13
-                    )  # makes sync uart.read async
-                    print("uploading can_message", can_message)
-                    can_message = await read_tcp_msg(reader)
-                    uart.write(can_message)
-            except (
-                serial.SerialException,
-                TypeError,
-            ):  # typeerror = disconnected, SerialException = no data
-                pass
+                await loop.run_in_executor(
+                    None, uart.write, can_message
+                )  # makes sync uart.read async
+                print("message written to uart")
+        except (
+            serial.SerialException,
+            TypeError,
+        ):  # typeerror = disconnected, SerialException = no data
+            pass
 
 
 async def can_uploader():
