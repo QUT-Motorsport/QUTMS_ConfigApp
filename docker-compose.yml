@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  #Setting up my repository
+  chfe:
+    image: qutmotorsport/configapp-frontend
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    links:
+      - db
+    container_name: confighubfrontend
+    # environment:
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+  chbe:
+    image: qutmotorsport/configapp-backend
+    links:
+      - db
+    container_name: confighubbackend
+    ports: 
+      - "3873:3873"
+#Setting up mysql service
+  db:
+    image: mysql
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: sqlroot
+      MYSQL_DATABASE: qutmsdb
+      MYSQL_USER: softman
+      MYSQL_PASSWORD: softmanpass
+    ports:
+      - "6033:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+#setting up phpmyadmin service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8081:80
+
+volumes:
+  dbdata:

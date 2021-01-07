@@ -1,23 +1,22 @@
-name: qev3-config-app
+name: config-hub-env
 
 channels:
   - defaults
   - conda-forge
 
 dependencies:
-  - plotly==4.4.1
-  - pip==19.0.3
-  - nodejs==14.4.0
-  - httptools==0.0.13
-  - pyserial==3.4
-  - pyinstaller==3.6
-  - sanic==19.6.3
-  - numpy==1.18.5
+  #All versions as of 28th October 2020
+  - plotly==4.12.0 #browser-based graphing library
+  - pip==20.2.4 #tool for installing Python packages
+  - nodejs==14.14.0 #platform for easily building fast, scalable network applications
+  - httptools==0.1.1 #Fast HTTP parser
+  - pyserial==3.4 #serial port access library
+  - pyinstaller==4.0 #bundles a Python application and all its dependencies into a single package.
+  - quart==0.13.1 #Python backend web framework
+  - numpy==1.19.2 #Array processing for numbers, strings, records, and objects.
 
-  - pylint==2.4.4 # for linting when you code
-  - black==19.10b0 # for autoformatting (when you save)
-
-  - pip:
-      - sanic-cors==0.9.9.post1
-      - python-dotenv==0.10.5
-      - git+git://github.com/CallumJHays/conda-pack@5c40cd38d0584cf037b4ee03c1f7625fedd9a782 # conda-pack with ability to pack modified packages (as we want to cache the jupyterlab install)
+  - pylint==2.6.0 # for linting when you code
+  - black==20.8b1 # for autoformatting (when you save)
+  - quart-cors==0.2.0 #Enables Cross Origin Resource Sharing addon for Quart
+  # - python-dotenv==0.14.0 #Get and set values in your .env file in local and production servers
+  - websockets

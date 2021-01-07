@@ -1,6 +1,6 @@
 # QUTMS_ConfigApp
 
-![ConfigApp](/wiki/banner.png)
+<!-- ![ConfigApp](/wiki/banner.png) -->
 
 ## Table of Contents
 
@@ -26,85 +26,17 @@
 
 ## Project Architecture and Release Plan
 
-![Architecture Diagram](/wiki/the_plan.png)
+Being reworked
 
 <a name="dev-env-setup"></a>
 
-## Development Environment Setup
+## Official Development Environment
 
-First you will want to have 3 things installed.
+Docker
 
-- [git](https://git-scm.com/download)
-- [vscode](https://code.visualstudio.com/) (recommended)
-- and [conda](https://docs.conda.io/en/latest/miniconda.html) (if installing on windows, selecting `ADD TO PATH (not recommended)`
-  during the installation is actually recommended by us. Although it can cause issues, it makes everything else easier.)
+## Local Development Environment
 
-<a name="windows-install-bundle"></a>
-
-### Windows Install bundle
-
-A bundle of everything you need to get started on windows is downloadable from [Callum Hays' Google Drive Here](https://drive.google.com/open?id=1zfqokZkqXZxnlcENICYbVcJj3-7xquXT)
-
-The extracted bundle contains multiple installers and are prefaced by the order in which you need to run them. You can skip any of these that you already have installed (except the last one).
-
-![WindowsInstallerBundle](/wiki/WindowsInstallerBundle.png)
-
-The final installer runs in a regular command prompt. If you click on it, it will pause the installation. This is a "Windows Feature" called Quick-Edit that you can either avoid by not clicking, typing keypresses in the window to resume the installation, or disable entirely through the command prompt 'Properties' menu:
-
-<div style="display:flex">
-     <div style="flex:1;padding-right:5px;">
-          <img src="https://github.com/QUT-Motorsport/QUTMS_ConfigApp/raw/master/wiki/disableQuickEdit1.png">
-     </div>
-     <div style="flex:1;padding-left:5px;">
-          <img src="https://github.com/QUT-Motorsport/QUTMS_ConfigApp/raw/master/wiki/disableQuickEdit2.png">
-     </div>
-</div>
-
-<a name="cross-platform-install-script"></a>
-
-### Cross-Platform Install Script
-
-This install script is cross-platform, and should work on windows, mac or linux.
-All the aforementioned requirements are... required =)
-
-```bash
-python install_dev.py
-```
-
-<a name="manual-installation"></a>
-
-### Manual Installation
-
-If you don't trust us to install the dev environment for you, or something goes wrong, you can do it manually.
-
-The first step is to install the conda environment from the `environment.yml`:
-
-```
-conda env update -f environment.yml
-```
-
-The second step is to install the npm packages for the app itself:
-
-```
-conda activate qev3-config-app
-npm i
-```
-
-<a name="environment-activation"></a>
-
-### Environment Activation
-
-_*THIS MUST BE DONE BEFORE RUNNING ANY OTHER COMMAND RELATED TO THE CONFIG APP IN THE TERMINAL, EVERY TIME YOU OPEN A NEW TERMINAL*_
-
-```bash
-conda activate qev3-config-app
-```
-
-Or, if you are using vscode as we recommend, this repository includes vscode settings that do this automatically. But you have to select to 'Allow' the option in the bottom-right popup box when you first open a terminal (be quick, it disappears):
-
-![allow_shell_injection_vscode](/wiki/allow_shell_injection.png)
-
-You have to then open up a new terminal for the auto-activation t take effect.
+Conda, vscode, npm start
 
 <a name="app-development"></a>
 
@@ -112,54 +44,72 @@ You have to then open up a new terminal for the auto-activation t take effect.
 
 <a name="development-as-website"></a>
 
-### As website
+Download Docker Desktop (windows & mac) or on linux Docker and Docker-compose.
+
+Run the docker-compose.yml file at repository root to install the bundled services/containers.
 
 ```bash
-npm start
-```
-
-This is recommended over electron-app as it includes hot-module-reloading
-
-<a name="development-as-electron-app"></a>
-
-### As electron app
-
-```bash
-npm start:electron
+docker-compose up
 ```
 
 <a name="editing-frontend"></a>
 
 ### Editing the Frontend / UI (Typescript & React)
 
-All the top-level page components are in `react/pages/`. These page components may also import re-usable React components that are defined in `react/components/`.
-
-Open them in your favourite editor (VSCode is recommended). If you have run the app in development mode, editing any of these pages and saving the file (ctrl-s) will cause the development app to restart and show your changes. Hot-reloading is currently pretty slow and we're working to fix that.
+All react/frontend components can be found in /src following create-react-app file format.
 
 When writing your React components, please stick to functional components!
 Using pure functional components with hooks is the new and best way to write react components since 2019. Please check [this guide](https://www.valentinog.com/blog/hooks/) to understand how to implement traditional class components as functional components.
 
 <a name="editing-backend"></a>
 
-### Editing the Backend (Python & Sanic WebServer)
+### Editing the Backend (Python & Quart WebServer)
 
-To make changes to the backend, edit the files in `python/`. The main python file is `python/api.py` which contains a Sanic server.
+The webserver is run through main.py through the quart syntax which is an asynchronous webserver framework based heavily on flask. All backend/python work can be found in the backend folder of the project. The responsibility of the backend is to process data, connect the frontend to the database, etc.
 
 <a name="building-production"></a>
 
-## Installing the Electron app permanently
-
-First you need to build the desktop application for the desired operating system:
-
-- Windows 32 Bit: `npm run build:win32`
-- Windows 64 Bit: `npm run build:win64` (this is probably the one you want)
-- Mac: `npm run build:mac`
-- Linux: `npm run build:linux`
-
-Then check the `dist` folder for resulting install packages for your desired platform
+Docker
 
 <a name="getting-involved"></a>
 
 ## Want to Get Involved?
 
 Studying at QUT? Contact us at qutmotorsport.team@gmail.com or [visit our website](https://www.qutmotorsport.com/) for details on how you can get involved.
+
+# Create React App info
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Available Scripts
+
+In the project directory, you can run:
+
+### `npm start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
