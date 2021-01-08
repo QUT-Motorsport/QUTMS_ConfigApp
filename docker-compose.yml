@@ -20,7 +20,7 @@ services:
       - db
     container_name: confighubbackend
     ports: 
-      - "3873:3873"
+      - "5873:5873"
 #Setting up mysql service
   db:
     image: mysql

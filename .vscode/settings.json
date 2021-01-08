@@ -2,12 +2,14 @@
   "terminal.integrated.shell.windows": "cmd.exe",
   "terminal.integrated.shellArgs.windows": [
     "/k",
-    "conda activate qev3-config-app"
+    "conda activate config-hub-env"
   ],
   "editor.formatOnSave": true,
   "python.formatting.provider": "black",
-  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "python.linting.enabled": true,
-  "python.pythonPath": "C:\\Users\\n9464263\\AppData\\Local\\Continuum\\miniconda3\\envs\\qev3-config-app\\python",
+  "python.pythonPath": "C:\\Users\\mreyn\\miniconda3\\envs\\config-hub-env\\python.exe",
   "typescript.tsdk": "node_modules\\typescript\\lib"
 }

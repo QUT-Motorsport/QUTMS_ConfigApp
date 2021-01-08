@@ -1,6 +1,6 @@
 FROM continuumio/miniconda3
 
-RUN conda init bash
+RUN conda init powershell
 
 # initialise conda environment
 COPY environment.yml .
