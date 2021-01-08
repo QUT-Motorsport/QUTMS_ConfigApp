@@ -1,0 +1,59 @@
+PS C:\Users\mreyn\documents\github\qutms_configapp> docker build -t condatest .
+[+] Building 785.5s (7/12)
+ => [internal] load build definition from Dockerfile                                                               0.1s
+ => => transferring dockerfile: 586B                                                                               0.0s
+ => [internal] load .dockerignore                                                                                  0.1s
+ => => transferring context: 102B                                                                                  0.0s
+ => [internal] load metadata for docker.io/continuumio/miniconda3:latest                                           7.6s
+ => [auth] continuumio/miniconda3:pull token for registry-1.docker.io                                              0.0s
+ => [1/7] FROM docker.io/continuumio/miniconda3@sha256:7838d0ce65783b0d944c19d193e2e6232196bada9e5f3762dc7a9f07  218.8s
+ => => resolve docker.io/continuumio/miniconda3@sha256:7838d0ce65783b0d944c19d193e2e6232196bada9e5f3762dc7a9f07dc  0.0s
+ => => sha256:7838d0ce65783b0d944c19d193e2e6232196bada9e5f3762dc7a9f07dc271179 953B / 953B                         0.0s
+ => => sha256:52daacd3dd5db18d372e31d19527ff1561adfe7f8f707ea0ad04b11d2307f1a3 4.77kB / 4.77kB                     0.0s
+ => => sha256:852e50cd189dfeb54d97680d9fa6bed21a6d7d18cfb56d6abfe2de9d7f173795 27.11MB / 27.11MB                  24.3s
+ => => sha256:a6236801494d5ca9acfae6569427398c2942c031375b96cac887cafe1de5a09b 80.38MB / 80.38MB                 211.8s
+[+] Building 861.9s (9/12)
+ => [internal] load build definition from Dockerfile                                                0.1s
+ => => transferring dockerfile: 586B                                                                0.0s
+ => [internal] load .dockerignore                                                                   0.1s
+ => => transferring context: 102B                                                                   0.0s
+ => [internal] load metadata for docker.io/continuumio/miniconda3:latest                            7.6s
+ => [auth] continuumio/miniconda3:pull token for registry-1.docker.io                               0.0s
+ => [1/7] FROM docker.io/continuumio/miniconda3@sha256:7838d0ce65783b0d944c19d193e2e6232196bada9  218.8s
+ => => resolve docker.io/continuumio/miniconda3@sha256:7838d0ce65783b0d944c19d193e2e6232196bada9e5  0.0s
+ => => sha256:7838d0ce65783b0d944c19d193e2e6232196bada9e5f3762dc7a9f07dc271179 953B / 953B          0.0s
+ => => sha256:52daacd3dd5db18d372e31d19527ff1561adfe7f8f707ea0ad04b11d2307f1a3 4.77kB / 4.77kB      0.0s
+ => => sha256:852e50cd189dfeb54d97680d9fa6bed21a6d7d18cfb56d6abfe2de9d7f173795 27.11MB / 27.11MB   24.3s
+ => => sha256:a6236801494d5ca9acfae6569427398c2942c031375b96cac887cafe1de5a09b 80.38MB / 80.38MB  211.8s
+ => => sha256:679c171d6942954a759f2d3a1dff911321940f23b0cdbe1d186f36bef0025124 52.98MB / 52.98MB  167.9s
+ => => extracting sha256:852e50cd189dfeb54d97680d9fa6bed21a6d7d18cfb56d6abfe2de9d7f173795           1.6s
+ => => extracting sha256:a6236801494d5ca9acfae6569427398c2942c031375b96cac887cafe1de5a09b           3.1s
+ => => extracting sha256:679c171d6942954a759f2d3a1dff911321940f23b0cdbe1d186f36bef0025124           3.3s
+ => [internal] load build context                                                                   0.1s
+ => => transferring context: 1.27kB                                                                 0.0s
+ => [2/7] COPY environment.yml .                                                                    1.5s
+ => [3/7] RUN conda env create -f environment.yml                                                 633.0s
+ => ERROR [4/7] RUN conda activate config-hub-env                                                   0.8s
+------
+ > [4/7] RUN conda activate config-hub-env:
+#8 0.785
+#8 0.785 CommandNotFoundError: Your shell has not been properly configured to use 'conda activate'.
+#8 0.785 To initialize your shell, run
+#8 0.785
+#8 0.785     $ conda init <SHELL_NAME>
+#8 0.785
+#8 0.785 Currently supported shells are:
+#8 0.785   - bash
+#8 0.785   - fish
+#8 0.785   - tcsh
+#8 0.785   - xonsh
+#8 0.785   - zsh
+#8 0.785   - powershell
+#8 0.785
+#8 0.785 See 'conda init --help' for more information and options.
+#8 0.785
+#8 0.785 IMPORTANT: You may need to close and restart your shell after running 'conda init'.
+#8 0.785
+#8 0.785
+------
+executor failed running [/bin/sh -c conda activate config-hub-env]: exit code: 1

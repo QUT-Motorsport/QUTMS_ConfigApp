@@ -1,5 +1,7 @@
 FROM continuumio/miniconda3
 
+RUN conda init bash
+
 # initialise conda environment
 COPY environment.yml .
 RUN conda env create -f environment.yml
