@@ -14,7 +14,7 @@ dependencies:
   - pyinstaller==4.0 #bundles a Python application and all its dependencies into a single package.
   - quart==0.13.1 #Python backend web framework
   - numpy==1.19.2 #Array processing for numbers, strings, records, and objects.
-
+  - h2==3.2.0
   - pylint==2.6.0 # for linting when you code
   - black==20.8b1 # for autoformatting (when you save)
   - quart-cors==0.2.0 #Enables Cross Origin Resource Sharing addon for Quart

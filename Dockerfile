@@ -2,12 +2,12 @@ FROM continuumio/miniconda3
 
 WORKDIR /app
 
+# RUN pip uninstall h2
+# RUN pip install h2===3.2.0
+
 # Create the environment:
 COPY environment.yml .
 RUN conda env create -f environment.yml
-
-RUN pip uninstall h2
-RUN pip install h2===3.2.0
 
 # Make RUN commands use the new environment:
 SHELL ["conda", "run", "-n", "config-hub-env", "/bin/bash", "-c"]
