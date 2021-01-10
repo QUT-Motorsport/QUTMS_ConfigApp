@@ -10,5 +10,5 @@ RUN conda env create -f environment.yml
 SHELL ["conda", "run", "-n", "config-hub-env", "/bin/bash", "-c"]
 
 # The code to run when container is started:
-COPY main.py /backend
+COPY backend/main.py /app
 ENTRYPOINT ["conda", "run", "-n", "config-hub-env", "python", "main.py"]
