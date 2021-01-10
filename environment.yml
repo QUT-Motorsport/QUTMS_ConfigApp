@@ -4,10 +4,12 @@ channels:
   - defaults
   - conda-forge
 
+#https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#updating-an-environment
+
 dependencies:
   #All versions as of 28th October 2020
   - plotly==4.12.0 #browser-based graphing library
-  - pip==20.2.4 #tool for installing Python packages
+  # - pip==20.2.4 #tool for installing Python packages
   - nodejs==14.14.0 #platform for easily building fast, scalable network applications
   - httptools==0.1.1 #Fast HTTP parser
   - pyserial==3.4 #serial port access library
@@ -18,5 +20,6 @@ dependencies:
   - pylint==2.6.0 # for linting when you code
   - black==20.8b1 # for autoformatting (when you save)
   - quart-cors==0.2.0 #Enables Cross Origin Resource Sharing addon for Quart
+  - mysql-connector-python
   # - python-dotenv==0.14.0 #Get and set values in your .env file in local and production servers
   # - websockets

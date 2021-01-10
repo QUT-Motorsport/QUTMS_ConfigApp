@@ -27,9 +27,9 @@ services:
     container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: sqlroot
-      MYSQL_DATABASE: qutmsdb
-      MYSQL_USER: softman
-      MYSQL_PASSWORD: softmanpass
+      # MYSQL_DATABASE: qutmsdb
+      # MYSQL_USER: softman
+      # MYSQL_PASSWORD: softmanpass
     ports:
       - "6033:3306"
     volumes:
