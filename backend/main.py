@@ -1,4 +1,4 @@
-from quart import Quart, websocket
+from quart import Quart, websocket, request
 import mysql.connector
 from quart_cors import cors
 
@@ -21,6 +21,17 @@ connection = mysql.connector.connect(**config)
 @app.route("/")
 async def hello():
     return "hello"
+
+
+@app.route("/registration", methods=["GET"])
+async def registration():
+    email = request.headers["email"]
+    username = request.headers["username"]
+    password = request.headers["password"]
+    print(email)
+    print(username)
+    print(password)
+    return "Registered"
 
 
 @app.websocket("/ws")
