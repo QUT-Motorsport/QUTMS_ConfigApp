@@ -1,0 +1,1 @@
+# NPM is using your .gitignore as a base for the .npmignore file, and thus ignores /lib. If you add a blank .npmignore file into the root of your application, everything should work. 
