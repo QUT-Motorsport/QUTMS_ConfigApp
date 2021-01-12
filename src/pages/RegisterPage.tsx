@@ -12,6 +12,37 @@ import styles from "./styles/loginRegister.module.scss";
 export default function RegisterPage() {
 //   useTitle("QUTMS Register");
 
+// Layout for form
+const layout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+};
+
+// Makes sure necessary info being entered
+const validateMessages = {
+  required: '${label} is required!',
+  types: {
+    email: '${label} is not a valid email!',
+  },
+};
+
+// Code for when the form is submitted
+const onFinish = (values: any) => {
+  values.preventDefault();
+  const data = { values };
+  console.log('submit');
+  console.log(values);
+  fetch('http://0.0.0.0:5873/registration/', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then(res => res.json())
+    .then(res => console.log(res));
+};
+
   return (
     <>
       <div
@@ -37,16 +68,21 @@ export default function RegisterPage() {
               marginTop: "100%",
             }}
           />
-          <Form>
-            <Form.Item>
+          <Form {...layout} name="registration" onFinish={onFinish} validateMessages={validateMessages}>
+            <Form.Item name={['user', 'email']} label="Email" rules={[{ type: 'email' }]}>
               <Input
                 prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
                 placeholder="Email Address"
               />
+
+            </Form.Item>
+            <Form.Item name={['user', 'name']} label="Name" rules={[{ required: true }]}>              
               <Input
                 prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
                 placeholder="First and Last Name"
               />
+            </Form.Item>
+            <Form.Item name={['user', 'password']} label="Password">              
               <Input
                 prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
                 placeholder="Password"
