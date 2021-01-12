@@ -1,0 +1,29 @@
+.homePage {
+    h1 {
+      color: #0f406a;
+      font-size: 2em;
+      padding: 20px 0px 0px 50px;
+    }
+  
+    h4 {
+      padding: 35px 0px 0px 0px;
+    }
+  
+    p {
+      padding: 0px 0px 0px 50px;
+      font-size: 18px;
+    }
+  
+    button {
+      // make it look like a link
+      background: none !important;
+      border: none;
+      padding: 0 !important;
+      /*optional*/
+      font-family: arial, sans-serif;
+      /*input has OS specific font-family*/
+      color: #069;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
