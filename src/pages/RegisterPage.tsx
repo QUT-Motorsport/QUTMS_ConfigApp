@@ -28,7 +28,7 @@ const validateMessages = {
 
 // Code for when the form is submitted
 const onFinish = (values: any) => {
-  values.preventDefault();
+  // values.preventDefault(); not a function??
   const data = { values };
   console.log('submit');
   console.log(values);
