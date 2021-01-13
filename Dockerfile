@@ -1,4 +1,5 @@
 FROM node:alpine
+RUN apk update && apk add python make g++
 WORKDIR /app
 #package*.json will also copy package-lock.json
 COPY package*.json ./
