@@ -25,12 +25,12 @@ async def hello():
 
 @app.route("/registration", methods=["GET"])
 async def registration():
-    email = request.headers["email"]
-    username = request.headers["username"]
-    password = request.headers["password"]
-    print(email)
-    print(username)
-    print(password)
+    # email = request.headers["email"]
+    # username = request.headers["username"]
+    # password = request.headers["password"]
+    # print(email)
+    # print(username)
+    # print(password)
     return "Registered"
 
 
