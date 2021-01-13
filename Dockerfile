@@ -5,6 +5,7 @@ COPY package*.json ./
 #DEBUG is an environment variable which controls logging for many Node modules.
 #Dont do it its terrifying
 # ENV DEBUG=*
+RUN npm uninstall node-gyp
 #--production will skip installing devDependencies
 RUN npm install --production
 #Putting full COPY command last will leverage cache better 
