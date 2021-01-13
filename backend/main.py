@@ -23,15 +23,15 @@ async def hello():
     return "hello"
 
 
-@app.route("/registration", methods=["GET"])
-async def registration():
-    # email = request.headers["email"]
-    # username = request.headers["username"]
-    # password = request.headers["password"]
-    # print(email)
-    # print(username)
-    # print(password)
-    return "Registered"
+# @app.route("/registration", methods=["GET"])
+# async def registration():
+#     # email = request.headers["email"]
+#     # username = request.headers["username"]
+#     # password = request.headers["password"]
+#     # print(email)
+#     # print(username)
+#     # print(password)
+#     return "Registered"
 
 
 @app.websocket("/ws")
