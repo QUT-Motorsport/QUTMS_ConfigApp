@@ -2,7 +2,7 @@ from quart import Quart, websocket
 
 # import mysql.connector
 
-from quart_cors import cors
+import quart_cors
 
 app = Quart(__name__)
 
