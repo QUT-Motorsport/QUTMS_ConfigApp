@@ -14,7 +14,7 @@ dependencies:
   - httptools==0.1.1 #Fast HTTP parser
   - pyserial==3.4 #serial port access library
   - pyinstaller==4.0 #bundles a Python application and all its dependencies into a single package.
-  - quart==0.13.1 #Python backend web framework
+  - quart==0.10.0 #Python backend web framework
   - numpy==1.19.2 #Array processing for numbers, strings, records, and objects.
   - h2==3.2.0
   - pylint==2.6.0 # for linting when you code
