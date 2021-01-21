@@ -43,3 +43,33 @@ async def ws():
 
 
 app.run(host="0.0.0.0", port="5873")
+
+
+## unsure if this code should be here, if not place it appropriately
+
+#handle login request from server side
+
+def loginRequest(username, inputPassword):
+    try{
+        #probably incorrect syntax for the query below, will fix later
+        dbQuery = "SELECT salt, password FROM users WHERE username='%s'", username"
+        #resultOfQuery = someFunction(dbquery) # unsure what python uses, Java has SQLQueryInterface package with .query function
+
+        #something on the lines of this
+        #import sqlite3
+        #connection = sqlite3.connect("survey.db")
+        #cursor = connection.cursor()
+        #cursor.execute("SELECT Site.lat, Site.long FROM Site;")
+        #results = cursor.fetchall()
+        #cursor.close()
+        #connection.close()
+        #
+        #
+        salt = decode(result[0])
+        password = decode(result[1])
+
+        return compareHash(password, inputPassword, salt) # this function is in crypto.py
+    }
+    catch(Exception e) {
+        return False
+    }

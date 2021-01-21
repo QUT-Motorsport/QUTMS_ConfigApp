@@ -10,6 +10,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "python.linting.enabled": true,
-  "python.pythonPath": "C:\\Users\\mreyn\\miniconda3\\envs\\config-hub-env\\python.exe",
+  "python.pythonPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Python36_64\\python.exe",
   "typescript.tsdk": "node_modules\\typescript\\lib"
 }
