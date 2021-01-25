@@ -23,7 +23,7 @@ config = {
      "port": "3306",
      "database": "qutmslogins",
      }
- connection = mysql.connector.connect(**config)
+connection = mysql.connector.connect(**config)
 
 
 #@app.route("/")
